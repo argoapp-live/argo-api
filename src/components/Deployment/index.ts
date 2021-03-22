@@ -10,6 +10,7 @@ import { Types } from 'mongoose';
 import JWTTokenService from '../Session/service';
 import UserService from '../User/service';
 import { IUserModel } from '../User/model';
+import RepositoryService from '../Repository/service';
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
@@ -111,8 +112,9 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
                 const deploymentTime: number = parseInt((totalTime / 1000).toFixed(1));
                 const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
                 const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-                let user = await UserService.findOneAndUpdateDepTime(deserializedToken.session_id, deploymentTime, totalGasPrice);
-                await RepositoryModel.findOneAndUpdate(repoFilter, update);
+                await UserService.findOneAndUpdateDepTime(deserializedToken.session_id, deploymentTime, totalGasPrice);
+                const repos = await RepositoryModel.findOneAndUpdate(repoFilter, update);
+                await RepositoryService.AddToProxy(repos, arweaveLink.substr(arweaveLink.lastIndexOf('/') + 1), deploymentObj.deploymentId);
             }
             else if (data.includes("Path not found")) {
                 updateDeployment = {
@@ -162,8 +164,6 @@ export async function FindDeploymentById(req: Request, res: Response, next: Next
         success: true,
     });
 }
-
-
 const createInstallationToken = async (installationId: any, repositoryId: any) => {
     const auth = await createAppAuth({
         id: config.githubApp.GIT_HUB_APP_ID,

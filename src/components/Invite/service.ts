@@ -25,10 +25,8 @@ const InvitationService: IInvitationService = {
         let _transporter: nodemailer.Transporter;
         try {
             _transporter = nodemailer.createTransport({
-                host: 'smtpout.secureserver.net',
-                port: 465,
                 secure: true, // true for 465, false for other ports
-                // service: 'gmail',
+                service: 'gmail',
                 auth: {
                     user: config.smtp.USERNAME,
                     pass: config.smtp.PASSWORD, // generated ethereal password

@@ -265,7 +265,7 @@ const UserService: IUserService = {
                         'argo_wallet.wallet_balance': updatedBalance
                     }
                 };
-                await UserModel.findOneAndUpdate(filter, update);
+                const users = await UserModel.findOneAndUpdate(filter, update);
                 const arweave: Arweave = Arweave.init({
                     host: config.arweave.HOST,
                     port: config.arweave.PORT,

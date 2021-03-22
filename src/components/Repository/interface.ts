@@ -40,4 +40,5 @@ export interface IRepositoryService {
     RemoveSubDomain(id: string, repositoryId: string): Promise<any>;
 
     RemoveDomain(id: string, repositoryId: string): Promise<any>;
+    AddToProxy(repo: IRepository, txId: string, depId: string): Promise<any>;
 }

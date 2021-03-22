@@ -22,12 +22,16 @@ export interface IRepository extends Document {
     sitePreview: string;
     framework: string;
     domains: [{
+        _id?: Types.ObjectId
         name: string,
         transactionId: string,
+        isLatestDomain: boolean
     }],
     subDomains: [{
+        _id?: Types.ObjectId
         name: string,
         transactionId: string,
+        isLatestSubDomain: boolean
     }]
 }
 
@@ -90,10 +94,12 @@ const RepositorySchema: Schema = new Schema({
     domains: [{
         name: String,
         transactionId: String,
+        isLatestDomain: Boolean
     }],
     subDomains: [{
         name: String,
         transactionId: String,
+        isLatestSubDomain: Boolean,
     }]
 });
 
