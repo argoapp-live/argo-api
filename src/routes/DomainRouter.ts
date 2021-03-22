@@ -20,7 +20,7 @@ router.post('/', async (req: any, res: any) => {
             var sendRequest = await sendAddRequest(req);
 
             if (sendRequest) {
-                let result = await RepositoryService.InsertDomain(req.body.repositoryId, req.body.domain, req.body.transactionId);
+                let result = await RepositoryService.InsertDomain(req.body.repositoryId, req.body.domain, req.body.transactionId, req.body.isLatest);
                 if (!result) {
                     res.status(200).json({
                         success: false
@@ -52,7 +52,7 @@ router.post('/subdomain', async (req: any, res: any) => {
         if (getUserToken) {
             var sendRequest = await sendAddRequest(req);
             if (sendRequest) {
-                let result = await RepositoryService.InsertSubDomain(req.body.repositoryId, req.body.domain, req.body.transactionId);
+                let result = await RepositoryService.InsertSubDomain(req.body.repositoryId, req.body.domain, req.body.transactionId, req.body.isLatest);
                 if (!result) {
                     res.status(200).json({
                         success: false
