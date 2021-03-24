@@ -110,7 +110,7 @@ const RepositoryService: IRepositoryService = {
                 var addDomain = { name: domain, transactionId: transactionId, isLatestDomain: false };
                 if (isLatest) {
                     addDomain.isLatestDomain = true;
-                    await addProxy(repo, transactionId);
+                    await addProxy(repo, transactionId, domain);
                 }
                 repo.domains.push(addDomain);
                 await repo.save();
@@ -137,7 +137,7 @@ const RepositoryService: IRepositoryService = {
                 var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false };
                 if (isLatest) {
                     addSubDomain.isLatestSubDomain = true;
-                    await addProxy(repo, transactionId);
+                    await addProxy(repo, transactionId, domain);
                 }
                 repo.subDomains.push(addSubDomain);
                 await repo.save();
@@ -213,13 +213,20 @@ const RepositoryService: IRepositoryService = {
     },
 
     async AddToProxy(repo: IRepository, txId: string, depId: string): Promise<any> {
-        addProxy(repo, txId);
+        await addProxy(repo, txId, '');
     }
 };
 
-const addProxy = async (repo: IRepository, txId: string) => {
+const addProxy = async (repo: IRepository, txId: string, domain: string): Promise<any> => {
     try {
         let domainArray: string[] = [];
+        if (txId === '') {
+            return false;
+        }
+        if (txId != '' && domain != '') {
+            domainArray.push(domain);
+        }
+
         repo.domains.forEach(domain => {
             if (domain.isLatestDomain) {
                 domainArray.push(domain.name)
@@ -246,7 +253,6 @@ const addProxy = async (repo: IRepository, txId: string) => {
 
         await repo.domains.forEach(async domain => {
             if (domain.isLatestDomain) {
-                let check = domain._id.toHexString();
                 const filter = {
                     'domains._id': domain._id
                 };
