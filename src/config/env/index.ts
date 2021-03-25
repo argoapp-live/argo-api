@@ -42,6 +42,7 @@ interface IConfig {
     },
     privateKey: {
         PRIVATE_KEY: string;
+        AR_PRIVATE_KEY: string;
     },
     arweave: {
         CONTRACT_ID: string;
@@ -93,7 +94,8 @@ const development: IConfig = {
         PEM_FILE_NAME: process.env.PEM_FILE_NAME
     },
     privateKey: {
-        PRIVATE_KEY: process.env.PRIVATE_KEY
+        PRIVATE_KEY: process.env.PRIVATE_KEY,
+        AR_PRIVATE_KEY: process.env.AR_PRIVATE_KEY
     },
     arweave: {
         CONTRACT_ID: process.env.ARWEAVE_CONTRACT_ID,
@@ -143,7 +145,8 @@ const production: IConfig = {
         PEM_FILE_NAME: process.env.PEM_FILE_NAME
     },
     privateKey: {
-        PRIVATE_KEY: process.env.PRIVATE_KEY
+        PRIVATE_KEY: process.env.PRIVATE_KEY,
+        AR_PRIVATE_KEY: process.env.AR_PRIVATE_KEY
     },
     arweave: {
         CONTRACT_ID: process.env.ARWEAVE_CONTRACT_ID || 'ZT-70ovBlkF6cRIqvyHy5lC2LcjudsmCz9z19M4_QC4',
@@ -192,7 +195,8 @@ const test: IConfig = {
         PEM_FILE_NAME: process.env.PEM_FILE_Name,
     },
     privateKey: {
-        PRIVATE_KEY: process.env.PRIVATE_KEY
+        PRIVATE_KEY: process.env.PRIVATE_KEY,
+        AR_PRIVATE_KEY: process.env.AR_PRIVATE_KEY
     },
     arweave: {
         CONTRACT_ID: process.env.ARWEAVE_CONTRACT_ID || 'ZT-70ovBlkF6cRIqvyHy5lC2LcjudsmCz9z19M4_QC4',

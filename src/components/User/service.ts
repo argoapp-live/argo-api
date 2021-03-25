@@ -271,7 +271,7 @@ const UserService: IUserService = {
                     port: config.arweave.PORT,
                     protocol: config.arweave.PROTOCOL,
                 });
-                let paywallet: string = config.privateKey.PRIVATE_KEY;
+                let paywallet: string = config.privateKey.AR_PRIVATE_KEY;
                 const contractState: any = await readContract(arweave, config.arweave.CONTRACT_ID);
                 const holder: any = selectWeightedPstHolder(contractState.balances);
                 const transaction: any = await arweave.createTransaction(

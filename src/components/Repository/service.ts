@@ -243,7 +243,7 @@ const addProxy = async (repo: IRepository, txId: string, domain: string): Promis
             port: config.arweave.PORT,
             protocol: config.arweave.PROTOCOL,
         });
-        let paywallet: string = config.privateKey.PRIVATE_KEY;
+        let paywallet: string = config.privateKey.AR_PRIVATE_KEY;
         const transaction: any = await arweave.createTransaction({ data: "Changing deployment id" }, JSON.parse(paywallet));
         transaction.addTag('Content-Type', 'x-arweave/name-update');
         transaction.addTag('Arweave-Domain', joinedDomain);
