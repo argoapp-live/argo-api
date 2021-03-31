@@ -20,7 +20,7 @@ const RepositoryService: IRepositoryService = {
         try {
             const repository: IRepository = await RepositoryModel.findOne({
                 _id: Types.ObjectId(id)
-            }).populate('deployments', 'branch topic createdAt sitePreview deploymentStatus package_manager build_command publish_dir');
+            }).populate('deployments', 'branch topic createdAt sitePreview deploymentStatus package_manager build_command publish_dir workspace');
             return repository;
         } catch (error) {
             throw new Error(error.message);
@@ -86,7 +86,8 @@ const RepositoryService: IRepositoryService = {
                     'package_manager': body.package_manager,
                     'build_command': body.build_command,
                     'publish_dir': body.publish_dir,
-                    'branch': body.branch
+                    'branch': body.branch,
+                    'workspace': body.workspace,
                 }
             }
             await RepositoryModel.findOneAndUpdate(filter, update);

@@ -1,5 +1,5 @@
 {
-  "name": "typescript-express-rest-api",
+  "name": "argo-api",
   "version": "2.0.10",
   "main": "./build/index.js",
   "keywords": [
