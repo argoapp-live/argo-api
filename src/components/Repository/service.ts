@@ -3,7 +3,10 @@ import { Types } from 'mongoose';
 import { IRepository, IOrganization, OrganizationModel, RepositoryModel, DeploymentModel } from '../Organization/model';
 import { IRepositoryService } from './interface';
 import config from '../../config/env';
-import { filter } from 'compression';
+import { v4 as uuidv4 } from 'uuid';
+import { recordsForHostname } from './helper';
+import * as request from 'request';
+
 
 /**
  * @export
@@ -96,7 +99,9 @@ const RepositoryService: IRepositoryService = {
         } catch (error) {
             throw new Error(error.message);
         }
-    }, async InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<any> {
+    },
+
+    async InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<any> {
         try {
             const filter = {
                 '_id': Types.ObjectId(id)
@@ -108,10 +113,10 @@ const RepositoryService: IRepositoryService = {
             }
 
             if (repo) {
-                var addDomain = { name: domain, transactionId: transactionId, isLatestDomain: false };
+                var addDomain = { name: domain, transactionId: transactionId, isLatestDomain: false, uuid: uuidv4(), ownerVerified: false };
                 if (isLatest) {
                     addDomain.isLatestDomain = true;
-                    await addProxy(repo, transactionId, domain);
+                    // await addProxy(repo, transactionId, domain);
                 }
                 repo.domains.push(addDomain);
                 await repo.save();
@@ -135,10 +140,10 @@ const RepositoryService: IRepositoryService = {
             }
 
             if (repo) {
-                var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false };
+                var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false, uuid: uuidv4(), ownerVerified: false };
                 if (isLatest) {
                     addSubDomain.isLatestSubDomain = true;
-                    await addProxy(repo, transactionId, domain);
+                    // await addProxy(repo, transactionId, domain);
                 }
                 repo.subDomains.push(addSubDomain);
                 await repo.save();
@@ -149,6 +154,75 @@ const RepositoryService: IRepositoryService = {
             throw new Error(error.message);
         }
     },
+
+    async VerifyDomain(id: string, domainName: string): Promise<any> {
+        try {
+            const filter = {
+                '_id': Types.ObjectId(id)
+            };
+            var repo = await RepositoryModel.findOne(filter);
+
+            if (repo) {
+                const domain = repo.domains.filter(d => d.name === domainName)[0];
+                const txtRecords = await recordsForHostname(domain.name)
+                console.log(txtRecords, domain)
+                if(txtRecords.indexOf(domain.uuid) != -1) {
+                    domain.ownerVerified = true
+                }
+                if (domain.isLatestDomain && domain.ownerVerified) {
+                    await addProxy(repo, domain.transactionId, domain.name, domain.uuid);
+                }
+                const filter = {
+                    'domains._id': domain._id
+                };
+                const updatCondition = {
+                    $set: {
+                        'domains.$.ownerVerified': domain.ownerVerified
+                    }
+                }
+                await RepositoryModel.findOneAndUpdate(filter, updatCondition)
+            }
+            return true;
+
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async VerifySubDomain(id: string, subdomainName: string): Promise<any> {
+        try {
+            const filter = {
+                '_id': Types.ObjectId(id)
+            };
+            var repo = await RepositoryModel.findOne(filter);
+
+            if (repo) {
+                const subdomain = repo.subDomains.filter(d => d.name === subdomainName)[0];
+                const txtRecords = await recordsForHostname(subdomain.name)
+                console.log(txtRecords, subdomain)
+                if(txtRecords.indexOf(subdomain.uuid) != -1) {
+                    subdomain.ownerVerified = true
+                }
+                if (subdomain.isLatestSubDomain && subdomain.ownerVerified) {
+                    await addProxy(repo, subdomain.transactionId, subdomain.name, subdomain.uuid);
+                }
+                const filter = {
+                    'domains._id': subdomain._id
+                };
+                const updatCondition = {
+                    $set: {
+                        'domains.$.ownerVerified': subdomain.ownerVerified
+                    }
+                }
+                await RepositoryModel.findOneAndUpdate(filter, updatCondition)
+            }
+            return true;
+
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     async UpdateDomain(id: string, domain: string, transactionId: string): Promise<any> {
         try {
             const filter = {
@@ -214,45 +288,53 @@ const RepositoryService: IRepositoryService = {
     },
 
     async AddToProxy(repo: IRepository, txId: string, depId: string): Promise<any> {
-        await addProxy(repo, txId, '');
+        await addProxy(repo, txId, '', '');
     }
 };
 
-const addProxy = async (repo: IRepository, txId: string, domain: string): Promise<any> => {
+const addProxy = async (repo: IRepository, txId: string, domain: string, uuid: string): Promise<any> => {
     try {
         let domainArray: string[] = [];
+        let uuidArray: string[] = [];
         if (txId === '') {
             return false;
         }
         if (txId != '' && domain != '') {
             domainArray.push(domain);
+            uuidArray.push(uuid)
         }
 
         repo.domains.forEach(domain => {
             if (domain.isLatestDomain) {
                 domainArray.push(domain.name)
+                uuidArray.push(domain.uuid)
             }
         });
         repo.subDomains.forEach(subdomain => {
             if (subdomain.isLatestSubDomain) {
                 domainArray.push(subdomain.name)
+                uuidArray.push(subdomain.uuid)
             }
         });
-        let joinedDomain = domainArray.join(',');
-        const arweave: Arweave = Arweave.init({
-            host: config.arweave.HOST,
-            port: config.arweave.PORT,
-            protocol: config.arweave.PROTOCOL,
-        });
-        let paywallet: string = config.privateKey.AR_PRIVATE_KEY;
-        const transaction: any = await arweave.createTransaction({ data: "Changing deployment id" }, JSON.parse(paywallet));
-        transaction.addTag('Content-Type', 'x-arweave/name-update');
-        transaction.addTag('Arweave-Domain', joinedDomain);
-        transaction.addTag('Arweave-Hash', txId);
-        await arweave.transactions.sign(transaction, JSON.parse(paywallet));
-        await arweave.transactions.post(transaction);
+        
+        const proxyBody = {
+            transaction: txId, domain: domainArray, uuid: uuidArray
+        }
+        await sendAddDomainRequest(proxyBody)
+        // const arweave: Arweave = Arweave.init({
+        //     host: config.arweave.HOST,
+        //     port: config.arweave.PORT,
+        //     protocol: config.arweave.PROTOCOL,
+        // });
+        // let paywallet: string = config.privateKey.AR_PRIVATE_KEY;
+        // const transaction: any = await arweave.createTransaction({ data: "Changing deployment id" }, JSON.parse(paywallet));
+        // transaction.addTag('Content-Type', 'x-arweave/name-update');
+        // transaction.addTag('Arweave-Domain', joinedDomain);
+        // transaction.addTag('Arweave-Hash', txId);
+        // await arweave.transactions.sign(transaction, JSON.parse(paywallet));
+        // await arweave.transactions.post(transaction);
 
-        await repo.domains.forEach(async domain => {
+        repo.domains.forEach(async domain => {
             if (domain.isLatestDomain) {
                 const filter = {
                     'domains._id': domain._id
@@ -265,7 +347,7 @@ const addProxy = async (repo: IRepository, txId: string, domain: string): Promis
                 await RepositoryModel.findOneAndUpdate(filter, updatCondition)
             }
         });
-        await repo.subDomains.forEach(async subDomains => {
+        repo.subDomains.forEach(async subDomains => {
             if (subDomains.isLatestSubDomain) {
                 const filter = {
                     'subDomains._id': subDomains._id
@@ -283,6 +365,25 @@ const addProxy = async (repo: IRepository, txId: string, domain: string): Promis
     } catch (error) {
         throw new Error(error.message);
     }
+}
+
+
+const sendAddDomainRequest = async (req: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        var options = {
+            'method': 'POST',
+            'url': 'https://argoapp.online/v1/add-domain',
+            'headers': {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify(req.body.domain)
+        };
+        request(options, function (error: any, response: any) {
+            if (error) reject(error);
+            resolve(response);
+        });
+    });
+
 }
 
 export default RepositoryService;

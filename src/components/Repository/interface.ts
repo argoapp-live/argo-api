@@ -34,6 +34,10 @@ export interface IRepositoryService {
 
     InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<boolean>;
 
+    VerifyDomain(id: string, domainName: string): Promise<boolean>;
+
+    VerifySubDomain(id: string, subdomainName: string): Promise<boolean>;
+
     UpdateDomain(id: string, domain: string, transactionId: string): Promise<any>;
     UpdateSubDomain(id: string, domain: string, transactionId: string): Promise<any>;
 
