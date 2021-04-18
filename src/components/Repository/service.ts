@@ -113,7 +113,7 @@ const RepositoryService: IRepositoryService = {
             }
 
             if (repo) {
-                var addDomain = { name: domain, transactionId: transactionId, isLatestDomain: false, uuid: uuidv4(), ownerVerified: false };
+                var addDomain = { name: domain, transactionId: transactionId, isLatestDomain: false, argoDomainKey: uuidv4(), ownerVerified: false };
                 if (isLatest) {
                     addDomain.isLatestDomain = true;
                     // await addProxy(repo, transactionId, domain);
@@ -140,7 +140,7 @@ const RepositoryService: IRepositoryService = {
             }
 
             if (repo) {
-                var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false, uuid: uuidv4(), ownerVerified: false };
+                var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false, argoDomainKey: uuidv4(), ownerVerified: false };
                 if (isLatest) {
                     addSubDomain.isLatestSubDomain = true;
                     // await addProxy(repo, transactionId, domain);
@@ -166,11 +166,11 @@ const RepositoryService: IRepositoryService = {
                 const domain = repo.domains.filter(d => d.name === domainName)[0];
                 const txtRecords = await recordsForHostname(domain.name)
                 console.log(txtRecords, domain)
-                if(txtRecords.indexOf(domain.uuid) != -1) {
+                if(txtRecords.indexOf(domain.argoDomainKey) != -1) {
                     domain.ownerVerified = true
                 }
                 if (domain.isLatestDomain && domain.ownerVerified) {
-                    await addProxy(repo, domain.transactionId, domain.name, domain.uuid);
+                    await addProxy(repo, domain.transactionId, domain.name, domain.argoDomainKey);
                 }
                 const filter = {
                     'domains._id': domain._id
@@ -200,11 +200,11 @@ const RepositoryService: IRepositoryService = {
                 const subdomain = repo.subDomains.filter(d => d.name === subdomainName)[0];
                 const txtRecords = await recordsForHostname(subdomain.name)
                 console.log(txtRecords, subdomain)
-                if(txtRecords.indexOf(subdomain.uuid) != -1) {
+                if(txtRecords.indexOf(subdomain.argoDomainKey) != -1) {
                     subdomain.ownerVerified = true
                 }
                 if (subdomain.isLatestSubDomain && subdomain.ownerVerified) {
-                    await addProxy(repo, subdomain.transactionId, subdomain.name, subdomain.uuid);
+                    await addProxy(repo, subdomain.transactionId, subdomain.name, subdomain.argoDomainKey);
                 }
                 const filter = {
                     'domains._id': subdomain._id
@@ -292,33 +292,33 @@ const RepositoryService: IRepositoryService = {
     }
 };
 
-const addProxy = async (repo: IRepository, txId: string, domain: string, uuid: string): Promise<any> => {
+const addProxy = async (repo: IRepository, txId: string, domain: string, argoDomainKey: string): Promise<any> => {
     try {
         let domainArray: string[] = [];
-        let uuidArray: string[] = [];
+        let argoDomainKeyArray: string[] = [];
         if (txId === '') {
             return false;
         }
         if (txId != '' && domain != '') {
             domainArray.push(domain);
-            uuidArray.push(uuid)
+            argoDomainKeyArray.push(argoDomainKey)
         }
 
         repo.domains.forEach(domain => {
             if (domain.isLatestDomain) {
                 domainArray.push(domain.name)
-                uuidArray.push(domain.uuid)
+                argoDomainKeyArray.push(domain.argoDomainKey)
             }
         });
         repo.subDomains.forEach(subdomain => {
             if (subdomain.isLatestSubDomain) {
                 domainArray.push(subdomain.name)
-                uuidArray.push(subdomain.uuid)
+                argoDomainKeyArray.push(subdomain.argoDomainKey)
             }
         });
 
         const proxyBody = {
-            transaction: txId, domains: domainArray, uuids: uuidArray
+            transaction: txId, domains: domainArray, uuids: argoDomainKeyArray
         }
         await sendAddDomainRequest(proxyBody)
         // const arweave: Arweave = Arweave.init({

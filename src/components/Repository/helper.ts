@@ -6,18 +6,17 @@ const resolveTxtRecords = promisify(resolveTxt);
 export const recordsForHostname = async (
   hostname: string
 ): Promise<Array<string>> => {
-  var uuids = new Array();
+  var argoDomainKeys = new Array();
   const records = await resolveTxtRecords(hostname);
 
   records.forEach((elements) => {
     elements.forEach((element) => {
-      if (element.indexOf("uuid=") !== -1) {
-        const uuid = element.split("=")[1];
-        console.log(element, uuid);
-        if (uuid) uuids.push(uuid);
+      if (element.indexOf("argo=") !== -1) {
+        const argoDomainKey = element.split("=")[1];
+        if (argoDomainKey) argoDomainKeys.push(argoDomainKey);
       }
     });
   });
 
-  return uuids;
+  return argoDomainKeys;
 };

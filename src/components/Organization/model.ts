@@ -27,7 +27,7 @@ export interface IRepository extends Document {
         name: string,
         transactionId: string,
         isLatestDomain: boolean,
-        uuid: string,
+        argoDomainKey: string,
         ownerVerified: boolean
     }],
     subDomains: [{
@@ -35,7 +35,7 @@ export interface IRepository extends Document {
         name: string,
         transactionId: string,
         isLatestSubDomain: boolean,
-        uuid: string,
+        argoDomainKey: string,
         ownerVerified: boolean
     }]
 }
@@ -102,14 +102,14 @@ const RepositorySchema: Schema = new Schema({
         name: String,
         transactionId: String,
         isLatestDomain: Boolean,
-        uuid: String,
+        argoDomainKey: String,
         ownerVerified: Boolean
     }],
     subDomains: [{
         name: String,
         transactionId: String,
         isLatestSubDomain: Boolean,
-        uuid: String,
+        argoDomainKey: String,
         ownerVerified: Boolean
     }]
 });
