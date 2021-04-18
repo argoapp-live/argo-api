@@ -316,9 +316,9 @@ const addProxy = async (repo: IRepository, txId: string, domain: string, uuid: s
                 uuidArray.push(subdomain.uuid)
             }
         });
-        
+
         const proxyBody = {
-            transaction: txId, domain: domainArray, uuid: uuidArray
+            transaction: txId, domains: domainArray, uuids: uuidArray
         }
         await sendAddDomainRequest(proxyBody)
         // const arweave: Arweave = Arweave.init({
@@ -368,15 +368,16 @@ const addProxy = async (repo: IRepository, txId: string, domain: string, uuid: s
 }
 
 
-const sendAddDomainRequest = async (req: any): Promise<any> => {
+const sendAddDomainRequest = async (domain: any): Promise<any> => {
     return new Promise((resolve, reject) => {
         var options = {
             'method': 'POST',
-            'url': 'https://argoapp.online/v1/add-domain',
+            'url': `${config.domainResolver.BASE_ADDRESS}/v1/add-domain`,
             'headers': {
-                'Content-Type': 'application/json; charset=utf-8'
+                'Content-Type': 'application/json; charset=utf-8',
+                Authorization: `Bearer ${config.domainResolver.SECRET}`,
             },
-            body: JSON.stringify(req.body.domain)
+            body: JSON.stringify(domain)
         };
         request(options, function (error: any, response: any) {
             if (error) reject(error);

@@ -30,6 +30,10 @@ interface IConfig {
     argoReact?: {
         BASE_ADDRESS: string;
     };
+    domainResolver: {
+        BASE_ADDRESS: string;
+        SECRET: string;
+    }
     secret: string;
     pushNotifyUrl?: string;
     arweaveUrl?: string;
@@ -83,6 +87,10 @@ const development: IConfig = {
     argoReact: {
         BASE_ADDRESS: "http://localhost:3000"
     },
+    domainResolver: {
+        BASE_ADDRESS:  process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+        SECRET:  process.env.DOMAIN_SECRET || ""
+    },
     secret: process.env.SECRET || '@QEGTUIARGOTEST',
     pushNotifyUrl: process.env.PUSH_NOTIFY_URL,
     arweaveUrl: process.env.ARWEAVE_URL || "https://arweave.net/",
@@ -134,6 +142,10 @@ const production: IConfig = {
     argoReact: {
         BASE_ADDRESS: process.env.INTERNAL_FE_BASE_ADDRESS
     },
+    domainResolver: {
+        BASE_ADDRESS:  process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+        SECRET:  process.env.DOMAIN_SECRET || ""
+    },
     secret: process.env.SECRET,
     pushNotifyUrl: process.env.PUSH_NOTIFY_URL,
     arweaveUrl: process.env.ARWEAVE_URL,
@@ -183,6 +195,10 @@ const test: IConfig = {
     },
     argoReact: {
         BASE_ADDRESS: process.env.INTERNAL_FE_BASE_ADDRESS || "http://35.194.19.236:3000/"
+    },
+    domainResolver: {
+        BASE_ADDRESS:  process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+        SECRET:  process.env.DOMAIN_SECRET || ""
     },
     secret: process.env.SECRET || '@QEGTUIARGOTEST',
     pushNotifyUrl: process.env.PUSH_NOTIFY_URL,
