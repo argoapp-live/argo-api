@@ -21,13 +21,22 @@ export interface IRepository extends Document {
     branch: string;
     sitePreview: string;
     framework: string;
+    workspace: string,
     domains: [{
+        _id?: Types.ObjectId
         name: string,
         transactionId: string,
+        isLatestDomain: boolean,
+        argoDomainKey: string,
+        ownerVerified: boolean
     }],
     subDomains: [{
+        _id?: Types.ObjectId
         name: string,
         transactionId: string,
+        isLatestSubDomain: boolean,
+        argoDomainKey: string,
+        ownerVerified: boolean
     }]
 }
 
@@ -49,6 +58,7 @@ export interface IDeployment extends Document {
     publish_dir: string;
     github_url: string;
     framework: string;
+    workspace: string,
 }
 
 /**
@@ -87,13 +97,20 @@ const RepositorySchema: Schema = new Schema({
     branch: String,
     sitePreview: String,
     framework: String,
+    workspace: String,
     domains: [{
         name: String,
         transactionId: String,
+        isLatestDomain: Boolean,
+        argoDomainKey: String,
+        ownerVerified: Boolean
     }],
     subDomains: [{
         name: String,
         transactionId: String,
+        isLatestSubDomain: Boolean,
+        argoDomainKey: String,
+        ownerVerified: Boolean
     }]
 });
 
@@ -110,6 +127,7 @@ const DeploymentSchema: Schema = new Schema({
     publish_dir: String,
     github_url: String,
     framework: String,
+    workspace: String,
 });
 
 const OrganizationSchema: Schema = new Schema(

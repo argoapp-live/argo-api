@@ -30,9 +30,13 @@ export interface IRepositoryService {
 
     findOneAndUpdate(id: string, body: any): Promise<boolean>;
 
-    InsertDomain(id: string, domain: string, transactionId: string): Promise<boolean>;
+    InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<boolean>;
 
-    InsertSubDomain(id: string, domain: string, transactionId: string): Promise<any>;
+    InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<boolean>;
+
+    VerifyDomain(id: string, domainName: string): Promise<boolean>;
+
+    VerifySubDomain(id: string, subdomainName: string): Promise<boolean>;
 
     UpdateDomain(id: string, domain: string, transactionId: string): Promise<any>;
     UpdateSubDomain(id: string, domain: string, transactionId: string): Promise<any>;
@@ -40,4 +44,5 @@ export interface IRepositoryService {
     RemoveSubDomain(id: string, repositoryId: string): Promise<any>;
 
     RemoveDomain(id: string, repositoryId: string): Promise<any>;
+    AddToProxy(repo: IRepository, txId: string, depId: string): Promise<any>;
 }

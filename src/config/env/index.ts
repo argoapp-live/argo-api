@@ -30,6 +30,10 @@ interface IConfig {
     argoReact?: {
         BASE_ADDRESS: string;
     };
+    domainResolver: {
+        BASE_ADDRESS: string;
+        SECRET: string;
+    }
     secret: string;
     pushNotifyUrl?: string;
     arweaveUrl?: string;
@@ -42,6 +46,7 @@ interface IConfig {
     },
     privateKey: {
         PRIVATE_KEY: string;
+        AR_PRIVATE_KEY: string;
     },
     arweave: {
         CONTRACT_ID: string;
@@ -82,6 +87,10 @@ const development: IConfig = {
     argoReact: {
         BASE_ADDRESS: "http://localhost:3000"
     },
+    domainResolver: {
+        BASE_ADDRESS:  process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+        SECRET:  process.env.DOMAIN_SECRET || ""
+    },
     secret: process.env.SECRET || '@QEGTUIARGOTEST',
     pushNotifyUrl: process.env.PUSH_NOTIFY_URL,
     arweaveUrl: process.env.ARWEAVE_URL || "https://arweave.net/",
@@ -93,7 +102,8 @@ const development: IConfig = {
         PEM_FILE_NAME: process.env.PEM_FILE_NAME
     },
     privateKey: {
-        PRIVATE_KEY: process.env.PRIVATE_KEY
+        PRIVATE_KEY: process.env.PRIVATE_KEY,
+        AR_PRIVATE_KEY: process.env.AR_PRIVATE_KEY
     },
     arweave: {
         CONTRACT_ID: process.env.ARWEAVE_CONTRACT_ID,
@@ -132,6 +142,10 @@ const production: IConfig = {
     argoReact: {
         BASE_ADDRESS: process.env.INTERNAL_FE_BASE_ADDRESS
     },
+    domainResolver: {
+        BASE_ADDRESS:  process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+        SECRET:  process.env.DOMAIN_SECRET || ""
+    },
     secret: process.env.SECRET,
     pushNotifyUrl: process.env.PUSH_NOTIFY_URL,
     arweaveUrl: process.env.ARWEAVE_URL,
@@ -143,7 +157,8 @@ const production: IConfig = {
         PEM_FILE_NAME: process.env.PEM_FILE_NAME
     },
     privateKey: {
-        PRIVATE_KEY: process.env.PRIVATE_KEY
+        PRIVATE_KEY: process.env.PRIVATE_KEY,
+        AR_PRIVATE_KEY: process.env.AR_PRIVATE_KEY
     },
     arweave: {
         CONTRACT_ID: process.env.ARWEAVE_CONTRACT_ID || 'ZT-70ovBlkF6cRIqvyHy5lC2LcjudsmCz9z19M4_QC4',
@@ -181,6 +196,10 @@ const test: IConfig = {
     argoReact: {
         BASE_ADDRESS: process.env.INTERNAL_FE_BASE_ADDRESS || "http://35.194.19.236:3000/"
     },
+    domainResolver: {
+        BASE_ADDRESS:  process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+        SECRET:  process.env.DOMAIN_SECRET || ""
+    },
     secret: process.env.SECRET || '@QEGTUIARGOTEST',
     pushNotifyUrl: process.env.PUSH_NOTIFY_URL,
     arweaveUrl: process.env.ARWEAVE_URL || "https://arweave.net/",
@@ -192,7 +211,8 @@ const test: IConfig = {
         PEM_FILE_NAME: process.env.PEM_FILE_Name,
     },
     privateKey: {
-        PRIVATE_KEY: process.env.PRIVATE_KEY
+        PRIVATE_KEY: process.env.PRIVATE_KEY,
+        AR_PRIVATE_KEY: process.env.AR_PRIVATE_KEY
     },
     arweave: {
         CONTRACT_ID: process.env.ARWEAVE_CONTRACT_ID || 'ZT-70ovBlkF6cRIqvyHy5lC2LcjudsmCz9z19M4_QC4',

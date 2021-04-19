@@ -19,7 +19,8 @@ const DeploymentService: IDeploymentService = {
             publish_dir: body.publish_dir,
             deploymentStatus: "Pending",
             github_url: body.github_url,
-            framework: body.framework
+            framework: body.framework,
+            workspace: body.workspace
         };
 
         const deploymentModel: IDeployment = await DeploymentModel.create(deployment);
@@ -77,7 +78,9 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
         build_command: body.build_command,
         publish_dir: body.publish_dir,
         branch: body.branch,
-        framework: body.framework
+        framework: body.framework,
+        workspace: body.workspace
+        
     };
     const repository: IRepository = await RepositoryModel.create(update);
     const orgFilter = {

@@ -34,4 +34,5 @@ export interface IDeploymentDto {
     deploymentStatus: string;
     github_url: string;
     framework: string;
+    workspace: string;
 }
