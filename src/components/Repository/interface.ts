@@ -32,7 +32,7 @@ export interface IRepositoryService {
 
     InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<boolean>;
 
-    InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean, argoDomainKey: string, ownerVerified: boolean): Promise<boolean>;
+    InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean, argoDomainKey?: string, ownerVerified?: boolean): Promise<boolean>;
 
     VerifyDomain(id: string, domainName: string): Promise<boolean>;
 
@@ -45,4 +45,7 @@ export interface IRepositoryService {
 
     RemoveDomain(id: string, repositoryId: string): Promise<any>;
     AddToProxy(repo: IRepository, txId: string, depId: string): Promise<any>;
+
+    addRecordToDnsZone(dnsZoneName: string, recordType: string, dnsName: string, data: string, ttl: number) : Promise<any>;
+    verifyDnsName(dnsName: string): boolean;
 }

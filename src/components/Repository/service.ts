@@ -6,6 +6,8 @@ import config from '../../config/env';
 import { v4 as uuidv4 } from 'uuid';
 import { recordsForHostname } from './helper';
 import * as request from 'request';
+import {DNS} from '@google-cloud/dns';
+import { boolean } from 'joi';
 
 
 /**
@@ -128,7 +130,7 @@ const RepositoryService: IRepositoryService = {
         }
     },
 
-    async InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean, argoDomainKey: string = null, ownerVerified: boolean = false): Promise<any> {
+    async InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean, argoDomainKey?: string, ownerVerified?: boolean): Promise<any> {
         try {
             const filter = {
                 '_id': Types.ObjectId(id)
@@ -143,6 +145,9 @@ const RepositoryService: IRepositoryService = {
 
                 if(!argoDomainKey) {
                     argoDomainKey = uuidv4();
+                }
+                if(!ownerVerified) {
+                    ownerVerified = false;
                 }
 
                 var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false, argoDomainKey: argoDomainKey, ownerVerified: ownerVerified };
@@ -294,6 +299,23 @@ const RepositoryService: IRepositoryService = {
 
     async AddToProxy(repo: IRepository, txId: string, depId: string): Promise<any> {
         await addProxy(repo, txId, '', '');
+    },
+
+    async addRecordToDnsZone(dnsZoneName: string, recordType: string, dnsName: string, data: string, ttl: number) : Promise<any> {
+        const dns = new DNS();
+        const zone = dns.zone(dnsZoneName);
+    
+        const record = zone.record(recordType, {
+            name: dnsName,
+            data: data,
+            ttl: ttl,
+        });
+    
+        return zone.addRecords(record);
+    },
+    
+    verifyDnsName(dnsName: string): boolean {
+        return true;
     }
 };
 

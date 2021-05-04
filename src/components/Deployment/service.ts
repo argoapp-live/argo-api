@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { DeploymentModel, IDeployment, IRepository, OrganizationModel, RepositoryModel } from "../Organization/model";
 import RepositoryService from "../Repository/service"
 import { IDeploymentDto, IDeploymentService } from "./interface";
-import GoogleCloudService from "../../services/google-cloud";
 import config from "../../config/env";
 
 
@@ -98,14 +97,19 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
     try {
         const uuid: string = uuidv4();
         const dnsName: string = `${repository.name}.${organization.profile.username}.${config.googleCloud.dns.DNS_NAME}`;
-        await GoogleCloudService.addRecordToDnsZone
+
+        if(!RepositoryService.verifyDnsName(dnsName)) {
+            throw new Error("dns name constraint violation");
+        }
+
+        await RepositoryService.addRecordToDnsZone
             (config.googleCloud.dns.DNS_ZONE_NAME, config.googleCloud.dns.RECORD_TYPE, dnsName, `argo=${uuid}`, config.googleCloud.dns.TTL);
     
         await RepositoryService.InsertSubDomain(repository._id, dnsName, '', true, uuid, true);
     } catch(error) {
         throw new Error(error.message);
     }
-    
+
     return repository._id;
 }
 
