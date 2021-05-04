@@ -1,6 +1,10 @@
 import { Types } from "mongoose";
+import { v4 as uuidv4 } from 'uuid';
 import { DeploymentModel, IDeployment, IRepository, OrganizationModel, RepositoryModel } from "../Organization/model";
+import RepositoryService from "../Repository/service"
 import { IDeploymentDto, IDeploymentService } from "./interface";
+import GoogleCloudService from "../../services/google-cloud";
+import config from "../../config/env";
 
 
 const DeploymentService: IDeploymentService = {
@@ -89,7 +93,21 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
     const updateOrg: any = {
         $addToSet: { repositories: [Types.ObjectId(repository._id)] },
     };
-    await OrganizationModel.findOneAndUpdate(orgFilter, updateOrg);
+    const organization = await OrganizationModel.findOneAndUpdate(orgFilter, updateOrg);
+
+    try {
+        const uuid: string = uuidv4();
+        const dnsName: string = `${repository.name}.${organization.profile.username}.${config.googleCloud.dns.DNS_NAME}`;
+        await GoogleCloudService.addRecordToDnsZone
+            (config.googleCloud.dns.DNS_ZONE_NAME, config.googleCloud.dns.RECORD_TYPE, dnsName, `argo=${uuid}`, config.googleCloud.dns.TTL);
+    
+        await RepositoryService.InsertSubDomain(repository._id, dnsName, '', true, uuid, true);
+    } catch(error) {
+        throw new Error(error.message);
+    }
+
+    // create domain project-name.organization-username.argoapp.live -> argo = uuid
+    // insert subdomain for created repository
     return repository._id;
 }
 

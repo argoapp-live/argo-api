@@ -32,7 +32,7 @@ export interface IRepositoryService {
 
     InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<boolean>;
 
-    InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<boolean>;
+    InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean, argoDomainKey: string, ownerVerified: boolean): Promise<boolean>;
 
     VerifyDomain(id: string, domainName: string): Promise<boolean>;
 

@@ -128,7 +128,7 @@ const RepositoryService: IRepositoryService = {
         }
     },
 
-    async InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<any> {
+    async InsertSubDomain(id: string, domain: string, transactionId: string, isLatest: boolean, argoDomainKey: string = null, ownerVerified: boolean = false): Promise<any> {
         try {
             const filter = {
                 '_id': Types.ObjectId(id)
@@ -140,7 +140,12 @@ const RepositoryService: IRepositoryService = {
             }
 
             if (repo) {
-                var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false, argoDomainKey: uuidv4(), ownerVerified: false };
+
+                if(!argoDomainKey) {
+                    argoDomainKey = uuidv4();
+                }
+
+                var addSubDomain = { name: domain, transactionId: transactionId, isLatestSubDomain: false, argoDomainKey: argoDomainKey, ownerVerified: ownerVerified };
                 if (isLatest) {
                     addSubDomain.isLatestSubDomain = true;
                     // await addProxy(repo, transactionId, domain);

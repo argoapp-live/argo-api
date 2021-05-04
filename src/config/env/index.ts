@@ -54,7 +54,17 @@ interface IConfig {
         PORT: number;
         PROTOCOL: string;
         APP_NAME: string;
+    },
+    googleCloud: {
+        GOOGLE_APPLICATION_CREDENTIALS: string;
+        dns: {
+            DNS_ZONE_NAME: string;
+            DNS_NAME: string;
+            RECORD_TYPE: string;
+            TTL: number;
+        }
     }
+
 }
 
 const NODE_ENV: string = process.env.NODE_ENV || 'test';
@@ -111,6 +121,15 @@ const development: IConfig = {
         PORT: +process.env.ARWEAVE_PORT || 443,
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ARGO_APP_LIVE',
+    },
+    googleCloud: {
+        GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        dns: {
+            DNS_ZONE_NAME: "meetrekpero",
+            DNS_NAME: "meetrekpero.xyz",
+            RECORD_TYPE: "txt",
+            TTL: 180,
+        }
     }
 };
 
@@ -166,6 +185,15 @@ const production: IConfig = {
         PORT: +process.env.ARWEAVE_PORT || 443,
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ArGoApp/2.0.0',
+    },
+    googleCloud: {
+        GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        dns: {
+            DNS_ZONE_NAME: "argoapp",
+            DNS_NAME: "argoapp.live",
+            RECORD_TYPE: "txt",
+            TTL: 180,
+        }
     }
 };
 const test: IConfig = {
@@ -220,6 +248,15 @@ const test: IConfig = {
         PORT: +process.env.ARWEAVE_PORT || 443,
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ARGO_APP_LIVE',
+    },
+    googleCloud: {
+        GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        dns: {
+            DNS_ZONE_NAME: "meetrekpero",
+            DNS_NAME: "meetrekpero.xyz",
+            RECORD_TYPE: "txt",
+            TTL: 180,
+        }
     }
 };
 
