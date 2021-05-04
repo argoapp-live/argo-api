@@ -105,9 +105,7 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
     } catch(error) {
         throw new Error(error.message);
     }
-
-    // create domain project-name.organization-username.argoapp.live -> argo = uuid
-    // insert subdomain for created repository
+    
     return repository._id;
 }
 
