@@ -302,7 +302,9 @@ const RepositoryService: IRepositoryService = {
     },
 
     async addRecordToDnsZone(dnsZoneName: string, recordType: string, dnsName: string, data: string, ttl: number) : Promise<any> {
-        const dns = new DNS();
+        const dns = new DNS({ projectId: process.env.GOOGLE_PROJECT_ID, credentials: {
+            client_email: process.env.GOOGLE_CLIENT_EMAIL,
+            private_key: process.env.GOOGLE_APLICATION_PRIVATE_KEY }});
         const zone = dns.zone(dnsZoneName);
     
         const record = zone.record(recordType, {
