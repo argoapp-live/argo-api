@@ -57,11 +57,20 @@ interface IConfig {
     },
     googleCloud: {
         GOOGLE_APPLICATION_CREDENTIALS: string;
+        ARGO_IPV4: string;
         dns: {
             DNS_ZONE_NAME: string;
             DNS_NAME: string;
-            RECORD_TYPE: string;
-            TTL: number;
+        }
+        records: {
+            A: {
+                RECORD_TYPE: string;
+                TTL: number;
+            },
+            TXT: {
+                RECORD_TYPE: string;
+                TTL: number;
+            }
         }
     }
 
@@ -124,11 +133,20 @@ const development: IConfig = {
     },
     googleCloud: {
         GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        ARGO_IPV4: "35.202.158.174",
         dns: {
-            DNS_ZONE_NAME: "meetrekpero",
-            DNS_NAME: "meetrekpero.xyz",
-            RECORD_TYPE: "txt",
-            TTL: 180,
+            DNS_ZONE_NAME: "dns-example-zone",
+            DNS_NAME: "dns-example.com.",
+        },
+        records: {
+            A: {
+                RECORD_TYPE: 'a',
+                TTL: 180,
+            },
+            TXT: {
+                RECORD_TYPE: 'txt',
+                TTL: 180,
+            }
         }
     }
 };
@@ -188,11 +206,20 @@ const production: IConfig = {
     },
     googleCloud: {
         GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        ARGO_IPV4: "35.202.158.174",
         dns: {
             DNS_ZONE_NAME: "argoapp",
-            DNS_NAME: "argoapp.live",
-            RECORD_TYPE: "txt",
-            TTL: 180,
+            DNS_NAME: "argoapp.live.",
+        },
+        records: {
+            A: {
+                RECORD_TYPE: 'a',
+                TTL: 180,
+            },
+            TXT: {
+                RECORD_TYPE: 'txt',
+                TTL: 180,
+            }
         }
     }
 };
@@ -251,11 +278,20 @@ const test: IConfig = {
     },
     googleCloud: {
         GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+        ARGO_IPV4: "35.202.158.174",
         dns: {
             DNS_ZONE_NAME: "meetrekpero",
-            DNS_NAME: "meetrekpero.xyz",
-            RECORD_TYPE: "txt",
-            TTL: 180,
+            DNS_NAME: "meetrekpero.xyz.",
+        },
+        records: {
+            A: {
+                RECORD_TYPE: 'a',
+                TTL: 180,
+            },
+            TXT: {
+                RECORD_TYPE: 'txt',
+                TTL: 180,
+            }
         }
     }
 };

@@ -315,7 +315,8 @@ const RepositoryService: IRepositoryService = {
     },
     
     verifyDnsName(dnsName: string): boolean {
-        return true;
+        const format = /[` +_~\``]/;
+        return !format.test(dnsName);
     }
 };
 
