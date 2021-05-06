@@ -39,6 +39,22 @@ const DeploymentService: IDeploymentService = {
         }
         const deployment: IDeployment = await DeploymentModel.findById(filter);
         return deployment;
+    },
+
+    async updateStatus(deploymentId: string, status: string): Promise<IDeployment> {
+        const filter = { '_id': Types.ObjectId(deploymentId) }
+        const update = { deploymentStatus: status };
+
+        const deployment: IDeployment = await DeploymentModel.findOneAndUpdate(filter, update);
+        return deployment;
+    },
+
+    async updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment> {
+        const filter = { '_id': Types.ObjectId(deploymentId) }
+        const update = { paymentId: paymentId };
+
+        const deployment: IDeployment = await DeploymentModel.findOneAndUpdate(filter, update);
+        return deployment;
     }
 }
 

@@ -6,6 +6,8 @@ export interface IDeploymentService {
 
     createAndDeployRepo(body: any, topic: string): Promise<Types.ObjectId>;
     FindOneDeployment(deploymentId: string): Promise<IDeployment>;
+    updateStatus(deploymentId: string, status: string): Promise<IDeployment>;
+    updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment>;
 }
 
 export interface IInternalApiDto {

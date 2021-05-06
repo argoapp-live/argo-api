@@ -132,6 +132,16 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
 
             await DeploymentModel.findOneAndUpdate(depFilter, updateDeployment).catch((err: Error) => console.log(err));
         });
+        const isDeploymentApproved = await axios.post(config.paymentApi.HOST_ADDRESS, { address: "" });
+
+        if (!isDeploymentApproved) {
+            await DeploymentService.updateStatus(deploymentObj.deploymentId, 'Failed');
+            throw new Error('Not enough amount approved');
+        }
+
+        //TODO Decide where to send request to make payment
+
+
         setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err: Error) => console.log(err)), 2000);
 
         res.status(200).json({

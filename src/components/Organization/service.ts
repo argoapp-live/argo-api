@@ -111,6 +111,23 @@ const OrganizationService: IOrganizationService = {
         }
     },
 
+    async updatePayment(organisationId: string, paymentId: string): Promise<any> {
+        try {
+            console.log('find one and update organization');
+            const filter: any = {
+                _id: organisationId,
+            };
+            const update: any = {
+                $addToSet: { payments: [paymentId] },
+            };
+            const updatedOrganization: any = await OrganizationModel.findOneAndUpdate(filter, update);
+
+            return updatedOrganization;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     async updateOrganization(org_id: string, org: any): Promise<any> {
         try {
             console.log('find one and update organization');

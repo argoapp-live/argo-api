@@ -1,6 +1,7 @@
 import * as connections from '../../config/connection/connection';
 import { Document, Schema, Model, Types } from 'mongoose';
 import { IUserModel } from '../User/model';
+import { IWalletModel } from '../Wallet/model';
 
 /**
  * @export
@@ -59,6 +60,7 @@ export interface IDeployment extends Document {
     github_url: string;
     framework: string;
     workspace: string,
+    payment: string,
 }
 
 /**
@@ -74,6 +76,8 @@ export interface IOrganization extends Document {
     };
     repositories: [IRepository['_id']];
     users: [IUserModel['_id']];
+    wallet: [IWalletModel['_id']],
+    payments: [string],
 }
 
 const RepositorySchema: Schema = new Schema({
@@ -128,6 +132,7 @@ const DeploymentSchema: Schema = new Schema({
     github_url: String,
     framework: String,
     workspace: String,
+    paymentId: String,
 });
 
 const OrganizationSchema: Schema = new Schema(
@@ -147,6 +152,11 @@ const OrganizationSchema: Schema = new Schema(
                 ref: 'UserModel',
             },
         ],
+        wallet: {
+            type: [Schema.Types.ObjectId],
+            ref: 'WalletModel',
+        },
+        payments: [String],
     },
     {
         collection: 'organizationsdb',

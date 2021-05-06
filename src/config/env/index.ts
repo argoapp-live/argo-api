@@ -27,6 +27,10 @@ interface IConfig {
         HOST_ADDRESS: string;
         BASE_ADDRESS: string;
     };
+    paymentApi?: {
+        HOST_ADDRESS: string;
+        BASE_ADDRESS: string;
+    };
     argoReact?: {
         BASE_ADDRESS: string;
     };
