@@ -22,42 +22,6 @@ const WalletService: IWalletService = {
             throw new Error(error.message);
         }
     },
-
-    async approve(walletId: string, amountToApprove: number): Promise<any> {
-        try {
-            const filter: any = {
-                _id: Types.ObjectId(walletId),
-            };
-
-            const update: any = {
-                $inc: { approved: amountToApprove }
-            }
-
-            const updatedWallet = await WalletModel.findOneAndUpdate(filter, update);
-            return updatedWallet.approved;
-
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    },
-
-    async discharge(walletId: string, amountToDischarge: number): Promise<any> {
-        try {
-            const filter: any = {
-                _id: Types.ObjectId(walletId),
-            };
-
-            const update: any = {
-                $inc: { approved: -amountToDischarge }
-            }
-
-            const updatedWallet = await WalletModel.findOneAndUpdate(filter, update);
-            return updatedWallet.approved;
-            
-        } catch (error) {
-            throw new Error(error.message);
-        }
-    },
 };
 
 export default WalletService;

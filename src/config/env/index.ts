@@ -88,6 +88,10 @@ const development: IConfig = {
         HOST_ADDRESS: process.env.INTERNAL_API || "http://localhost:5000/request_build/",
         BASE_ADDRESS: process.env.INTERNAL_API_BASE_ADDRESS || "http://localhost:5000/"
     },
+    paymentApi: {
+        HOST_ADDRESS: "http://localhost:3001/payments",
+        BASE_ADDRESS: "http://localhost:3001/payments",
+    },
     argoReact: {
         BASE_ADDRESS: "http://localhost:3000"
     },
@@ -196,6 +200,10 @@ const test: IConfig = {
     flaskApi: {
         HOST_ADDRESS: process.env.INTERNAL_API || "http://35.194.19.236:5000/request_build",
         BASE_ADDRESS: process.env.INTERNAL_API_BASE_ADDRESS || "http://35.194.19.236:5000/"
+    },
+    paymentApi: {
+        HOST_ADDRESS: "http://localhost:3001/payments",
+        BASE_ADDRESS: "http://localhost:3001/payments",
     },
     argoReact: {
         BASE_ADDRESS: process.env.INTERNAL_FE_BASE_ADDRESS || "http://35.194.19.236:3000/"

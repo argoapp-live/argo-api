@@ -3,7 +3,8 @@ import HttpError from '../../config/error';
 import config from '../../config/env/index';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { DeploymentModel, IDeployment, RepositoryModel } from '../Organization/model';
+import { DeploymentModel, IDeployment, IOrganization, RepositoryModel } from '../Organization/model';
+import { IWalletModel } from '../Wallet/model';
 import { IInternalApiDto } from './interface';
 import DeploymentService from './service';
 import { Types } from 'mongoose';
@@ -11,6 +12,7 @@ import JWTTokenService from '../Session/service';
 import UserService from '../User/service';
 import { IUserModel } from '../User/model';
 import RepositoryService from '../Repository/service';
+import OrganizationService from '../Organization/service';
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
@@ -34,7 +36,6 @@ const socket: any = io(config.flaskApi.BASE_ADDRESS);
 export async function Deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-
         console.log('I am in deployment', argoDecodedHeaderToken);
 
         const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
@@ -69,6 +70,10 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
             is_workspace: !!req.body.workspace
         };
         const deploymentObj: any = await DeploymentService.createAndDeployRepo(req.body, uniqueTopicName);
+
+        const { orgId }: { orgId: string } = req.body;
+        const organization: IOrganization = await OrganizationService.findOne(orgId);
+        const wallet: IWalletModel = <IWalletModel><unknown>organization.wallet;
 
         const globalPrice: number = 0;
         let startTime: any;
@@ -115,13 +120,20 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
                 await UserService.findOneAndUpdateDepTime(deserializedToken.session_id, deploymentTime, totalGasPrice);
                 const repos = await RepositoryModel.findOneAndUpdate(repoFilter, update);
                 await RepositoryService.AddToProxy(repos, arweaveLink.substr(arweaveLink.lastIndexOf('/') + 1), deploymentObj.deploymentId);
+
+                //TODO add fee
+                await axios.post(config.paymentApi.HOST_ADDRESS, { buildTime: deploymentTime, walletId: wallet.id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
             }
             else if (data.includes("Path not found")) {
                 updateDeployment = {
                     $addToSet: { logs: [{ time: new Date().toString(), log: data }] },
                     deploymentStatus: 'Failed'
                 };
-                await ReduceBalanceAndUpdateTime(startTime, req, 'Failed');
+                
+                const endDateTime: any = new Date();
+                const totalTime = Math.abs(endDateTime - startTime);
+                const deploymentTime: number = parseInt((totalTime / 1000).toFixed(1));
+                await axios.post(config.paymentApi.HOST_ADDRESS, { buildTime: deploymentTime, walletId: wallet.id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
             }
             else {
                 updateDeployment = {
@@ -129,18 +141,23 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
                     deploymentStatus: 'Pending'
                 };
             }
-
+            
             await DeploymentModel.findOneAndUpdate(depFilter, updateDeployment).catch((err: Error) => console.log(err));
         });
-        const isDeploymentApproved = await axios.post(config.paymentApi.HOST_ADDRESS, { address: "" });
 
+        const isDeploymentApproved = await axios.post(`${config.paymentApi.HOST_ADDRESS}/approve`, { address: wallet.address });
         if (!isDeploymentApproved) {
             await DeploymentService.updateStatus(deploymentObj.deploymentId, 'Failed');
-            throw new Error('Not enough amount approved');
+            res.status(200).json({
+                success: false,
+                message: "Not enough money approved",
+                deploymentId: deploymentObj.deploymentId,
+                repositoryId: deploymentObj.repositoryId
+            });
+            return;
         }
 
         //TODO Decide where to send request to make payment
-
 
         setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err: Error) => console.log(err)), 2000);
 

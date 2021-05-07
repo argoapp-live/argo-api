@@ -60,7 +60,7 @@ export interface IDeployment extends Document {
     github_url: string;
     framework: string;
     workspace: string,
-    payment: string,
+    paymentId: string,
 }
 
 /**
@@ -77,7 +77,6 @@ export interface IOrganization extends Document {
     repositories: [IRepository['_id']];
     users: [IUserModel['_id']];
     wallet: [IWalletModel['_id']],
-    payments: [string],
 }
 
 const RepositorySchema: Schema = new Schema({
@@ -156,7 +155,6 @@ const OrganizationSchema: Schema = new Schema(
             type: [Schema.Types.ObjectId],
             ref: 'WalletModel',
         },
-        payments: [String],
     },
     {
         collection: 'organizationsdb',

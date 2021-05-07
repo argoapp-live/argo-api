@@ -26,7 +26,8 @@ const OrganizationService: IOrganizationService = {
      */
     async findOne(id: string): Promise<IOrganization> {
         try {
-            const organization: IOrganization = await OrganizationModel.findOne({ _id: Types.ObjectId(id) }).populate('users').populate('repositories');
+            const organization: IOrganization = await OrganizationModel.findOne({ _id: Types.ObjectId(id) }).populate('users').populate('repositories')
+            .populate('wallet');
 
             return organization;
         } catch (error) {
