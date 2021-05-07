@@ -97,10 +97,11 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
     try {
         const uuid: string = uuidv4();
         const randomString: string = Math.random().toString(36).substring(7);
-        const dnsName: string = `${repository.name}-${randomString}.${config.googleCloud.dns.DNS_NAME}`;
+        const repositoryNameNormalized: string = repository.name.replace(/\s/g, '');
+        const dnsName: string = `${repositoryNameNormalized}-${randomString}.${config.googleCloud.dns.DNS_NAME}`;
 
         if (!RepositoryService.verifyDnsName(dnsName)) {
-            throw new Error(' dnsName constraint validation');
+            console.log('dnsName constraint validation');
         }
 
         await RepositoryService.addRecordToDnsZone
