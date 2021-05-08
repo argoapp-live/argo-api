@@ -1,6 +1,9 @@
-import { Types } from "mongoose";
-import { DeploymentModel, IDeployment, IRepository, OrganizationModel, RepositoryModel } from "../Organization/model";
-import { IDeploymentDto, IDeploymentService } from "./interface";
+import { Types } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { DeploymentModel, IDeployment, IRepository, OrganizationModel, RepositoryModel } from '../Organization/model';
+import RepositoryService from '../Repository/service';
+import { IDeploymentDto, IDeploymentService } from './interface';
+import config from '../../config/env';
 
 
 const DeploymentService: IDeploymentService = {
@@ -12,12 +15,12 @@ const DeploymentService: IDeploymentService = {
             commitId: '00192',
             log: ['Build started'],
             createdAt: new Date(),
-            topic: topic,
+            topic,
             branch: body.branch,
             package_manager: body.package_manager,
             build_command: body.build_command,
             publish_dir: body.publish_dir,
-            deploymentStatus: "Pending",
+            deploymentStatus: 'Pending',
             github_url: body.github_url,
             framework: body.framework,
             workspace: body.workspace
@@ -29,25 +32,25 @@ const DeploymentService: IDeploymentService = {
         return {
             deploymentId: deploymentModel._id,
             repositoryId: repositoryId._id
-        }
+        };
     },
     async FindOneDeployment(deploymentId: string): Promise<IDeployment> {
         // create deployment and
 
         const filter = {
-            '_id': Types.ObjectId(deploymentId)
-        }
+            _id: Types.ObjectId(deploymentId)
+        };
         const deployment: IDeployment = await DeploymentModel.findById(filter);
         return deployment;
     }
-}
+};
 
 
 const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Promise<any> => {
     const filter = {
-        'url': body.github_url,
-        'orgId': Types.ObjectId(body.orgId)
-    }
+        url: body.github_url,
+        orgId: Types.ObjectId(body.orgId)
+    };
 
     console.log('giturl: ', body.github_url);
     const findOneRepo: IRepository = await RepositoryModel.findOne(filter);
@@ -56,14 +59,14 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
 
         console.log(findOneRepo);
         const filter = {
-            '_id': Types.ObjectId(findOneRepo._id)
-        }
+            _id: Types.ObjectId(findOneRepo._id)
+        };
         const updateDeploymentId = {
             $addToSet: {
                 deployments: [deploymentId]
             },
             updateDate: new Date()
-        }
+        };
         await RepositoryModel.findOneAndUpdate(filter, updateDeploymentId);
         return findOneRepo._id;
     }
@@ -71,7 +74,7 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
     const update = {
         name: body.folder_name,
         url: body.github_url,
-        'webHook': "xyz",
+        webHook: 'xyz',
         deployments: [deploymentId],
         orgId: Types.ObjectId(body.orgId),
         package_manager: body.package_manager,
@@ -80,17 +83,39 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
         branch: body.branch,
         framework: body.framework,
         workspace: body.workspace
-        
+
     };
     const repository: IRepository = await RepositoryModel.create(update);
     const orgFilter = {
-        '_id': Types.ObjectId(body.orgId)
+        _id: Types.ObjectId(body.orgId)
     };
     const updateOrg: any = {
         $addToSet: { repositories: [Types.ObjectId(repository._id)] },
     };
-    await OrganizationModel.findOneAndUpdate(orgFilter, updateOrg);
+    const organization = await OrganizationModel.findOneAndUpdate(orgFilter, updateOrg);
+
+    try {
+        const uuid: string = uuidv4();
+        const randomString: string = Math.random().toString(36).substring(7);
+        const repositoryNameNormalized: string = repository.name.replace(/\s/g, '-');
+        const dnsName: string = `${repositoryNameNormalized}-${randomString}.${config.googleCloud.dns.DNS_NAME}`;
+
+        if (!RepositoryService.verifyDnsName(dnsName)) {
+            console.log('dnsName constraint validation');
+        }
+
+        await RepositoryService.addRecordToDnsZone
+            (config.googleCloud.dns.DNS_ZONE_NAME, config.googleCloud.records.A.RECORD_TYPE, dnsName, config.googleCloud.ARGO_IPV4, config.googleCloud.records.A.TTL);
+        
+        await RepositoryService.addRecordToDnsZone
+            (config.googleCloud.dns.DNS_ZONE_NAME, config.googleCloud.records.TXT.RECORD_TYPE, dnsName, `argo=${uuid}`, config.googleCloud.records.TXT.TTL);
+
+        await RepositoryService.InsertSubDomain(repository._id, dnsName, '', true, uuid, true);
+    } catch (error) {
+        console.log(error);
+    }
+
     return repository._id;
-}
+};
 
 export default DeploymentService;
