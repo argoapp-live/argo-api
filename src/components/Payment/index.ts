@@ -14,6 +14,7 @@ export async function insertPayment(
 
         await DeploymentService.updatePayment(deploymentId, paymentId);
         //TODO socket notify
+        // create socket and emit new payment processed
         res.send(201).json({ msg: 'Payment successfully recorded'})
     } catch (error) {
         next(new HttpError(error.message.status, error.message));

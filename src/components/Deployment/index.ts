@@ -73,7 +73,15 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
 
         const { orgId }: { orgId: string } = req.body;
         const organization: IOrganization = await OrganizationService.findOne(orgId);
-        const wallet: IWalletModel = <IWalletModel><unknown>organization.wallet;
+        let wallet: IWalletModel | any = <IWalletModel><unknown>organization.wallet;
+
+        //This is used just for testing purposes until wallet integration is done
+        if (wallet === null) {
+            wallet = {
+                _id: 'mockedWalletId',
+                address: 'mockedWalletAddress'
+            }
+        }
 
         const globalPrice: number = 0;
         let startTime: any;
@@ -122,7 +130,7 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
                 await RepositoryService.AddToProxy(repos, arweaveLink.substr(arweaveLink.lastIndexOf('/') + 1), deploymentObj.deploymentId);
 
                 //TODO add fee
-                await axios.post(config.paymentApi.HOST_ADDRESS, { buildTime: deploymentTime, walletId: wallet.id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
+                await axios.post(config.paymentApi.HOST_ADDRESS, { buildTime: deploymentTime, walletId: wallet._id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
             }
             else if (data.includes("Path not found")) {
                 updateDeployment = {
@@ -156,8 +164,6 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
             });
             return;
         }
-
-        //TODO Decide where to send request to make payment
 
         setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err: Error) => console.log(err)), 2000);
 
