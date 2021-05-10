@@ -5,6 +5,6 @@ import { PaymentComponent } from '../components';
 
 const router: Router = Router();
 
-router.post('/payment', PaymentComponent.insertPayment);
+router.post('/payments', PaymentComponent.insertPayment);
 
 export default router;

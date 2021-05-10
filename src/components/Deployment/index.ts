@@ -78,8 +78,8 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
         //This is used just for testing purposes until wallet integration is done
         if (wallet === null) {
             wallet = {
-                _id: 'mockedWalletId',
-                address: 'mockedWalletAddress'
+                _id: '507f1f77bcf86cd799439012',
+                address: '0x05C8024kL13Ea42A226CF35CBE7047b21B8a9C36'
             }
         }
 
@@ -130,7 +130,8 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
                 await RepositoryService.AddToProxy(repos, arweaveLink.substr(arweaveLink.lastIndexOf('/') + 1), deploymentObj.deploymentId);
 
                 //TODO add fee
-                await axios.post(config.paymentApi.HOST_ADDRESS, { buildTime: deploymentTime, walletId: wallet._id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
+                console.log('-------------------------------------------SUCCESS----------------------------------------')
+                await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments`, { buildTime: deploymentTime, walletId: wallet._id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
             }
             else if (data.includes("Path not found")) {
                 updateDeployment = {
@@ -141,7 +142,8 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
                 const endDateTime: any = new Date();
                 const totalTime = Math.abs(endDateTime - startTime);
                 const deploymentTime: number = parseInt((totalTime / 1000).toFixed(1));
-                await axios.post(config.paymentApi.HOST_ADDRESS, { buildTime: deploymentTime, walletId: wallet.id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
+                console.log('-------------------------------------------FAILED----------------------------------------')
+                await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments`, { buildTime: deploymentTime, walletId: wallet.id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
             }
             else {
                 updateDeployment = {

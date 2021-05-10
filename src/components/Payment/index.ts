@@ -13,6 +13,7 @@ export async function insertPayment(
             { paymentId: string, deploymentId: string } = req.body;
 
         await DeploymentService.updatePayment(deploymentId, paymentId);
+        console.log('PAYMENT PROCESSED IN ARGO-API')
         //TODO socket notify
         // create socket and emit new payment processed
         res.send(201).json({ msg: 'Payment successfully recorded'})
