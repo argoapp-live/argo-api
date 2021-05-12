@@ -14,10 +14,10 @@ const WalletService: IWalletService = {
             throw new Error(error.message);
         }
     },
-    async insert(body: any): Promise<IWalletModel> {
+    async insert(address: string): Promise<IWalletModel> {
         try {
             //TODO validate body
-            return WalletModel.create(body);
+            return WalletModel.create({ address });
         } catch (error) {
             throw new Error(error.message);
         }

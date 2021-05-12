@@ -149,6 +149,24 @@ const OrganizationService: IOrganizationService = {
             throw new Error(error.message);
         }
     },
+
+    async updateWallet(organisationId: string, walletId: string): Promise<any> {
+        try {
+            const filter: any = {
+                _id: Types.ObjectId(organisationId),
+            };
+
+            const wallet_id: Types.ObjectId = Types.ObjectId(walletId);
+
+            const update: any = {
+                wallet: wallet_id,
+            };
+
+            return OrganizationModel.findOneAndUpdate(filter, update);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
 };
 
 export default OrganizationService;

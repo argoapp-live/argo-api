@@ -46,4 +46,6 @@ export interface IOrganizationService {
     updateOrganization(org_id: string, org: any): Promise<any>;
 
     updatePayment(organisationId: string, paymentId: string): Promise<any>;
+
+    updateWallet(organisationId: string, walletId: string): Promise<any>;
 }

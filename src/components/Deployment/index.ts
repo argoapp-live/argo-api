@@ -36,20 +36,30 @@ const socket: any = io(config.flaskApi.BASE_ADDRESS);
 export async function Deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-        console.log('I am in deployment', argoDecodedHeaderToken);
-
         const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-
-        console.log('Deserialized Token In Deplyment: ', deserializedToken);
-
-        console.log(deserializedToken.session_id);
         const user: IUserModel = await UserService.findOne(deserializedToken.session_id);
-        console.log(user);
         const uniqueTopicName: string = uuidv4();
+
+        const { orgId }: { orgId: string } = req.body;
+        const organization: IOrganization = await OrganizationService.findOne(orgId);
+        
+        const isUserInOrganization: boolean = user.organizations.some((orgUser) => {
+            return orgUser._id.equals(orgId)
+        });
+
+        if (!isUserInOrganization) {
+            console.log('user is not part of sent organization');
+            res.status(400).json({
+                success: false,
+                message: "user is not part of sent organization",
+            });
+            return;
+        }
+
         const splitUrl: string = req.body.github_url.split('/');
         const folderName: string = splitUrl[splitUrl.length - 1].slice(0, -4);
         let fullGitHubPath: string;
-        console.log(req.body.isPrivate);
+
         if (req.body.isPrivate) {
             let installationToken = await createInstallationToken(req.body.installationId, req.body.repositoryId);
             fullGitHubPath = `https://x-access-token:${installationToken.token}@github.com/${req.body.owner}/${folderName}.git`;
@@ -70,15 +80,12 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
             is_workspace: !!req.body.workspace
         };
         const deploymentObj: any = await DeploymentService.createAndDeployRepo(req.body, uniqueTopicName);
-
-        const { orgId }: { orgId: string } = req.body;
-        const organization: IOrganization = await OrganizationService.findOne(orgId);
-        let wallet: IWalletModel | any = <IWalletModel><unknown>organization.wallet;
+        let wallet: any = organization.wallet;
 
         //This is used just for testing purposes until wallet integration is done
         if (wallet === null) {
             wallet = {
-                _id: '507f1f77bcf86cd799439012',
+                _id: Types.ObjectId,
                 address: '0x05C8024kL13Ea42A226CF35CBE7047b21B8a9C36'
             }
         }
@@ -87,6 +94,7 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
         let startTime: any;
         let totalGasPrice: number = 0;
         socket.on(uniqueTopicName, async (data: any) => {
+            console.log('From flask:', data);
             emitter.emit(uniqueTopicName, data);
             const depFilter: any = {
                 _id: deploymentObj.deploymentId
@@ -131,7 +139,7 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
 
                 //TODO add fee
                 console.log('-------------------------------------------SUCCESS----------------------------------------')
-                await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments`, { buildTime: deploymentTime, walletId: wallet._id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
+                await axios.post(`${config.paymentApi.HOST_ADDRESS}`, { buildTime: deploymentTime, walletId: wallet._id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
             }
             else if (data.includes("Path not found")) {
                 updateDeployment = {
@@ -143,9 +151,10 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
                 const totalTime = Math.abs(endDateTime - startTime);
                 const deploymentTime: number = parseInt((totalTime / 1000).toFixed(1));
                 console.log('-------------------------------------------FAILED----------------------------------------')
-                await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments`, { buildTime: deploymentTime, walletId: wallet.id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
+                await axios.post(`${config.paymentApi.HOST_ADDRESS}`, { buildTime: deploymentTime, walletId: wallet.id, walletAddress: wallet.address, deploymentId: deploymentObj.deploymentId });
             }
             else {
+                console.log('-------------------------------------------PENDING----------------------------------------')
                 updateDeployment = {
                     $addToSet: { logs: [{ time: new Date().toString(), log: data }] },
                     deploymentStatus: 'Pending'
@@ -156,6 +165,7 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
         });
 
         const isDeploymentApproved = await axios.post(`${config.paymentApi.HOST_ADDRESS}/approve`, { address: wallet.address });
+        console.log(isDeploymentApproved);
         if (!isDeploymentApproved) {
             await DeploymentService.updateStatus(deploymentObj.deploymentId, 'Failed');
             res.status(200).json({
@@ -167,7 +177,7 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
             return;
         }
 
-        setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err: Error) => console.log(err)), 2000);
+        setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err: Error) => console.log('error here' + err)), 2000);
 
         res.status(200).json({
             success: true,

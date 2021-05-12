@@ -7,7 +7,7 @@
 
  export default interface IWalletService {
     findOne(id: string): Promise<IWalletModel>;
-    insert(orgDto: IWalletModel): Promise<IWalletModel>;
+    insert(address: string): Promise<IWalletModel>;
  }
  
  
