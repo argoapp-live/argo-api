@@ -90,7 +90,7 @@ const development: IConfig = {
     },
     paymentApi: {
         HOST_ADDRESS: "http://localhost:3001/payments",
-        BASE_ADDRESS: "http://localhost:3001/payments",
+        BASE_ADDRESS: "http://localhost:3001",
     },
     argoReact: {
         BASE_ADDRESS: "http://localhost:3000"
