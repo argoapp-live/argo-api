@@ -164,9 +164,9 @@ export async function Deploy(req: Request, res: Response, next: NextFunction): P
             await DeploymentModel.findOneAndUpdate(depFilter, updateDeployment).catch((err: Error) => console.log(err));
         });
 
-        const isDeploymentApproved = await axios.post(`${config.paymentApi.HOST_ADDRESS}/approve`, { address: wallet.address });
+        const isDeploymentApproved: any = await axios.post(`${config.paymentApi.HOST_ADDRESS}/approve`, { address: wallet.address });
         console.log(isDeploymentApproved);
-        if (!isDeploymentApproved) {
+        if (!isDeploymentApproved.approved) {
             await DeploymentService.updateStatus(deploymentObj.deploymentId, 'Failed');
             res.status(200).json({
                 success: false,
