@@ -4,7 +4,7 @@ import server from './server';
 import notificationService from '../../components/Notification';
 
 const Server: http.Server = http.createServer(server);
-notificationService.init();
+notificationService.init(Server);
 
 /**
  * Binds and listens for connections on the specified host

@@ -1,11 +1,12 @@
+import * as http from 'http';
 import * as SocketIO from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 
 class NotificationService {
     private serverSocket: SocketIO.Server;
 
-    init() {
-        this.serverSocket = SocketIO(3030);
+    init(server: http.Server) {
+        this.serverSocket = SocketIO(server);
         this.serverSocket.on('connection', (socket: SocketIO.Socket) => {
             socket.emit('session', { id: uuidv4() });
         })
