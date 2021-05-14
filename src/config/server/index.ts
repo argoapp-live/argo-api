@@ -1,8 +1,10 @@
 import * as http from 'http';
 import * as serverHandlers from './serverHandlers';
 import server from './server';
+import notificationService from '../../components/Notification';
 
 const Server: http.Server = http.createServer(server);
+notificationService.init();
 
 /**
  * Binds and listens for connections on the specified host

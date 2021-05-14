@@ -25,6 +25,9 @@
     "src"
   ],
   "dependencies": {
+    "@feathersjs/express": "^4.5.11",
+    "@feathersjs/feathers": "^4.5.11",
+    "@feathersjs/socketio": "^4.5.11",
     "@octokit/core": "^3.1.2",
     "@octokit/rest": "^18.0.6",
     "@types/jsonwebtoken": "^8.5.0",

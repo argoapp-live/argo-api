@@ -1,9 +1,20 @@
-import * as socketio from "socket.io";
+import * as SocketIO from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
 
-export default class Emitter {
-    private socket;
+class NotificationService {
+    private serverSocket: SocketIO.Server;
 
-    constructor() {
-        this.socket = new socketio();
+    init() {
+        this.serverSocket = SocketIO(3030);
+        this.serverSocket.on('connection', (socket: SocketIO.Socket) => {
+            socket.emit('session', { id: uuidv4() });
+        })
+    }
+
+    emit(topic: string, data: any) {
+        this.serverSocket.emit(topic, data);
     }
 }
+
+const notificationService: NotificationService = new NotificationService();
+export default notificationService;
