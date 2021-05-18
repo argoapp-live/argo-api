@@ -21,8 +21,8 @@ const fullPath = path.join(__dirname, `../../templates/user-org-invite/${config.
 const readAsAsync = fs.readFileSync(fullPath, 'utf8');
 const io: any = require('socket.io-client');
 
-const Server: any = require('socket.io');
-const emitter: any = new Server();
+const emitter: any = require('socket.io')();
+// const emitter: any = new Server();
 
 const socket: any = io(config.flaskApi.BASE_ADDRESS);
 
@@ -87,7 +87,7 @@ export async function newDeploy(req: Request, res: Response, next: NextFunction)
     const body: any = {
         githubUrl: fullGitHubPath,
         folderName,
-        topic: sessiodId,
+        topic: !!sessiodId ? sessiodId : 'random-topic-url',
         framework: 'simplebash',
         packageMenager: package_manager,
         branch,

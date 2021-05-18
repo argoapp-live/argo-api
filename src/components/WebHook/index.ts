@@ -11,8 +11,8 @@ import DeploymentService from '../Deployment/service';
 import RepositoryService from '../Repository/service';
 
 const io = require('socket.io-client');
-const Server = require('socket.io');
-const emitter = new Server();
+const emitter = require('socket.io')();
+// const emitter = new Server();
 const socket = io(config.flaskApi.BASE_ADDRESS);
 
 /**
