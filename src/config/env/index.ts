@@ -85,7 +85,7 @@ const development: IConfig = {
         PASSWORD: process.env.SMTP_PASSWORD || 'abcd',
     },
     flaskApi: {
-        HOST_ADDRESS: process.env.INTERNAL_API || "http://localhost:5000/request_build/",
+        HOST_ADDRESS: process.env.INTERNAL_API || "http://localhost:5000/deploy/",
         BASE_ADDRESS: process.env.INTERNAL_API_BASE_ADDRESS || "http://localhost:5000/"
     },
     paymentApi: {
