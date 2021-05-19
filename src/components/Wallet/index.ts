@@ -37,8 +37,7 @@ export async function createWallet(
 
         const wallet: IWalletModel = await WalletService.insert(address);
         await OrganizationService.updateWallet(organizationId, wallet._id.toString());
-
-        //TODO connect with organisation
+        organization.wallet = wallet._id;
         res.status(200).json(wallet);
 
     } catch (error) {
