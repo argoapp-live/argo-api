@@ -6,7 +6,7 @@ import config from '../../config/env';
 import { v4 as uuidv4 } from 'uuid';
 import { recordsForHostname } from './helper';
 import * as request from 'request';
-
+import { simpleClone } from '../../utils';
 
 /**
  * @export
@@ -101,8 +101,31 @@ const RepositoryService: IRepositoryService = {
         }
     },
 
-    async createIfNotExists(filter: any, update: any): Promise<any> {
-        return OrganizationModel.findOneAndUpdate(filter, update, { new: true, upsert: true });
+    async createOrUpdateExisting(githubUrl: string, orgId: string, depolymentId: Types.ObjectId, branch: string, workspace: string,
+        folderName: string, package_manager: string, build_command: string, publish_dir: string, framework: string): Promise<any> {
+        const repo: IRepository = await RepositoryModel.findOne({ url: githubUrl, orgId: Types.ObjectId(orgId) });
+
+        if (repo) {
+            const deployments = simpleClone(repo.deployments);
+            deployments.push(depolymentId);
+            repo.deployments = deployments;
+            return repo.save();
+        }
+
+        return RepositoryModel.create({
+            url: githubUrl,
+            orgId: Types.ObjectId(orgId),
+            deployments: [depolymentId],
+            branch,
+            workspace,
+            name: folderName,
+            'webHook': "xyz",
+            package_manager,
+            build_command,
+            publish_dir,
+            framework,
+        })
+        
     },
 
     async InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<any> {

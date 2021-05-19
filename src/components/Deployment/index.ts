@@ -80,25 +80,12 @@ export async function newDeploy(req: Request, res: Response, next: NextFunction)
 
     //NOTE this should probably be changed
     const deploymentObj: any = await DeploymentService.create(uniqueTopicId, branch, package_manager, publish_dir, build_command, framework, github_url, workspace);
-    const rep: any = await RepositoryService.createIfNotExists(
-        { 
-            url: github_url, 
-            orgId: Types.ObjectId(orgId)}, 
-        {
-            $addToSet: {
-                deployments: [deploymentObj._id]
-            },
-            branch,
-            workspace,
-            name: folderName,
-            'webHook': "xyz",
-            package_manager: package_manager,
-            build_command: build_command,
-            publish_dir: publish_dir,
-            framework: framework,            
-    });
+    console.log('Ovdeeee', orgId);
+    const repository = await RepositoryService.createOrUpdateExisting(github_url, orgId, deploymentObj._id, 
+        branch, workspace, folderName, package_manager, build_command, publish_dir, framework);
 
-    console.log('Created or updated', rep);
+    console.log('Deployment ID', deploymentObj._id);
+    console.log('Created or updated', repository);
 
     const body: any = {
         githubUrl: fullGitHubPath,
@@ -119,8 +106,8 @@ export async function newDeploy(req: Request, res: Response, next: NextFunction)
         message: 'Deployment is being processed',
         success: true,
         topic: uniqueTopicId,
-        deploymentId: deploymentObj.deploymentId,
-        repositoryId: deploymentObj.repositoryId
+        deploymentId: deploymentObj._id,
+        repositoryId: repository._id,
     });
 
 }

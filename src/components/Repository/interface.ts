@@ -1,4 +1,5 @@
 import { IRepository } from '../Organization/model';
+import { Types } from 'mongoose';
 
 /**
  * @export
@@ -28,7 +29,8 @@ export interface IRepositoryService {
      */
     insert(repository: IRepository, organizationId: string): Promise<IRepository>;
 
-    createIfNotExists(filter: any, update: any): Promise<any>;
+    createOrUpdateExisting(githubUrl: string, orgId: string, depolymentId: Types.ObjectId, branch: string, workspace: string,
+        folderName: string, package_manager: string, build_command: string, publish_dir: string, framework: string): Promise<any>;
 
     findOneAndUpdate(id: string, body: any): Promise<boolean>;
 

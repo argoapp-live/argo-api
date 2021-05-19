@@ -82,13 +82,8 @@ const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Pr
         'url': body.github_url,
         'orgId': Types.ObjectId(body.orgId)
     }
-
-    console.log('giturl: ', body.github_url);
     const findOneRepo: IRepository = await RepositoryModel.findOne(filter);
-
     if (findOneRepo) {
-
-        console.log(findOneRepo);
         const filter = {
             '_id': Types.ObjectId(findOneRepo._id)
         }
