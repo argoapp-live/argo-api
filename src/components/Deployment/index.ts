@@ -53,7 +53,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
 }
 
 export async function findDeploymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const deployment: IDeployment = await DeploymentService.FindOneDeployment(req.params.id);
+    const deployment: IDeployment = await DeploymentService.findOne(req.params.id);
 
     //TODO handle error
 
