@@ -6,7 +6,6 @@ export interface IDeploymentService {
     create(topic: string, branch:string, package_manager: string, publish_dir: string, 
         build_command: string, framework: string, github_url: string, workspace: string): Promise<IDeployment>;
     findOne(deploymentId: string): Promise<IDeployment>;
-    // findPendingForOrganization(organizationId: string): Promise<any>;
 }
 
 export interface IInternalApiDto {

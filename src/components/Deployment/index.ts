@@ -1,24 +1,30 @@
 import { NextFunction, Request, Response } from 'express';
 import config from '../../config/env/index';
 import axios from 'axios';
-import { IDeployment } from '../Organization/model';
+import { IDeployment, OrganizationModel } from '../Organization/model';
 import DeploymentService from './service';
 import { IUserModel } from '../User/model';
 import RepositoryService from '../Repository/service';
+import OrganizationService from '../Organization/service';
 import GithubAppService from '../GitHubApp/service';
 import AuthService from '../Auth/service';
+import { IRequestBody, IDeploymentBody } from './interfaces';
 
 
 export async function deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const { orgId, github_url, isPrivate, owner, branch, repositoryId, installationId, uniqueTopicId, framework, package_manager, build_command, workspace, publish_dir }: 
-        { orgId: string, github_url: string, isPrivate: boolean, owner: string, branch: string, repositoryId: string, installationId: string
-            uniqueTopicId: string, framework: string, package_manager: string, build_command: string, workspace: string, publish_dir: string } = req.body;
-
+    req.body as IRequestBody;
+    const { orgId, github_url, isPrivate, owner, branch, repositoryId, installationId, uniqueTopicId, framework, package_manager, build_command, workspace, publish_dir } = req.body;
+    
     const user: IUserModel = await AuthService.authUser(req);
-
     if(!user) {
         //return error
     }
+
+    const hasPendingDeployment: boolean = await OrganizationService.hasPendingDeployment(orgId);
+    if (hasPendingDeployment) {
+        //TODO return wait for pending deployment to finish
+    }
+
 
     const [fullGitHubPath, folderName]: Array<string> = await GithubAppService.getFullGithubUrlAndFolderName(github_url, isPrivate, branch, installationId, repositoryId, owner);
 
@@ -27,7 +33,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         branch, workspace, folderName, package_manager, build_command, publish_dir, framework);
 
 
-    const body: any = {
+    const body: IDeploymentBody = {
         githubUrl: fullGitHubPath,
         folderName,
         topic: !!uniqueTopicId ? uniqueTopicId : 'random-topic-url',

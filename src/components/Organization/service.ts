@@ -1,4 +1,4 @@
-import { IOrganization, OrganizationModel } from './model';
+import { IOrganization, OrganizationModel, IRepository, IDeployment} from './model';
 import { IOrganizationService } from './interface';
 import { Types } from 'mongoose';
 
@@ -167,6 +167,33 @@ const OrganizationService: IOrganizationService = {
             throw new Error(error.message);
         }
     },
+
+    async hasPendingDeployment(organisationId: string): Promise<boolean> {
+        try {
+            const organization = await OrganizationModel.findById(Types.ObjectId(organisationId)).populate({ 
+                path: 'repositories',
+                populate: {
+                  path: 'deployments',
+                  model: 'Deployment'
+                } 
+             });
+
+            if (!organization) throw new Error('organization does not exists');
+
+            organization.repositories.forEach((repository: IRepository) => {
+                console.log('Repository found', repository._id);
+                repository.deployments.forEach((deployment: IDeployment) => {
+                    console.log('Deployment in repository found', deployment._id);
+                    if (deployment.deploymentStatus === 'Pending') return true;
+                })
+            });
+
+            return false;
+
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
 };
 
 export default OrganizationService;

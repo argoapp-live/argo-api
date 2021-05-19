@@ -10,13 +10,13 @@ export async function insertPayment(
   next: NextFunction
 ): Promise<void> {
     try {
-        const { paymentId, deploymentId, amount, topic }: 
-            { paymentId: string, deploymentId: string, amount: number, topic: string } = req.body;
+        // const { paymentId, deploymentId, amount, topic }: 
+        //     { paymentId: string, deploymentId: string, amount: number, topic: string } = req.body;
 
-        await DeploymentService.updatePayment(deploymentId, paymentId);
-        console.log('PAYMENT PROCESSED IN ARGO-API')
-        notificationService.emit(topic, { deploymentId, amount });
-        res.send(201).json({ msg: 'Payment successfully recorded'})
+        // await DeploymentService.updatePayment(deploymentId, paymentId);
+        // console.log('PAYMENT PROCESSED IN ARGO-API')
+        // notificationService.emit(topic, { deploymentId, amount });
+        // res.send(201).json({ msg: 'Payment successfully recorded'})
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
