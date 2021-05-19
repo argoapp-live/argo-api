@@ -66,8 +66,6 @@ export async function pushNotify(
         //     build_command: repoData.build_command,
         //     publish_dir: repoData.publish_dir
         // };
-        // const deploymentObj: any = await DeploymentService.create(body, uniqueTopicName);
-        // const deploymentObj: any = await DeploymentService.create(uniqueTopicId, branch, package_manager, publish_dir, build_command, framework, github_url, workspace);
         // const repository = await RepositoryService.createOrUpdateExisting(github_url, orgId, deploymentObj._id, 
         //     branch, workspace, folderName, package_manager, build_command, publish_dir, framework);
 

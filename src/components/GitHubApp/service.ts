@@ -8,8 +8,8 @@ import config from '../../config/env/index';
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
-const fullPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-const readAsAsync = fs.readFileSync(fullPath, 'utf8');
+const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
 
 
 const GithubAppService: IGitHubAppTokenService = {
@@ -77,7 +77,7 @@ const GithubAppService: IGitHubAppTokenService = {
     async createInstallationToken (installationId: any): Promise<any> {
         const auth = await createAppAuth({
             id: config.githubApp.GIT_HUB_APP_ID,
-            privateKey: readAsAsync,
+            privateKey: gitPrivateKey,
             installationId: installationId,
             clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
             clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
