@@ -28,6 +28,8 @@ export interface IRepositoryService {
      */
     insert(repository: IRepository, organizationId: string): Promise<IRepository>;
 
+    createIfNotExists(filter: any, update: any): Promise<any>;
+
     findOneAndUpdate(id: string, body: any): Promise<boolean>;
 
     InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<boolean>;

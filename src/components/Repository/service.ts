@@ -101,6 +101,10 @@ const RepositoryService: IRepositoryService = {
         }
     },
 
+    async createIfNotExists(filter: any, update: any): Promise<any> {
+        return OrganizationModel.findOneAndUpdate(filter, update, { new: true, upsert: true });
+    },
+
     async InsertDomain(id: string, domain: string, transactionId: string, isLatest: boolean): Promise<any> {
         try {
             const filter = {

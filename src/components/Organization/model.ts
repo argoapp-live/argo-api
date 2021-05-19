@@ -124,7 +124,7 @@ const DeploymentSchema: Schema = new Schema({
     topic: String,
     createdAt: { type: String, default: new Date() },
     branch: String,
-    deploymentStatus: String,
+    deploymentStatus: { type: String, default: 'Pending' },
     package_manager: String,
     build_command: String,
     publish_dir: String,

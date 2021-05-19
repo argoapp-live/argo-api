@@ -4,10 +4,13 @@ import { IDeployment } from "../Organization/model";
 
 export interface IDeploymentService {
 
+    create(topic: string, branch:string, package_manager: string, publish_dir: string, 
+        build_command: string, framework: string, github_url: string, workspace: string): Promise<IDeployment>;
     createAndDeployRepo(body: any, topic: string): Promise<Types.ObjectId>;
     FindOneDeployment(deploymentId: string): Promise<IDeployment>;
     updateStatus(deploymentId: string, status: string): Promise<IDeployment>;
     updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment>;
+    // findPendingForOrganization(organizationId: string): Promise<any>;
 }
 
 export interface IInternalApiDto {
