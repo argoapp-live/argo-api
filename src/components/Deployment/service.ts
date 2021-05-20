@@ -1,11 +1,9 @@
 import { Types } from "mongoose";
-import { DeploymentModel, IDeployment, IRepository, OrganizationModel, RepositoryModel } from "../Organization/model";
-import { IDeploymentDto, IDeploymentService } from "./interface";
+import { DeploymentModel, IDeployment } from "../Organization/model";
+import { IDeploymentService } from "./service-interface";
 
 
 const DeploymentService: IDeploymentService = {
-
-    //TODO switch to camel case
     async create(topic: string, branch:string, package_manager: string, publish_dir: string, 
         build_command: string, framework: string, github_url: string, workspace: string): Promise<IDeployment> {
 
@@ -24,14 +22,38 @@ const DeploymentService: IDeploymentService = {
     },
 
     async findOne(deploymentId: string): Promise<IDeployment> {
-        // create deployment and
-
         const filter = {
             '_id': Types.ObjectId(deploymentId)
         }
         const deployment: IDeployment = await DeploymentModel.findById(filter);
         return deployment;
     },
+
+    async updateFinishedDeployment(deploymentId: string, sitePreview: string, deploymentStatus: string, logs: Array<string>): Promise<IDeployment> {
+        const condition = {
+            '_id': Types.ObjectId(deploymentId)
+        }
+
+        const update = {
+            sitePreview,
+            deploymentStatus,
+            $addToSet: { logs }
+        }
+
+        return DeploymentModel.findOneAndUpdate(condition, update);
+    },
+
+    async updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment> {
+        const condition = {
+            '_id': Types.ObjectId(deploymentId)
+        }
+        
+        const update = {
+            paymentId,
+        }
+
+        return DeploymentModel.findOneAndUpdate(condition, update);
+    }
 }
 
 export default DeploymentService;

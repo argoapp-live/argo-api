@@ -4,9 +4,8 @@ import * as OrganizationComponent from './Organization';
 import * as RepositoryComponent from './Repository';
 import * as InvitationComponent from './Invite';
 import * as WebHookComponent from './WebHook';
-import * as LogsComponent from './Deployment';
+import * as DeploymentComponent from './Deployment';
 import * as WalletComponent from './Wallet';
-import * as PaymentComponent from './Payment';
 
 export {
     AuthComponent,
@@ -14,8 +13,7 @@ export {
     OrganizationComponent,
     RepositoryComponent,
     InvitationComponent,
-    LogsComponent,
+    DeploymentComponent,
     WebHookComponent,
     WalletComponent,
-    PaymentComponent
 };

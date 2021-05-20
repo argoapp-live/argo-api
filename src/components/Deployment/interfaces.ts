@@ -14,7 +14,13 @@ export interface IRequestBody {
     publish_dir: string,
 }
 
+interface LogToCapture {
+    key: string, 
+    value: string,
+}
+
 export interface IDeploymentBody {
+    deploymentId: string,
     githubUrl: string,
     folderName: string,
     topic: string,
@@ -24,5 +30,16 @@ export interface IDeploymentBody {
     buildCommand: string,
     publishDir: string,
     workspace: string,
-    is_workspace: boolean
+    is_workspace: boolean,
+    logsToCapture: Array<LogToCapture>,
+    walletId: string, 
+    walletAddress: string
+}
+
+
+export interface IDeploymentCreated {
+    deploymentId: string,
+    sitePreview: string,
+    deploymentStatus: string,
+    logs: Array<string>
 }

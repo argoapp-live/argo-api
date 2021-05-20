@@ -9,7 +9,7 @@ import RepositoryRouter from './RepositoryRouter';
 import InvitationRouter from './InvitationRouter';
 import WebHookRouter from './WebHookRouter';
 
-import LogsRouter from './LogsRouter';
+import LogsRouter from './DeploymentsRouter';
 
 import RepositoryService from '../components/Repository/service';
 import DomainRouter from './DomainRouter';

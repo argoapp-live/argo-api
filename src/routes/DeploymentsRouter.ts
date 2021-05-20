@@ -1,0 +1,14 @@
+import { Router } from "express";
+import { DeploymentComponent } from "../components";
+
+const router: Router = Router();
+
+router.post("/", DeploymentComponent.deploy);
+
+router.post("/created", DeploymentComponent.deploymentFinished);
+
+router.post("/payment", DeploymentComponent.paymentFinished);
+
+router.get("/:id", DeploymentComponent.findDeploymentById);
+
+export default router;

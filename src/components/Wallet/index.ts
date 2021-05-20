@@ -7,6 +7,7 @@ import UserService from '../User/service';
 import { IUserModel } from '../User/model';
 import { IOrganization } from '../Organization/model';
 import OrganizationService from '../Organization/service';
+import AuthService from '../Auth/service';
 
 export async function createWallet(
   req: Request,
@@ -14,9 +15,11 @@ export async function createWallet(
   next: NextFunction
 ): Promise<void> {
     try {
-        const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-        const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-        const user: IUserModel = await UserService.findOne(deserializedToken.session_id);
+        const user: IUserModel = await AuthService.authUser(req);
+
+        if (!user) {
+            // return error
+        }
 
         const { address, organizationId } : { address: string, organizationId: string } = req.body;
 
@@ -37,7 +40,6 @@ export async function createWallet(
 
         const wallet: IWalletModel = await WalletService.insert(address);
         await OrganizationService.updateWallet(organizationId, wallet._id.toString());
-        organization.wallet = wallet._id;
         res.status(200).json(wallet);
 
     } catch (error) {

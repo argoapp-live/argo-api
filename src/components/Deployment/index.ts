@@ -1,19 +1,20 @@
 import { NextFunction, Request, Response } from 'express';
 import config from '../../config/env/index';
 import axios from 'axios';
-import { IDeployment, OrganizationModel } from '../Organization/model';
+import { IDeployment } from '../Organization/model';
 import DeploymentService from './service';
 import { IUserModel } from '../User/model';
 import RepositoryService from '../Repository/service';
 import OrganizationService from '../Organization/service';
 import GithubAppService from '../GitHubApp/service';
 import AuthService from '../Auth/service';
-import { IRequestBody, IDeploymentBody } from './interfaces';
+import { IRequestBody, IDeploymentBody, IDeploymentCreated } from './interfaces';
 
 
 export async function deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
     req.body as IRequestBody;
-    const { orgId, github_url, isPrivate, owner, branch, repositoryId, installationId, uniqueTopicId, framework, package_manager, build_command, workspace, publish_dir } = req.body;
+    const { orgId, github_url, isPrivate, owner, branch, repositoryId, installationId, uniqueTopicId, 
+        framework, package_manager, build_command, workspace, publish_dir } = req.body;
     
     const user: IUserModel = await AuthService.authUser(req);
     if(!user) {
@@ -25,15 +26,16 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         //TODO return wait for pending deployment to finish
     }
 
-
     const [fullGitHubPath, folderName]: Array<string> = await GithubAppService.getFullGithubUrlAndFolderName(github_url, isPrivate, branch, installationId, repositoryId, owner);
 
-    const deploymentObj: any = await DeploymentService.create(uniqueTopicId, branch, package_manager, publish_dir, build_command, framework, github_url, workspace);
-    const repository = await RepositoryService.createOrUpdateExisting(github_url, orgId, deploymentObj._id, 
+    const deployment: any = await DeploymentService.create(uniqueTopicId, branch, package_manager, publish_dir, build_command, framework, github_url, workspace);
+    const repository = await RepositoryService.createOrUpdateExisting(github_url, orgId, deployment._id, 
         branch, workspace, folderName, package_manager, build_command, publish_dir, framework);
 
+    const organization: any = await OrganizationService.findOne(orgId);
 
     const body: IDeploymentBody = {
+        deploymentId: deployment._id,
         githubUrl: fullGitHubPath,
         folderName,
         topic: !!uniqueTopicId ? uniqueTopicId : 'random-topic-url',
@@ -43,7 +45,10 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         buildCommand: build_command,
         publishDir: publish_dir,
         workspace: !!workspace ? workspace : '',
-        is_workspace: !!workspace
+        is_workspace: !!workspace,
+        logsToCapture: [{ key: 'sitePreview', value: 'Hello' }],
+        walletId: !!organization.wallet._id ? organization.wallet._id : 'abcdefghij',
+        walletAddress: !!organization.wallet.address ? organization.wallet.address : '0x123456789'
     };
 
     axios.post(`${config.flaskApi.HOST_ADDRESS}`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));
@@ -52,11 +57,30 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         message: 'Deployment is being processed',
         success: true,
         topic: uniqueTopicId,
-        deploymentId: deploymentObj._id,
+        deploymentId: deployment._id,
         repositoryId: repository._id,
     });
 
 }
+
+export async function deploymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log('DEPLOYMENT FINISHED', req.body);
+    const { deploymentId, sitePreview, deploymentStatus, logs } = req.body;
+
+    await DeploymentService.updateFinishedDeployment(deploymentId, sitePreview, deploymentStatus, logs);
+
+    res.status(201).json({
+        msg: 'successfuly updated',
+    });
+}
+
+export async function paymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const { paymentId, deploymentId }: { paymentId: string, deploymentId: string } = req.body;
+
+    await DeploymentService.updatePayment(deploymentId, paymentId);
+    res.send(201).json({ msg: 'Payment successfully recorded'});
+}
+
 
 export async function findDeploymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
     const deployment: IDeployment = await DeploymentService.findOne(req.params.id);
