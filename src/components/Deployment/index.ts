@@ -65,21 +65,26 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
 
 export async function deploymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
     console.log('DEPLOYMENT FINISHED', req.body);
-    const { deploymentId, capturedLogs, deploymentStatus, logs } = req.body;
-    const sitePreview = Object.keys(capturedLogs).length === 0 ? '' : capturedLogs.sitePreview;
-
-    await DeploymentService.updateFinishedDeployment(deploymentId, sitePreview, deploymentStatus, logs);
-
-    res.status(201).json({
-        msg: 'successfuly updated',
-    });
+    try {
+        const { deploymentId, capturedLogs, deploymentStatus, logs } = req.body;
+        const sitePreview = Object.keys(capturedLogs).length === 0 ? '' : capturedLogs.sitePreview;
+    
+        await DeploymentService.updateFinishedDeployment(deploymentId, sitePreview, deploymentStatus, logs);
+    
+        res.status(201).json({
+            msg: 'successfuly updated',
+        });
+    } catch(err) {
+        console.log(err.message);
+    }
 }
 
 export async function paymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log('Payment finished', req.body);
     const { paymentId, deploymentId }: { paymentId: string, deploymentId: string } = req.body;
 
     await DeploymentService.updatePayment(deploymentId, paymentId);
-    res.send(201).json({ msg: 'Payment successfully recorded'});
+    res.status(201).json({ msg: 'Payment successfully recorded'});
 }
 
 

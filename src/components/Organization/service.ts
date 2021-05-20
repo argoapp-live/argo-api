@@ -181,9 +181,9 @@ const OrganizationService: IOrganizationService = {
             if (!organization) throw new Error('organization does not exists');
 
             organization.repositories.forEach((repository: IRepository) => {
-                console.log('Repository found', repository._id);
+                // console.log('Repository found', repository._id);
                 repository.deployments.forEach((deployment: IDeployment) => {
-                    console.log('Deployment in repository found', deployment._id);
+                    // console.log('Deployment in repository found', deployment._id);
                     if (deployment.deploymentStatus === 'Pending') return true;
                 })
             });

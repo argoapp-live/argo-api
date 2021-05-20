@@ -9,7 +9,9 @@ notificationService.init(Server);
 /**
  * Binds and listens for connections on the specified host
  */
-Server.listen(server.get('port'));
+Server.listen(server.get('port'), () => {
+    console.log('listening on port:', server.get('port'));
+});
 
 /**
  * Server Events

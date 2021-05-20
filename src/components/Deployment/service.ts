@@ -37,7 +37,7 @@ const DeploymentService: IDeploymentService = {
         const update = {
             sitePreview,
             deploymentStatus,
-            $addToSet: { logs }
+            logs,
         }
 
         return DeploymentModel.findOneAndUpdate(condition, update);

@@ -16,7 +16,7 @@
   "scripts": {
     "build": "rimraf build && tsc --skipLibCheck && npm run copy:templates",
     "start": "npm run build && node ./build/config/server/index.js",
-    "dev": "nodemon",
+    "dev": "nodemon --inspect",
     "ts:watch": "tsc -w",
     "copy:templates": "cpx './src/templates/**' 'build/templates'",
     "test": "NODE_ENV=test mocha -r ts-node/register test/index.js --exit"
