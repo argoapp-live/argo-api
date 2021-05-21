@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import config from '../../config/env/index';
 import axios from 'axios';
-import { IDeployment } from '../Organization/model';
+import { IDeployment, IRepository } from '../Organization/model';
 import DeploymentService from './service';
 import { IUserModel } from '../User/model';
 import RepositoryService from '../Repository/service';
@@ -31,6 +31,9 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
     const deployment: any = await DeploymentService.create(uniqueTopicId, branch, package_manager, publish_dir, build_command, framework, github_url, workspace);
     const repository = await RepositoryService.createOrUpdateExisting(github_url, orgId, deployment._id, 
         branch, workspace, folderName, package_manager, build_command, publish_dir, framework);
+
+    deployment.repository = repository._id;
+    await deployment.save();
 
     const organization: any = await OrganizationService.findOne(orgId);
 
@@ -83,8 +86,13 @@ export async function paymentFinished(req: Request, res: Response, next: NextFun
     console.log('Payment finished', req.body);
     const { paymentId, deploymentId }: { paymentId: string, deploymentId: string } = req.body;
 
-    await DeploymentService.updatePayment(deploymentId, paymentId);
+    const deployment: IDeployment = await DeploymentService.updatePayment(deploymentId, paymentId);
     res.status(201).json({ msg: 'Payment successfully recorded'});
+
+    if (deployment.deploymentStatus === 'Deployed') {
+        const repo: IRepository = await RepositoryService.findOne(deployment.repository.toString());
+        await RepositoryService.AddToProxy(repo, deployment.sitePreview, deployment._id);
+    }
 }
 
 

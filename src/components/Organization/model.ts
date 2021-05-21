@@ -47,7 +47,7 @@ export interface IRepository extends Document {
  * @extends {Document}
  */
 export interface IDeployment extends Document {
-    sitePreview: String;
+    sitePreview: string;
     commitId: String;
     logs: [{ time: String, log: String }];
     createdAt: any;
@@ -61,6 +61,7 @@ export interface IDeployment extends Document {
     framework: string;
     workspace: string,
     paymentId: string,
+    repository: [IRepository['_id']],
 }
 
 /**
@@ -132,6 +133,10 @@ const DeploymentSchema: Schema = new Schema({
     framework: String,
     workspace: String,
     paymentId: String,
+    repository: {
+        type: [Schema.Types.ObjectId],
+        ref: 'RepositoryModel',
+    },
 });
 
 const OrganizationSchema: Schema = new Schema(

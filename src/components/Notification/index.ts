@@ -11,7 +11,16 @@ class NotificationService {
     private serverSocket: SocketIO.Server;
 
     init(server: http.Server) {
-        this.serverSocket = io(server);
+        this.serverSocket = io(server, {  cors: {
+            origin: "http://localhost:3000",
+            credentials: true,
+            methods: ['GET, POST, PUT, DELETE, OPTIONS'],
+            allowedHeaders: ['Access-Control-Allow-Headers',
+            'Origin, X-Requested-With,' +
+            ' Content-Type, Accept,' +
+            ' Authorization,' +
+            ' Access-Control-Allow-Credentials']
+          }});
         
         const pubClient = createClient({ host: '127.0.0.1', port: 6379 });
         const subClient = pubClient.duplicate();
