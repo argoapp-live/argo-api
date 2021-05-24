@@ -7,4 +7,6 @@ const router: Router = Router();
 
 router.post('/', WalletComponent.createWallet);
 
+// router.get('/', WalletComponent.getWallet);
+
 export default router;

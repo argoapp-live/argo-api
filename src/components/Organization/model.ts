@@ -77,7 +77,7 @@ export interface IOrganization extends Document {
     };
     repositories: [IRepository['_id']];
     users: [IUserModel['_id']];
-    wallet: [IWalletModel['_id']],
+    wallet: IWalletModel['_id'],
 }
 
 const RepositorySchema: Schema = new Schema({

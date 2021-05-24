@@ -9,7 +9,7 @@ export interface IWalletModel extends Document {
 }
 
 const WalletSchema: Schema = new Schema({
-    address: String,
+    address: { type: String },
     createDate: {
         type: Date, default: new Date()
     },
