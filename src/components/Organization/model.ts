@@ -157,7 +157,7 @@ const OrganizationSchema: Schema = new Schema(
             },
         ],
         wallet: {
-            type: [Schema.Types.ObjectId],
+            type: Schema.Types.ObjectId,
             ref: 'WalletModel',
         },
     },
