@@ -5,6 +5,8 @@ import { NextFunction, Request, Response } from 'express';
 import JWTTokenService from '../Session/service';
 import { IUserModel } from '../User/model';
 import UserService from '../User/service';
+import axios from 'axios';
+import config from '../../config/env';
 
 /**
  * @export
@@ -32,7 +34,10 @@ export async function findAll(req: Request, res: Response, next: NextFunction): 
  */
 export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const organization: IOrganization = await OrganizationService.findOne(req.params.id);
+        const organization: any = await OrganizationService.findOne(req.params.id);
+
+        const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
+        organization.payments = payments;
 
         res.status(200).json(organization);
     } catch (error) {
