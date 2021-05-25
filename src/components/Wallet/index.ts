@@ -2,10 +2,7 @@ import { HttpError } from '../../config/error';
 import { NextFunction, Request, Response } from 'express';
 import WalletService from './service';
 import { IWalletModel } from './model';
-import JWTTokenService from '../Session/service';
-import UserService from '../User/service';
 import { IUserModel } from '../User/model';
-import { IOrganization } from '../Organization/model';
 import OrganizationService from '../Organization/service';
 import AuthService from '../Auth/service';
 
@@ -21,12 +18,10 @@ export async function createWallet(
             // return error
         }
 
-        const { address, organizationId } : { address: string, organizationId: string } = req.body;
-
-        const organization: IOrganization = await OrganizationService.findOne(organizationId);
+        const { address, orgId } : { address: string, orgId: string } = req.body;
         
         const isUserInOrganization: boolean = user.organizations.some((orgUser) => {
-            return orgUser._id.equals(organizationId)
+            return orgUser._id.equals(orgId)
         });
 
         if (!isUserInOrganization) {
@@ -39,7 +34,7 @@ export async function createWallet(
         }
 
         const wallet: IWalletModel = await WalletService.insert(address);
-        await OrganizationService.updateWallet(organizationId, wallet._id.toString());
+        await OrganizationService.updateWallet(orgId, wallet._id.toString());
         res.status(200).json(wallet);
 
     } catch (error) {

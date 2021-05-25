@@ -42,7 +42,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         githubUrl: fullGitHubPath,
         folderName,
         topic: !!uniqueTopicId ? uniqueTopicId : 'random-topic-url',
-        framework: 'simplebash',
+        framework,
         packageMenager: package_manager,
         branch,
         buildCommand: build_command,
