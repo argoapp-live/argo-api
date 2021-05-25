@@ -97,12 +97,13 @@ export async function paymentFinished(req: Request, res: Response, next: NextFun
 
 
 export async function findDeploymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const deployment: IDeployment = await DeploymentService.findOne(req.params.id);
+    const deployment: any = await DeploymentService.findOne(req.params.id);
 
-    //TODO handle error
+    if (deployment.deploymentStatus === 'Pending') {
+        deployment.logs = await axios.post(`${config.flaskApi.HOST_ADDRESS}/liveLogs`, { deploymentId: deployment._id });
+    }
 
     res.status(200).json({
-        deployment,
-        success: true,
+        deployment
     });
 }
