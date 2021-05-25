@@ -69,10 +69,10 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
 export async function deploymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
     console.log('DEPLOYMENT FINISHED', req.body);
     try {
-        const { deploymentId, capturedLogs, deploymentStatus, logs } = req.body;
+        const { deploymentId, capturedLogs, deploymentStatus, buildTime, logs } = req.body;
         const sitePreview = Object.keys(capturedLogs).length === 0 ? '' : capturedLogs.sitePreview;
     
-        await DeploymentService.updateFinishedDeployment(deploymentId, sitePreview, deploymentStatus, logs);
+        await DeploymentService.updateFinishedDeployment(deploymentId, sitePreview, deploymentStatus, buildTime, logs);
     
         res.status(201).json({
             msg: 'successfuly updated',

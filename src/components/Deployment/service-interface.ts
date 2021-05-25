@@ -6,7 +6,7 @@ export interface IDeploymentService {
     create(topic: string, branch:string, package_manager: string, publish_dir: string, 
         build_command: string, framework: string, github_url: string, workspace: string): Promise<IDeployment>;
     findOne(deploymentId: string): Promise<IDeployment>;
-    updateFinishedDeployment(deploymentId: string, sitePreview: string, deploymentStatus: string, logs: Array<string>): Promise<IDeployment>;
+    updateFinishedDeployment(deploymentId: string, sitePreview: string, deploymentStatus: string, buildTime: number, logs: Array<string>): Promise<IDeployment>;
     updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment>;
 }
 

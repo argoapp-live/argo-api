@@ -61,6 +61,7 @@ export interface IDeployment extends Document {
     framework: string;
     workspace: string,
     paymentId: string,
+    buildTime: number,
     repository: [IRepository['_id']],
 }
 
@@ -133,6 +134,7 @@ const DeploymentSchema: Schema = new Schema({
     framework: String,
     workspace: String,
     paymentId: String,
+    buildTime: { type: Number, default: 0 },
     repository: {
         type: [Schema.Types.ObjectId],
         ref: 'RepositoryModel',

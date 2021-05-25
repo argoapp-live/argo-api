@@ -29,7 +29,7 @@ const DeploymentService: IDeploymentService = {
         return deployment;
     },
 
-    async updateFinishedDeployment(deploymentId: string, sitePreview: string, deploymentStatus: string, logs: Array<string>): Promise<IDeployment> {
+    async updateFinishedDeployment(deploymentId: string, sitePreview: string, deploymentStatus: string, buildTime: number, logs: Array<string>): Promise<IDeployment> {
         const condition = {
             '_id': Types.ObjectId(deploymentId)
         }
@@ -37,6 +37,7 @@ const DeploymentService: IDeploymentService = {
         const update = {
             sitePreview,
             deploymentStatus,
+            buildTime,
             logs,
         }
 
