@@ -36,8 +36,10 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
     try {
         const organization: any = await OrganizationService.findOne(req.params.id);
 
-        const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
-        organization.payments = payments;
+        if(organization.wallet) {
+            const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
+            organization.payments = payments;
+        }
 
         res.status(200).json(organization);
     } catch (error) {
