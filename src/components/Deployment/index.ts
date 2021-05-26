@@ -104,9 +104,9 @@ export async function findDeploymentById(req: Request, res: Response, next: Next
         deployment.logs = !liveLogs.data.logs ? [] : liveLogs.data.logs;
     }
     const paymentDetails = await axios.get(`${config.paymentApi.HOST_ADDRESS}/deployment/${deployment._id}`);
+    deployment._doc.payment = paymentDetails.data
 
     res.status(200).json({
-        deployment,
-        payment: paymentDetails.data
+        deployment
     });
 }

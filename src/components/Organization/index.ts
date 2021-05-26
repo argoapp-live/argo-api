@@ -7,6 +7,7 @@ import { IUserModel } from '../User/model';
 import UserService from '../User/service';
 import axios from 'axios';
 import config from '../../config/env';
+import { simpleClone } from '../../utils';
 
 /**
  * @export
@@ -34,11 +35,11 @@ export async function findAll(req: Request, res: Response, next: NextFunction): 
  */
 export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const organization: any = await OrganizationService.findOne(req.params.id);
+        let organization: any = await OrganizationService.findOne(req.params.id);
 
         if(organization.wallet) {
             const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
-            organization.payments = payments.data ? payments.data : [];
+            organization._doc.payments = payments.data ? payments.data : [];
         }
 
         res.status(200).json(organization);
