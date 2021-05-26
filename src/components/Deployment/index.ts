@@ -97,14 +97,16 @@ export async function paymentFinished(req: Request, res: Response, next: NextFun
 
 
 export async function findDeploymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const deployment: any = await DeploymentService.findOne(req.params.id);
+    let deployment: any = await DeploymentService.findOne(req.params.id);
 
     if (deployment.deploymentStatus === 'Pending') {
         const liveLogs = await axios.post(`${config.flaskApi.HOST_ADDRESS}liveLogs`, { deploymentId: deployment._id });
         deployment.logs = !liveLogs.data.logs ? [] : liveLogs.data.logs;
     }
+    const paymentDetails = await axios.get(`${config.paymentApi.HOST_ADDRESS}/deployment/${deployment._id}`);
 
     res.status(200).json({
-        deployment
+        deployment,
+        payment: paymentDetails.data
     });
 }
