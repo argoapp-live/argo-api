@@ -62,7 +62,7 @@ export interface IDeployment extends Document {
     workspace: string,
     paymentId: string,
     buildTime: number,
-    repository: [IRepository['_id']],
+    repository: IRepository['_id'],
 }
 
 /**

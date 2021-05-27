@@ -8,6 +8,8 @@ import UserService from '../User/service';
 import axios from 'axios';
 import config from '../../config/env';
 import { simpleClone } from '../../utils';
+import DeploymentService from '../Deployment/service';
+import RepositoryService from '../Repository/service';
 
 /**
  * @export
@@ -39,13 +41,31 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
 
         if(organization.wallet) {
             const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
-            organization._doc.payments = payments.data ? payments.data : [];
+
+            if (!payments.data) {
+                organization._doc.payments = [];
+            } else {
+                const promises = payments.map((payment: any) => {
+                    return _populatePayment(payment.data);
+                })
+
+                organization._doc.payments = await Promise.all(promises);
+            }
+            
         }
 
         res.status(200).json(organization);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
+}
+
+async function _populatePayment(payment: any): Promise<any> {
+    const deployment = await DeploymentService.findOne(payment.deploymentId);
+    const repository = await RepositoryService.findOne(deployment.repository);
+    payment.buildTime = deployment.buildTime;
+    payment.projectName = repository.name;
+    return payment;
 }
 
 /**
