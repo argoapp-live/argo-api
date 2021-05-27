@@ -49,7 +49,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         publishDir: publish_dir,
         workspace: !!workspace ? workspace : '',
         is_workspace: !!workspace,
-        logsToCapture: [{ key: 'sitePreview', value: 'https://arweave.net' }],
+        logsToCapture: [{ key: 'sitePreview', value: 'https://arweave.net' }, { key: 'fee', value: 'Price' }],
         walletId: !!organization.wallet._id ? organization.wallet._id : 'abcdefghij',
         walletAddress: !!organization.wallet.address ? organization.wallet.address : '0x123456789'
     };
