@@ -45,10 +45,9 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
             if (!payments.data) {
                 organization._doc.payments = [];
             } else {
-                const promises = payments.map((payment: any) => {
-                    return _populatePayment(payment.data);
+                const promises = payments.data.map((payment: any) => {
+                    return _populatePayment(payment);
                 })
-
                 organization._doc.payments = await Promise.all(promises);
             }
             

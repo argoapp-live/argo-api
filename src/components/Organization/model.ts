@@ -136,7 +136,7 @@ const DeploymentSchema: Schema = new Schema({
     paymentId: String,
     buildTime: { type: Number, default: 0 },
     repository: {
-        type: [Schema.Types.ObjectId],
+        type: Schema.Types.ObjectId,
         ref: 'RepositoryModel',
     },
 });
