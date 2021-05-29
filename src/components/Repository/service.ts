@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { recordsForHostname } from './helper';
 import * as request from 'request';
 import { simpleClone } from '../../utils';
+import { addDnsRecord, IDnsRecord } from '../../config/cloudflare/index';
 
 /**
  * @export
@@ -112,7 +113,7 @@ const RepositoryService: IRepositoryService = {
             return repo.save();
         }
 
-        return RepositoryModel.create({
+        const repository: IRepository = await RepositoryModel.create({
             url: githubUrl,
             orgId: Types.ObjectId(orgId),
             deployments: [depolymentId],
@@ -125,6 +126,34 @@ const RepositoryService: IRepositoryService = {
             publish_dir,
             framework,
         })
+
+        //THIS SHOULD BE DONE IN DOMAIN SERVICE AFTER MIGRATION
+        try {
+            const uuid: string = uuidv4();
+            const randomString: string = Math.random().toString(36).substring(7);
+            const repositoryNameNormalized: string = repository.name.replace(/\s/g, '-');
+            const dnsName: string = `${repositoryNameNormalized}-${randomString}.${config.cloudflare.dns}`;
+
+            let record: IDnsRecord = {
+                type: 'A',
+                name: dnsName,
+                content: config.cloudflare.ARGO_IPV4,
+                ttl: 300,
+            }
+
+            await addDnsRecord(record);
+
+            record.type = 'TXT';
+            record.content = `argo=${uuid}`;
+
+            await addDnsRecord(record);
+
+            //TODO CREATE SUBDOMAIN
+            // await RepositoryService.InsertSubDomain(repository._id, dnsName, '', true, uuid, true);
+
+        } catch(err) {
+            throw new Error(err.message);
+        }
         
     },
 

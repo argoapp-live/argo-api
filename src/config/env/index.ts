@@ -58,6 +58,13 @@ interface IConfig {
         PORT: number;
         PROTOCOL: string;
         APP_NAME: string;
+    },
+    cloudflare: {
+        ARGO_IPV4: string;
+        dns: string;
+        zoneId: string;
+        email: string;
+        key: string;
     }
 }
 
@@ -119,6 +126,13 @@ const development: IConfig = {
         PORT: +process.env.ARWEAVE_PORT || 443,
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ARGO_APP_LIVE',
+    },
+    cloudflare: {
+        ARGO_IPV4: "35.202.158.174",
+        dns: 'meetrekpero.xyz',
+        zoneId: '278d3b095d1a88ee08d3370f60753744',
+        email: 'mitrasish@argoapp.live',
+        key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
     }
 };
 
@@ -174,6 +188,13 @@ const production: IConfig = {
         PORT: +process.env.ARWEAVE_PORT || 443,
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ArGoApp/2.0.0',
+    },
+    cloudflare: {
+        ARGO_IPV4: "35.202.158.174",
+        dns: 'meetrekpero.xyz',
+        zoneId: '278d3b095d1a88ee08d3370f60753744',
+        email: 'mitrasish@argoapp.live',
+        key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
     }
 };
 const test: IConfig = {
@@ -232,6 +253,13 @@ const test: IConfig = {
         PORT: +process.env.ARWEAVE_PORT || 443,
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ARGO_APP_LIVE',
+    },
+    cloudflare: {
+        ARGO_IPV4: "35.202.158.174",
+        dns: 'meetrekpero.xyz',
+        zoneId: '278d3b095d1a88ee08d3370f60753744',
+        email: 'mitrasish@argoapp.live',
+        key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
     }
 };
 
