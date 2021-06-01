@@ -4,6 +4,7 @@ import GitHubAppTokenModel from './model'
 import { Types } from "mongoose";
 import UserModel from "../User/model";
 import config from '../../config/env/index';
+const axios = require('axios').default;
 
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
@@ -98,6 +99,32 @@ const GithubAppService: IGitHubAppTokenService = {
         else {
             return [`${githubUrl} --branch ${branch}`, folderName];
         }
+    },
+
+    async getBranches(id: string, branchesQuery: any): Promise<any> {
+        const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: id })
+        const instanceAxiosBranch = axios.create({
+            baseURL: branchesQuery,
+            timeout: 5000,
+            headers: {
+                'authorization': `bearer ${getUserToken.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        return instanceAxiosBranch.get();
+    },
+
+    async getInstallationRepos(id: string, installationId: any): Promise<any> {
+        const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: id });
+        const instanceAxios = axios.create({
+            baseURL: `https://api.github.com/user/installations/${installationId}/repositories`,
+            timeout: 5000,
+            headers: {
+                'authorization': `bearer ${getUserToken.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        return instanceAxios.get();
     }
 }
 export default GithubAppService;

@@ -9,7 +9,6 @@ import axios from 'axios';
 import config from '../../config/env';
 import { simpleClone } from '../../utils';
 import DeploymentService from '../Deployment/service';
-import RepositoryService from '../Repository/service';
 
 /**
  * @export
@@ -60,10 +59,8 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
 }
 
 async function _populatePayment(payment: any): Promise<any> {
-    const deployment = await DeploymentService.findOne(payment.deploymentId);
-    const repository = await RepositoryService.findOne(deployment.repository);
+    const deployment = await DeploymentService.findById(payment.deploymentId);
     payment.buildTime = deployment.buildTime;
-    payment.projectName = repository.name;
     return payment;
 }
 

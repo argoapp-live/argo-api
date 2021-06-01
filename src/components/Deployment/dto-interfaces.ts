@@ -1,17 +1,13 @@
 export interface IRequestBody {
     orgId: string, 
-    github_url: string, 
+    githubUrl: string, 
     isPrivate: boolean, 
     owner: string, 
     branch: string, 
-    repositoryId: string, 
+    projectId: string, 
     installationId: string
     uniqueTopicId: string, 
-    framework: string,
-    package_manager: string, 
-    build_command: string, 
-    workspace: string, 
-    publish_dir: string,
+    configurationId: string,
 }
 
 interface LogToCapture {
@@ -25,7 +21,7 @@ export interface IDeploymentBody {
     folderName: string,
     topic: string,
     framework: string,
-    packageMenager: string,
+    packageManager: string,
     branch: string,
     buildCommand: string,
     publishDir: string,

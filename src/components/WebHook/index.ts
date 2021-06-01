@@ -2,13 +2,6 @@ import { HttpError } from '../../config/error';
 import { NextFunction, Request, Response } from 'express';
 import config from '../../config/env/index';
 import WebHookService from './service';
-const { Octokit } = require('@octokit/core');
-import { v4 as uuidv4 } from 'uuid';
-import { IInternalApiDto } from './interface';
-import axios from 'axios';
-import { DeploymentModel, IRepository } from '../Organization/model';
-import DeploymentService from '../Deployment/service';
-import RepositoryService from '../Repository/service';
 
 const io = require('socket.io-client');
 const emitter = require('socket.io')();

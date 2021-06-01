@@ -1,9 +1,6 @@
 import * as http from 'http';
-// import * as SocketIO from 'socket.io';
 const io = require('socket.io');
 import { v4 as uuidv4 } from 'uuid';
-// import { createClient, RedisClient } from 'redis';
-// import { createAdapter } from '@socket.io/redis-adapter';
 const { createClient } = require("redis");
 const redisAdapter = require('@socket.io/redis-adapter');
 

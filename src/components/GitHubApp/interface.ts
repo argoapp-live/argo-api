@@ -10,4 +10,6 @@ export interface IGitHubAppTokenService {
     remove(installationId: number): Promise<boolean>;
     createInstallationToken (installationId: any): Promise<any>;
     getFullGithubUrlAndFolderName(githubUrl: string, isPrivate: boolean, branch: string, installationId: string, repositoryId: string, owner: string): Promise<Array<string>>;
+    getBranches(id: string, branchesQuery: any): Promise<any>;
+    getInstallationRepos(id: string, installationId: any): Promise<any>;
 }

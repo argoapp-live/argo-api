@@ -49,5 +49,5 @@ export interface IOrganizationService {
 
     updateWallet(organisationId: string, walletId: string): Promise<any>;
 
-    hasPendingDeployment(organisationId: string): Promise<boolean>;
+    // hasPendingDeployment(organisationId: string): Promise<boolean>;
 }
