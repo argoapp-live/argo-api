@@ -13,6 +13,7 @@ import ProjectService from '../Project/project-service';
 import ConfigurationService from '../Configuration/service';
 import { IConfiguration } from '../Configuration/model';
 import { IDeployment } from './model';
+import DomainService from '../Domain/service';
 
 
 export async function deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -31,12 +32,19 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
     //TODO check wallet exists for the organization
     
     
-    let project: IProject = await ProjectService.createIfNotExists(githubUrl, organizationId, folderName);
+    const result: any = await ProjectService.createIfNotExists(githubUrl, organizationId, folderName);
+    const project = result.project;
+    const created = result.created;
+
+    if (created) {
+        try {
+            await DomainService.addDefault(project.name)
+        } catch(err) {
+            throw new Error(err.message);
+        }
+    }
 
     const fullGitHubPath: string = await GithubAppService.getFullGithubUrlAndFolderName(githubUrl, isPrivate, branch, installationId, owner, folderName);
-    // if (!projectId) {
-    //     project = await ProjectService.insert({ name: folderName, githubUrl, organizationId })
-    // }
 
     const deployment: IDeployment = await DeploymentService.create(uniqueTopicId, project._id, configurationId);
     const organization: IOrganization = await OrganizationService.findOne(organizationId);
@@ -67,7 +75,6 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         deploymentId: deployment._id,
         projectId: project._id
     });
-
 }
 
 export async function deploymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -94,8 +101,8 @@ export async function paymentFinished(req: Request, res: Response, next: NextFun
     res.status(201).json({ msg: 'Payment successfully recorded'});
 
     if (deployment.status === 'Deployed') {
-        // const repo: IProject = await ProjectService.findOne(deployment.repository.toString());
-        // await RepositoryService.AddToProxy(repo, deployment.sitePreview, deployment._id);
+        const project: IProject = await ProjectService.findById(deployment.project);
+        DomainService.addToResolver(project._id, deployment.sitePreview);
     }
 }
 

@@ -9,29 +9,30 @@ import { IProject } from '../Project/model';
 //  */
 export interface IDomain extends Document {
     name: string,
-    url: string, 
-    transaction: string,
-    txtUid: string,
+    link: string,
+    argoKey: string,
     isLatest: boolean,
     type: string,
+    verified: boolean,
     projectId: IProject['_id']
 }
 
 const DomainSchema: Schema = new Schema(
     {
         name: String,
-        url: String, 
-        transaction: String,
-        txtUid: String,
-        isLatest: String,
+        link: String,
+        argoKey: String,
+        isLatest: Boolean,
         type: String,
+        verified: { type: Boolean, default: false },
         projectId: {
             type: Schema.Types.ObjectId,
             ref: 'ProjectModel',
         }
     },
     {
-        collection: 'organization',
+        collection: 'domains',
+        timestamps: true,
         versionKey: false,
     }
 );

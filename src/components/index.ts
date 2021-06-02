@@ -7,6 +7,7 @@ import * as WebHookComponent from './WebHook';
 import * as DeploymentComponent from './Deployment';
 import * as WalletComponent from './Wallet';
 import * as ConfigurationComponent from './Configuration';
+import * as DomainComponent from './Domain';
 
 export {
     AuthComponent,
@@ -18,4 +19,5 @@ export {
     DeploymentComponent,
     WebHookComponent,
     WalletComponent,
+    DomainComponent,
 };

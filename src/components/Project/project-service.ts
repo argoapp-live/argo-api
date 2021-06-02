@@ -33,13 +33,14 @@ const ProjectService: any = {
         }
     },
 
-    async createIfNotExists(githubUrl: string, organizationId: string, name: string): Promise<IProject> {
+    async createIfNotExists(githubUrl: string, organizationId: string, name: string): Promise<any> {
         try {
-            const project = await ProjectModel.findOne({ githubUrl, organizationId });
-            if(!project) {
-                return ProjectModel.create({ name, githubUrl, organizationId });
+            const existingProject = await ProjectModel.findOne({ githubUrl, organizationId });
+            if(!existingProject) {
+                const project = await ProjectModel.create({ name, githubUrl, organizationId })
+                return { project, created: true };
             }
-            return project
+            return { project: existingProject, created: false };
         } catch(err) {
             throw new Error(err.message);
         }
