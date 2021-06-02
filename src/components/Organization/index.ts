@@ -7,8 +7,8 @@ import { IUserModel } from '../User/model';
 import UserService from '../User/service';
 import axios from 'axios';
 import config from '../../config/env';
-import { simpleClone } from '../../utils';
 import DeploymentService from '../Deployment/service';
+import ProjectService from '../Project/project-service';
 
 /**
  * @export
@@ -38,6 +38,13 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
     try {
         let organization: any = await OrganizationService.findOne(req.params.id);
 
+        if(!organization) {
+            // TODO return null
+        }
+
+        const projects = await ProjectService.find({ organizationId: organization._id })
+        organization._doc.projects = projects;
+
         if(organization.wallet) {
             const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
 
@@ -61,6 +68,7 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
 async function _populatePayment(payment: any): Promise<any> {
     const deployment = await DeploymentService.findById(payment.deploymentId);
     payment.buildTime = deployment.buildTime;
+    payment.projectName = deployment.project.name;
     return payment;
 }
 

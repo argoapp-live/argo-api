@@ -17,7 +17,7 @@ import { IDeployment } from './model';
 
 export async function deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
     req.body as IRequestBody;
-    const { organizationId, githubUrL, isPrivate, owner, projectId, installationId, uniqueTopicId, configurationId } = req.body;
+    const { organizationId, githubUrl, isPrivate, folderName, owner, installationId, uniqueTopicId, configurationId } = req.body;
 
     const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
     if (!configuration) {}
@@ -28,14 +28,17 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
 
     //TODO check pending deployment
 
-    const [fullGitHubPath, folderName]: Array<string> = await GithubAppService.getFullGithubUrlAndFolderName(githubUrL, isPrivate, branch, installationId, projectId, owner);
+    //TODO check wallet exists for the organization
+    
+    
+    let project: IProject = await ProjectService.createIfNotExists(githubUrl, organizationId, folderName);
 
-    let project: IProject;
-    if (!projectId) {
-        project = await ProjectService.insert({ name: folderName, githubUrL, organizationId })
-    }
+    const fullGitHubPath: string = await GithubAppService.getFullGithubUrlAndFolderName(githubUrl, isPrivate, branch, installationId, owner, folderName);
+    // if (!projectId) {
+    //     project = await ProjectService.insert({ name: folderName, githubUrl, organizationId })
+    // }
 
-    const deployment: IDeployment = await DeploymentService.create(uniqueTopicId, !!projectId ? projectId : project._id, configurationId);
+    const deployment: IDeployment = await DeploymentService.create(uniqueTopicId, project._id, configurationId);
     const organization: IOrganization = await OrganizationService.findOne(organizationId);
 
     const body: IDeploymentBody = {
@@ -62,7 +65,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         success: true,
         topic: uniqueTopicId,
         deploymentId: deployment._id,
-        organization: organization._id
+        projectId: project._id
     });
 
 }
@@ -90,10 +93,10 @@ export async function paymentFinished(req: Request, res: Response, next: NextFun
     const deployment: IDeployment = await DeploymentService.updatePayment(deploymentId, paymentId);
     res.status(201).json({ msg: 'Payment successfully recorded'});
 
-    // if (deployment.deploymentStatus === 'Deployed') {
-    //     // const repo: IProject = await RepositoryService.findOne(deployment.repository.toString());
-    //     // await RepositoryService.AddToProxy(repo, deployment.sitePreview, deployment._id);
-    // }
+    if (deployment.status === 'Deployed') {
+        // const repo: IProject = await ProjectService.findOne(deployment.repository.toString());
+        // await RepositoryService.AddToProxy(repo, deployment.sitePreview, deployment._id);
+    }
 }
 
 

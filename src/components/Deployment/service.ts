@@ -16,7 +16,17 @@ const DeploymentService: IDeploymentService = {
     },
 
     async findById(id: string): Promise<IDeployment> {
-        return DeploymentModel.findById(id);
+        return DeploymentModel.findById(id).populate("configuration").populate("project");
+    },
+
+    async findLatest(projectId: string): Promise<IDeployment> {
+        const latest = await DeploymentModel.find({ project: Types.ObjectId(projectId) }).sort({"updatedAt": "desc"}).populate("configuration")
+        console.log(latest, projectId)
+        return latest[0];
+    },
+
+    async find(query: Partial<IDeployment>): Promise<Array<IDeployment>> {
+        return DeploymentModel.find(query).populate("configuration").populate("project")
     },
 
     async updateFinishedDeployment(deploymentId: string, sitePreview: string, status: string, buildTime: number, logs: Array<string>): Promise<IDeployment> {

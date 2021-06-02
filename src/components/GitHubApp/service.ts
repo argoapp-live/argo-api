@@ -88,16 +88,13 @@ const GithubAppService: IGitHubAppTokenService = {
         return installationToken;
     },
 
-    async getFullGithubUrlAndFolderName(githubUrl: string, isPrivate: boolean, branch: string, installationId: string, repositoryId: string, owner: string): Promise<Array<string>> {
-        const splitUrl: Array<string> = githubUrl.split('/');
-        const folderName: string = splitUrl[splitUrl.length - 1].slice(0, -4);
-    
+    async getFullGithubUrlAndFolderName(githubUrl: string, isPrivate: boolean, branch: string, installationId: string, owner: string, folderName: string): Promise<string> {
         if (isPrivate) {
             let installationToken = await GithubAppService.createInstallationToken(installationId);
-            return [`https://x-access-token:${installationToken.token}@github.com/${owner}/${folderName}.git`, folderName];
+            return `https://x-access-token:${installationToken.token}@github.com/${owner}/${folderName}.git`;
         }
         else {
-            return [`${githubUrl} --branch ${branch}`, folderName];
+            return `${githubUrl} --branch ${branch}`;
         }
     },
 
@@ -115,7 +112,8 @@ const GithubAppService: IGitHubAppTokenService = {
     },
 
     async getInstallationRepos(id: string, installationId: any): Promise<any> {
-        const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: id });
+        const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: Types.ObjectId(id) });
+        console.log("Print", getUserToken, installationId)
         const instanceAxios = axios.create({
             baseURL: `https://api.github.com/user/installations/${installationId}/repositories`,
             timeout: 5000,

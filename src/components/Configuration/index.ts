@@ -1,7 +1,5 @@
 import { HttpError } from '../../config/error';
 import { NextFunction, Request, Response } from 'express';
-import AuthService from '../Auth/service';
-import { IUserModel } from '../User/model';
 import { IConfiguration } from './model';
 import ConfigurationService from './service';
 
@@ -17,7 +15,7 @@ export async function create(
         // if (!is<IConfiguration>(req.body)) throw new Error('not valid request body');
         const exists: IConfiguration = await ConfigurationService.findOne(req.body);
         if (exists) {
-            res.status(201).json(exists);
+            res.status(200).json(exists);
             return;
         }
         const configuration: IConfiguration = await ConfigurationService.insert(req.body);

@@ -1,5 +1,5 @@
 import * as connections from '../../config/connection/connection';
-import { Document, Schema, Model, Types } from 'mongoose';
+import { Document, Schema, Model } from 'mongoose';
 import { IUserModel } from '../User/model';
 import { IWalletModel } from '../Wallet/model';
 
@@ -38,7 +38,7 @@ const OrganizationSchema: Schema = new Schema(
         },
     },
     {
-        collection: 'organizationsdb',
+        collection: 'organizations',
         versionKey: false,
     }
 );

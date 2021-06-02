@@ -23,7 +23,8 @@ const ProjectSchema: Schema = new Schema(
         },
     },
     {
-        collection: 'organization',
+        collection: 'projects',
+        timestamps: true,
         versionKey: false,
     }
 );

@@ -3,11 +3,10 @@ import { IProject } from './model';
 import { NextFunction, Request, Response } from 'express';
 import JWTTokenService from '../Session/service';
 import { IArgoSessionModel } from '../Session/model';
-import { Types } from 'mongoose';
 import GithubAppService from '../GitHubApp/service';
 import ProjectService from './project-service';
+import DeploymentService from '../Deployment/service';
 const { Octokit } = require("@octokit/core");
-const axios = require('axios').default;
 
 /**
  * @export
@@ -18,7 +17,15 @@ const axios = require('axios').default;
  */
 export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const repository: IProject = await ProjectService.findOne(req.params.id);
+        const repository: any = await ProjectService.findById(req.params.id);
+        if(repository) {
+            const latestDep = await DeploymentService.findLatest(req.params.id)
+            repository._doc.configuration = latestDep.configuration;
+            const deployments = await DeploymentService.find({ project: req.params.id })
+            repository._doc.deployments = deployments;
+            repository._doc.domains = [];
+            repository._doc.subdomains = [];
+        }
         res.status(200).json(repository);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
@@ -86,7 +93,7 @@ export async function getInstallationRepos(req: Request, res: Response, next: Ne
     try {
         const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
         const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-        const response = await GithubAppService.getInstallationRepos(deserializedToken.session_id, req.query.installationId);
+        const response = await GithubAppService.getInstallationRepos(deserializedToken.session_id, req.params.installationId);
         res.status(200).json({
             success: true,
             repositories: response.data.repositories

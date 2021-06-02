@@ -1,5 +1,5 @@
 import * as connections from '../../config/connection/connection';
-import { Document, Schema, Model } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 
 // /**
 //  * @export
@@ -25,7 +25,7 @@ const ConfigurationSchema: Schema = new Schema(
         framework: String,
     },
     {
-        collection: 'organization',
+        collection: 'configurations',
         versionKey: false,
     }
 );
