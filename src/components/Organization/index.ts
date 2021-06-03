@@ -5,6 +5,13 @@ import { NextFunction, Request, Response } from 'express';
 import JWTTokenService from '../Session/service';
 import { IUserModel } from '../User/model';
 import UserService from '../User/service';
+import axios from 'axios';
+import config from '../../config/env';
+import DeploymentService from '../Deployment/service';
+import ProjectService from '../Project/service';
+import DomainService from '../Domain/service';
+import WalletService from '../Wallet/service';
+import { IWalletModel } from '../Wallet/model';
 
 /**
  * @export
@@ -32,12 +39,55 @@ export async function findAll(req: Request, res: Response, next: NextFunction): 
  */
 export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const organization: IOrganization = await OrganizationService.findOne(req.params.id);
+        let organization: any = await OrganizationService.findOne(req.params.id);
+
+        if(!organization) {
+            // TODO return null
+        }
+
+        const wallet: IWalletModel = await WalletService.findOne({ organizationId: organization._id });
+        organization._doc.wallet = wallet;
+
+        const projects = await ProjectService.find({ organizationId: organization._id })
+        const promises = projects.map((project: any) => {
+            return _populateProject(project);
+        })
+        organization._doc.projects = await Promise.all(promises);
+
+        if(organization.wallet) {
+            const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
+
+            if (!payments.data) {
+                organization._doc.payments = [];
+            } else {
+                const promises = payments.data.map((payment: any) => {
+                    return _populatePayment(payment);
+                })
+                organization._doc.payments = await Promise.all(promises);
+            }
+            
+        }
 
         res.status(200).json(organization);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
+}
+
+async function _populatePayment(payment: any): Promise<any> {
+    const deployment = await DeploymentService.findById(payment.deploymentId);
+    payment.buildTime = deployment.buildTime;
+    payment.projectName = deployment.project.name;
+    return payment;
+}
+
+async function _populateProject(project: any): Promise<any> {
+    const deployment = await DeploymentService.findLatestDeployed(project._id);
+    project._doc.sitePreview = deployment ? deployment.sitePreview : undefined;
+    const domains = await DomainService.find({ projectId: project._id });
+    project._doc.domains = domains.filter(domain => domain.type === 'domain');
+    project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
+    return project;
 }
 
 /**

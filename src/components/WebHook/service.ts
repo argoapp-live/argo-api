@@ -2,6 +2,8 @@ import { IWebHookService } from './interface';
 import { IWebHook } from './model';
 import JWTTokenService from '../Session/service';
 import { IArgoSessionModel } from '../Session/model';
+import GithubAppService from '../GitHubApp/service';
+import AuthService from '../Auth/service';
 const { Octokit } = require('@octokit/core');
 import config from '../../config/env/index';
 import { Request } from 'express';
@@ -25,13 +27,15 @@ const WebHookService: IWebHookService = {
     async createHook(req: Request): Promise<any> {
         try {
             const webHookCreationDto = req.body as IWebHook;
-            const getToken: any = await JWTTokenService.DecodeToken(req);
-            const decodeToken: any = await JWTTokenService.VerifyToken(getToken);
+            const decodeToken: any = await AuthService.deseralizeToken(req);
+            
+            //Why we need this?
 
-            const argoSession: IArgoSessionModel = await JWTTokenService.FindOneBySessionId(
-                decodeToken.session_id
-            );
-            let installationToken = await createInstallationToken(req.body.installationId, req.body.repositoryId);
+            // const argoSession: IArgoSessionModel = await JWTTokenService.FindOneBySessionId(
+            //     decodeToken.session_id
+            // );
+
+            let installationToken = await GithubAppService.createInstallationToken(req.body.installationId);
             const octokit: any = new Octokit({ auth: `${installationToken.token}` });
             const response: any = await octokit.request(
                 'POST /repos/{owner}/{repo}/hooks',
@@ -53,20 +57,6 @@ const WebHookService: IWebHookService = {
         }
     },
 };
-
-const createInstallationToken = async (installationId: any, repositoryId: any) => {
-    const auth = await createAppAuth({
-        id: config.githubApp.GIT_HUB_APP_ID,
-        privateKey: readAsAsync,
-        installationId: installationId,
-        clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
-        clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
-    });
-    const authToken = await auth({ type: "app" });
-    const installationToken = await auth({ type: "installation" });
-    console.log(installationToken);
-    return installationToken;
-}
 
 export default WebHookService;
 

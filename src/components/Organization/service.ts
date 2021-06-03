@@ -1,4 +1,4 @@
-import { IOrganization, OrganizationModel } from './model';
+import { IOrganization, OrganizationModel} from './model';
 import { IOrganizationService } from './interface';
 import { Types } from 'mongoose';
 
@@ -26,7 +26,7 @@ const OrganizationService: IOrganizationService = {
      */
     async findOne(id: string): Promise<IOrganization> {
         try {
-            const organization: IOrganization = await OrganizationModel.findOne({ _id: Types.ObjectId(id) }).populate('users').populate('repositories');
+            const organization: IOrganization = await OrganizationModel.findOne({ _id: Types.ObjectId(id) }).populate('users');
 
             return organization;
         } catch (error) {
@@ -111,6 +111,23 @@ const OrganizationService: IOrganizationService = {
         }
     },
 
+    async updatePayment(organisationId: string, paymentId: string): Promise<any> {
+        try {
+            console.log('find one and update organization');
+            const filter: any = {
+                _id: organisationId,
+            };
+            const update: any = {
+                $addToSet: { payments: [paymentId] },
+            };
+            const updatedOrganization: any = await OrganizationModel.findOneAndUpdate(filter, update);
+
+            return updatedOrganization;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     async updateOrganization(org_id: string, org: any): Promise<any> {
         try {
             console.log('find one and update organization');
@@ -131,6 +148,51 @@ const OrganizationService: IOrganizationService = {
             throw new Error(error.message);
         }
     },
+
+    async updateWallet(organisationId: string, walletId: string): Promise<any> {
+        try {
+            const filter: any = {
+                _id: Types.ObjectId(organisationId),
+            };
+
+            const wallet_id: Types.ObjectId = Types.ObjectId(walletId);
+
+            const update: any = {
+                wallet: wallet_id,
+            };
+
+            return OrganizationModel.findOneAndUpdate(filter, update);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    // async hasPendingDeployment(organisationId: string): Promise<boolean> {
+    //     try {
+    //         const organization = await OrganizationModel.findById(Types.ObjectId(organisationId)).populate({ 
+    //             path: 'repositories',
+    //             populate: {
+    //               path: 'deployments',
+    //               model: 'Deployment'
+    //             } 
+    //          });
+
+    //         if (!organization) throw new Error('organization does not exists');
+
+    //         organization.repositories.forEach((repository: IRepository) => {
+    //             // console.log('Repository found', repository._id);
+    //             repository.deployments.forEach((deployment: IDeployment) => {
+    //                 // console.log('Deployment in repository found', deployment._id);
+    //                 if (deployment.deploymentStatus === 'Pending') return true;
+    //             })
+    //         });
+
+    //         return false;
+
+    //     } catch (error) {
+    //         throw new Error(error.message);
+    //     }
+    // }
 };
 
 export default OrganizationService;

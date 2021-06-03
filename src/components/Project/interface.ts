@@ -1,4 +1,5 @@
-import { IRepository } from '../Organization/model';
+import { IProject } from './model';
+import { Types } from 'mongoose';
 
 /**
  * @export
@@ -11,7 +12,7 @@ export interface IRepositoryService {
      * @returns {Promise<IRepository>}
      * @memberof IRepositoryService
      */
-    findOne(id: string): Promise<IRepository>;
+    findOne(id: string): Promise<IProject>;
 
     /**
      * @param {string} repoName
@@ -19,14 +20,17 @@ export interface IRepositoryService {
      * @returns {Promise < IRepository >}
      * @memberof UserService
      */
-    findRepoByNameAndBranch(repoName: string, branchName: string): Promise<IRepository>;
+    findRepoByNameAndBranch(repoName: string, branchName: string): Promise<IProject>;
 
     /**
      * @param {IOrganization} IOrganizationModel
      * @returns {Promise<IOrganization>}
      * @memberof IRepositoryService
      */
-    insert(repository: IRepository, organizationId: string): Promise<IRepository>;
+    insert(repository: IProject, organizationId: string): Promise<IProject>;
+
+    createOrUpdateExisting(githubUrl: string, orgId: string, depolymentId: Types.ObjectId, branch: string, workspace: string,
+        folderName: string, package_manager: string, build_command: string, publish_dir: string, framework: string): Promise<any>;
 
     findOneAndUpdate(id: string, body: any): Promise<boolean>;
 
@@ -44,8 +48,5 @@ export interface IRepositoryService {
     RemoveSubDomain(id: string, repositoryId: string): Promise<any>;
 
     RemoveDomain(id: string, repositoryId: string): Promise<any>;
-    AddToProxy(repo: IRepository, txId: string, depId: string): Promise<any>;
-
-    addRecordToDnsZone(dnsZoneName: string, recordType: string, dnsName: string, data: string, ttl: number) : Promise<any>;
-    verifyDnsName(dnsName: string): boolean;
+    AddToProxy(repo: IProject, txId: string, depId: string): Promise<any>;
 }

@@ -27,6 +27,10 @@ interface IConfig {
         HOST_ADDRESS: string;
         BASE_ADDRESS: string;
     };
+    paymentApi?: {
+        HOST_ADDRESS: string;
+        BASE_ADDRESS: string;
+    };
     argoReact?: {
         BASE_ADDRESS: string;
     };
@@ -55,23 +59,12 @@ interface IConfig {
         PROTOCOL: string;
         APP_NAME: string;
     },
-    googleCloud: {
-        GOOGLE_APPLICATION_CREDENTIALS: string;
+    cloudflare: {
         ARGO_IPV4: string;
-        dns: {
-            DNS_ZONE_NAME: string;
-            DNS_NAME: string;
-        }
-        records: {
-            A: {
-                RECORD_TYPE: string;
-                TTL: number;
-            },
-            TXT: {
-                RECORD_TYPE: string;
-                TTL: number;
-            }
-        }
+        dns: string;
+        zoneId: string;
+        email: string;
+        key: string;
     }
 
 }
@@ -100,8 +93,12 @@ const development: IConfig = {
         PASSWORD: process.env.SMTP_PASSWORD || 'abcd',
     },
     flaskApi: {
-        HOST_ADDRESS: process.env.INTERNAL_API || "http://localhost:5000/request_build/",
+        HOST_ADDRESS: process.env.INTERNAL_API || "http://localhost:5000/deploy/",
         BASE_ADDRESS: process.env.INTERNAL_API_BASE_ADDRESS || "http://localhost:5000/"
+    },
+    paymentApi: {
+        HOST_ADDRESS: "http://localhost:3001/payments",
+        BASE_ADDRESS: "http://localhost:3001",
     },
     argoReact: {
         BASE_ADDRESS: "http://localhost:3000"
@@ -131,23 +128,12 @@ const development: IConfig = {
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ARGO_APP_LIVE',
     },
-    googleCloud: {
-        GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    cloudflare: {
         ARGO_IPV4: "35.202.158.174",
-        dns: {
-            DNS_ZONE_NAME: "dns-example-zone",
-            DNS_NAME: "dns-example.com.",
-        },
-        records: {
-            A: {
-                RECORD_TYPE: 'a',
-                TTL: 180,
-            },
-            TXT: {
-                RECORD_TYPE: 'txt',
-                TTL: 180,
-            }
-        }
+        dns: 'meetrekpero.xyz',
+        zoneId: '278d3b095d1a88ee08d3370f60753744',
+        email: 'mitrasish@argoapp.live',
+        key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
     }
 };
 
@@ -204,23 +190,12 @@ const production: IConfig = {
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ArGoApp/2.0.0',
     },
-    googleCloud: {
-        GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    cloudflare: {
         ARGO_IPV4: "35.202.158.174",
-        dns: {
-            DNS_ZONE_NAME: "argoapp",
-            DNS_NAME: "argoapp.live.",
-        },
-        records: {
-            A: {
-                RECORD_TYPE: 'a',
-                TTL: 180,
-            },
-            TXT: {
-                RECORD_TYPE: 'txt',
-                TTL: 180,
-            }
-        }
+        dns: 'meetrekpero.xyz',
+        zoneId: '278d3b095d1a88ee08d3370f60753744',
+        email: 'mitrasish@argoapp.live',
+        key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
     }
 };
 const test: IConfig = {
@@ -247,6 +222,10 @@ const test: IConfig = {
     flaskApi: {
         HOST_ADDRESS: process.env.INTERNAL_API || "http://35.194.19.236:5000/request_build",
         BASE_ADDRESS: process.env.INTERNAL_API_BASE_ADDRESS || "http://35.194.19.236:5000/"
+    },
+    paymentApi: {
+        HOST_ADDRESS: "http://localhost:3001/payments",
+        BASE_ADDRESS: "http://localhost:3001/payments",
     },
     argoReact: {
         BASE_ADDRESS: process.env.INTERNAL_FE_BASE_ADDRESS || "http://35.194.19.236:3000/"
@@ -276,23 +255,12 @@ const test: IConfig = {
         PROTOCOL: process.env.ARWEAVE_PROTOCOL || 'https',
         APP_NAME: process.env.ARWEAVE_APP_NAME || 'ARGO_APP_LIVE',
     },
-    googleCloud: {
-        GOOGLE_APPLICATION_CREDENTIALS: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    cloudflare: {
         ARGO_IPV4: "35.202.158.174",
-        dns: {
-            DNS_ZONE_NAME: "meetrekpero",
-            DNS_NAME: "meetrekpero.xyz.",
-        },
-        records: {
-            A: {
-                RECORD_TYPE: 'a',
-                TTL: 180,
-            },
-            TXT: {
-                RECORD_TYPE: 'txt',
-                TTL: 180,
-            }
-        }
+        dns: 'meetrekpero.xyz',
+        zoneId: '278d3b095d1a88ee08d3370f60753744',
+        email: 'mitrasish@argoapp.live',
+        key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
     }
 };
 

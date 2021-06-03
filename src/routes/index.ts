@@ -9,10 +9,10 @@ import RepositoryRouter from './RepositoryRouter';
 import InvitationRouter from './InvitationRouter';
 import WebHookRouter from './WebHookRouter';
 
-import LogsRouter from './LogsRouter';
-
-import RepositoryService from '../components/Repository/service';
+import LogsRouter from './DeploymentsRouter';
+import WalletRouter from './WalletRouter';
 import DomainRouter from './DomainRouter';
+import ConfigurationRouter from './ConfigurationRouter';
 
 let swaggerDoc: Object;
 
@@ -84,6 +84,8 @@ export function init(app: express.Application): void {
 
     app.use('/domain', passportConfig.isAuthenticated, DomainRouter);
     app.use('/logs', LogsRouter);
+    app.use('/wallet', WalletRouter);
+    app.use('/configuration', ConfigurationRouter);
     /**
      * @description
      *  If swagger.json file exists in root folder, shows swagger api description

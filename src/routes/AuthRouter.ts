@@ -9,7 +9,6 @@ import GithubAppService from '../components/GitHubApp/service';
 import console = require('console');
 import { Types } from 'mongoose';
 const { createAppAuth } = require('@octokit/auth-app');
-const { Octokit } = require('@octokit/rest');
 const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');

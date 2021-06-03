@@ -1,179 +1,125 @@
 import { NextFunction, Request, Response } from 'express';
-import HttpError from '../../config/error';
 import config from '../../config/env/index';
-import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { DeploymentModel, IDeployment, RepositoryModel } from '../Organization/model';
-import { IInternalApiDto } from './interface';
+import { IOrganization } from '../Organization/model';
 import DeploymentService from './service';
-import { Types } from 'mongoose';
-import JWTTokenService from '../Session/service';
-import UserService from '../User/service';
 import { IUserModel } from '../User/model';
-import RepositoryService from '../Repository/service';
-const { createAppAuth } = require("@octokit/auth-app");
-const fs = require('fs');
-const path = require('path');
-const fullPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+import OrganizationService from '../Organization/service';
+import GithubAppService from '../GitHubApp/service';
+import AuthService from '../Auth/service';
+import { IRequestBody, IDeploymentBody } from './dto-interfaces';
+import { IProject } from '../Project/model';
+import ProjectService from '../Project/service';
+import ConfigurationService from '../Configuration/service';
+import { IConfiguration } from '../Configuration/model';
+import { IDeployment } from './model';
+import DomainService from '../Domain/service';
+import { IWalletModel } from '../Wallet/model';
+import WalletService from '../Wallet/service';
 
-const readAsAsync = fs.readFileSync(fullPath, 'utf8');
-const io: any = require('socket.io-client');
 
-const Server: any = require('socket.io');
-const emitter: any = new Server();
+export async function deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
+    req.body as IRequestBody;
+    const { organizationId, githubUrl, isPrivate, folderName, owner, installationId, uniqueTopicId, configurationId } = req.body;
 
-const socket: any = io(config.flaskApi.BASE_ADDRESS);
+    const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
+    if (!configuration) {}
+    const { branch, buildCommand, packageManager, publishDir, framework, workspace } = configuration;
 
-/**
- * @export
- * @param {Request} req
- * @param {Response} res
- * @param {NextFunction} next
- * @returns {Promise <void>}
- */
-export async function Deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const user: IUserModel = await AuthService.authUser(req);
+    if(!user) {}
+
+    //TODO check pending deployment
+
+    //TODO check wallet exists for the organization
+    
+    
+    const result: any = await ProjectService.createIfNotExists(githubUrl, organizationId, folderName);
+    const project = result.project;
+    const created = result.created;
+
+    if (created) {
+        try {
+            await DomainService.addDefault(project)
+        } catch(err) {
+            throw new Error(err.message);
+        }
+    }
+
+    const fullGitHubPath: string = await GithubAppService.getFullGithubUrlAndFolderName(githubUrl, isPrivate, branch, installationId, owner, folderName);
+
+    const deployment: IDeployment = await DeploymentService.create(uniqueTopicId, project._id, configurationId);
+    const wallet: IWalletModel = await WalletService.findOne({ organizationId });
+
+    const body: IDeploymentBody = {
+        deploymentId: deployment._id,
+        githubUrl: fullGitHubPath,
+        folderName,
+        topic: !!uniqueTopicId ? uniqueTopicId : 'random-topic-url',
+        framework,
+        packageManager,
+        branch,
+        buildCommand,
+        publishDir,
+        workspace: !!workspace ? workspace : '',
+        is_workspace: !!workspace,
+        logsToCapture: [{ key: 'sitePreview', value: 'https://arweave.net' }, { key: 'fee', value: 'Total price:' }],
+        walletId: !!wallet._id ? wallet._id : 'abcdefghij',
+        walletAddress: !!wallet.address ? wallet.address : '0x123456789'
+    };
+
+    axios.post(`${config.flaskApi.HOST_ADDRESS}`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));
+
+    res.status(200).json({
+        message: 'Deployment is being processed',
+        success: true,
+        topic: uniqueTopicId,
+        deploymentId: deployment._id,
+        projectId: project._id
+    });
+}
+
+export async function deploymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log('DEPLOYMENT FINISHED', req.body);
     try {
-        const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-
-        console.log('I am in deployment', argoDecodedHeaderToken);
-
-        const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-
-        console.log('Deserialized Token In Deplyment: ', deserializedToken);
-
-        console.log(deserializedToken.session_id);
-        const user: IUserModel = await UserService.findOne(deserializedToken.session_id);
-        console.log(user);
-        const uniqueTopicName: string = uuidv4();
-        const splitUrl: string = req.body.github_url.split('/');
-        const folderName: string = splitUrl[splitUrl.length - 1].slice(0, -4);
-        let fullGitHubPath: string;
-        console.log(req.body.isPrivate);
-        if (req.body.isPrivate) {
-            let installationToken = await createInstallationToken(req.body.installationId, req.body.repositoryId);
-            fullGitHubPath = `https://x-access-token:${installationToken.token}@github.com/${req.body.owner}/${folderName}.git`;
-        }
-        else {
-            fullGitHubPath = `${req.body.github_url} --branch ${req.body.branch}`;
-        }
-        const body: IInternalApiDto = {
-            github_url: fullGitHubPath,
-            folder_name: folderName,
-            topic: uniqueTopicName,
-            framework: req.body.framework,
-            package_manager: req.body.package_manager,
-            branch: req.body.branch,
-            build_command: req.body.build_command,
-            publish_dir: req.body.publish_dir,
-            workspace: !!req.body.workspace ? req.body.workspace : '',
-            is_workspace: !!req.body.workspace
-        };
-        const deploymentObj: any = await DeploymentService.createAndDeployRepo(req.body, uniqueTopicName);
-
-        const globalPrice: number = 0;
-        let startTime: any;
-        let totalGasPrice: number = 0;
-        socket.on(uniqueTopicName, async (data: any) => {
-            emitter.emit(uniqueTopicName, data);
-            const depFilter: any = {
-                _id: deploymentObj.deploymentId
-            };
-            const isLink: boolean = data.indexOf(config.arweaveUrl) !== -1;
-            const indexOfTotalPrice = data.indexOf("Total price:");
-            if (!startTime) {
-                startTime = new Date();
-            }
-
-            if (indexOfTotalPrice !== -1) {
-                const splitOne = data.split(":")[1];
-                const splitTwo = splitOne.split("AR");
-                totalGasPrice = splitTwo[0].trim();
-            }
-            let updateDeployment: any;
-
-            if (isLink) {
-                const arweaveLink: string = data.trim();
-                updateDeployment = {
-                    $addToSet: { logs: [{ time: new Date().toString(), log: data }] },
-                    sitePreview: arweaveLink,
-                    deploymentStatus: 'Deployed'
-                };
-                const repoFilter: any = {
-                    _id: Types.ObjectId(deploymentObj.repositoryId)
-                };
-
-                const update: any = {
-                    $set: {
-                        sitePreview: arweaveLink
-                    }
-                };
-                const endDateTime: any = new Date();
-                const totalTime = Math.abs(endDateTime - startTime);
-                const deploymentTime: number = parseInt((totalTime / 1000).toFixed(1));
-                const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-                const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-                await UserService.findOneAndUpdateDepTime(deserializedToken.session_id, deploymentTime, totalGasPrice);
-                const repos = await RepositoryModel.findOneAndUpdate(repoFilter, update);
-                await RepositoryService.AddToProxy(repos, arweaveLink.substr(arweaveLink.lastIndexOf('/') + 1), deploymentObj.deploymentId);
-            }
-            else if (data.includes("Path not found")) {
-                updateDeployment = {
-                    $addToSet: { logs: [{ time: new Date().toString(), log: data }] },
-                    deploymentStatus: 'Failed'
-                };
-                await ReduceBalanceAndUpdateTime(startTime, req, 'Failed');
-            }
-            else {
-                updateDeployment = {
-                    $addToSet: { logs: [{ time: new Date().toString(), log: data }] },
-                    deploymentStatus: 'Pending'
-                };
-            }
-
-            await DeploymentModel.findOneAndUpdate(depFilter, updateDeployment).catch((err: Error) => console.log(err));
+        const { deploymentId, capturedLogs, deploymentStatus, buildTime, logs } = req.body;
+        const sitePreview = Object.keys(capturedLogs).length === 0 ? '' : capturedLogs.sitePreview;
+    
+        await DeploymentService.updateFinishedDeployment(deploymentId, sitePreview, deploymentStatus, buildTime, logs);
+    
+        res.status(201).json({
+            msg: 'successfuly updated',
         });
-        setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err: Error) => console.log(err)), 2000);
-
-        res.status(200).json({
-            success: true,
-            topic: uniqueTopicName,
-            deploymentId: deploymentObj.deploymentId,
-            repositoryId: deploymentObj.repositoryId
-        });
-
-    } catch (error) {
-        next(new HttpError(error.message.status, error.message));
+    } catch(err) {
+        console.log(err.message);
     }
 }
 
-const ReduceBalanceAndUpdateTime = async (startTime: any, req: any, status: string) => {
-    const endDateTime: any = new Date();
-    const totalTime = Math.abs(endDateTime - startTime);
-    const deploymentTime: number = parseInt((totalTime / 1000).toFixed(1));
-    const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-    const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-    await UserService.findOneAndUpdateDepTime(deserializedToken.session_id, deploymentTime, 0, status);
+export async function paymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log('Payment finished', req.body);
+    const { paymentId, deploymentId }: { paymentId: string, deploymentId: string } = req.body;
+
+    const deployment: IDeployment = await DeploymentService.updatePayment(deploymentId, paymentId);
+    res.status(201).json({ msg: 'Payment successfully recorded'});
+
+    if (deployment.status === 'Deployed') {
+        const project: IProject = await ProjectService.findById(deployment.project);
+        DomainService.addToResolver(project._id, deployment.sitePreview);
+    }
 }
 
 
-export async function FindDeploymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const deployment: IDeployment = await DeploymentService.FindOneDeployment(req.params.id);
+export async function findDeploymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    let deployment: any = await DeploymentService.findById(req.params.id);
+
+    if (deployment.deploymentStatus === 'Pending') {
+        const liveLogs = await axios.post(`${config.flaskApi.HOST_ADDRESS}liveLogs`, { deploymentId: deployment._id });
+        deployment.logs = !liveLogs.data.logs ? [] : liveLogs.data.logs;
+    }
+    const paymentDetails = await axios.get(`${config.paymentApi.HOST_ADDRESS}/deployment/${deployment._id}`);
+    deployment._doc.payment = paymentDetails.data;
 
     res.status(200).json({
-        deployment,
-        success: true,
+        deployment
     });
-}
-const createInstallationToken = async (installationId: any, repositoryId: any) => {
-    const auth = await createAppAuth({
-        id: config.githubApp.GIT_HUB_APP_ID,
-        privateKey: readAsAsync,
-        installationId: installationId,
-        clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
-        clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
-    });
-    const authToken = await auth({ type: "app" });
-    const installationToken = await auth({ type: "installation" });
-    console.log(installationToken);
-    return installationToken;
 }

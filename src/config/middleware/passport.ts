@@ -76,7 +76,6 @@ passport.use(new GitlabStrategy(
  * @description Login Required middleware.
  */
 export function isAuthenticated(req: Request, res: Response, next: NextFunction): void {
-    console.log('i am in middleware');
     let jwtToken: any = '';
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -84,11 +83,9 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
     } else if (req.query && req.query.token) {
         jwtToken = req.query.token;
     }
-    console.log(jwtToken);
     let decoded: any = null;
 
     try {
-        console.log('i am decoded', decoded);
         decoded = verify(jwtToken, config.secret);
     } catch (err) {
         // err
