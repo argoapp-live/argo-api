@@ -11,7 +11,7 @@ import { IProject } from '../Project/model';
  * @implements {DomainService}
  */
 
- const client = new Cloudflare({ email: config.cloudflare.email, token: config.cloudflare.key });
+const client = new Cloudflare({ email: config.cloudflare.email, key: config.cloudflare.key });
 
 
 const DomainService = {
