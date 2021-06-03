@@ -4,8 +4,9 @@ import { NextFunction, Request, Response } from 'express';
 import JWTTokenService from '../Session/service';
 import { IArgoSessionModel } from '../Session/model';
 import GithubAppService from '../GitHubApp/service';
-import ProjectService from './project-service';
+import ProjectService from './service';
 import DeploymentService from '../Deployment/service';
+import DomainService from '../Domain/service';
 const { Octokit } = require("@octokit/core");
 
 /**
@@ -17,16 +18,19 @@ const { Octokit } = require("@octokit/core");
  */
 export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const repository: any = await ProjectService.findById(req.params.id);
-        if(repository) {
+        const project: any = await ProjectService.findById(req.params.id);
+        if(project) {
             const latestDep = await DeploymentService.findLatest(req.params.id)
-            repository._doc.configuration = latestDep.configuration;
+            project._doc.configuration = latestDep.configuration;
             const deployments = await DeploymentService.find({ project: req.params.id })
-            repository._doc.deployments = deployments;
-            repository._doc.domains = [];
-            repository._doc.subdomains = [];
+            project._doc.deployments = deployments;
+            const domains = await DomainService.find({ projectId: req.params.id });
+            project._doc.domains = domains.filter(domain => domain.type === 'domain');
+            project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
+            // repository._doc.domains = [];
+            // repository._doc.subdomains = [];
         }
-        res.status(200).json(repository);
+        res.status(200).json(project);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }

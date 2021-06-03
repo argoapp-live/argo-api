@@ -16,7 +16,6 @@ export interface IOrganization extends Document {
         username: String;
     };
     users: [IUserModel['_id']];
-    wallet: IWalletModel['_id'],
 }
 
 const OrganizationSchema: Schema = new Schema(
@@ -31,14 +30,11 @@ const OrganizationSchema: Schema = new Schema(
                 type: Schema.Types.ObjectId,
                 ref: 'UserModel',
             },
-        ],
-        wallet: {
-            type: Schema.Types.ObjectId,
-            ref: 'WalletModel',
-        },
+        ]
     },
     {
         collection: 'organizations',
+        timestamps: true,
         versionKey: false,
     }
 );

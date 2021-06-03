@@ -1,10 +1,9 @@
 import  DomainModel, { IDomain } from './model';
 import { v4 as uuidv4 } from 'uuid';
 import * as dns from 'dns';
-const Cloudflare = require('cloudflare');
+import * as Cloudflare from 'cloudflare';
 import config from '../../config/env';
 import { Types } from 'mongoose';
-import axios from 'axios';
 import { IProject } from '../Project/model';
 
 /**
@@ -66,16 +65,19 @@ const DomainService = {
 
     async update(id: string, updateQuery: Partial<IDomain>): Promise<IDomain> {
         try {
-            if (updateQuery.verified) throw new Error('now valid query'); 
+            if (updateQuery.verified && updateQuery.type && updateQuery.argoKey) throw new Error('Not valid query'); 
+            if(updateQuery.name) {
+                updateQuery.verified = false
+            }
             return DomainModel.updateOne({ _id: id }, updateQuery);
         } catch (error) {
             throw new Error(error.message);
         }
     },
 
-    async remove(id: string): Promise<IDomain> {
+    async remove(id: string): Promise<void> {
         try {
-            return DomainService.remove(id);
+            return DomainModel.remove({_id: id});
         } catch (error) {
             throw new Error(error.message);
         }
@@ -83,7 +85,7 @@ const DomainService = {
 
     async find(query: Partial<IDomain>): Promise<Array<IDomain>> {
         try {
-            return DomainService.find(query);
+            return DomainModel.find(query);
         } catch (error) {
             throw new Error(error.message);
         }
@@ -131,17 +133,17 @@ const DomainService = {
             uuids: latestDomains.map((latestDomain: IDomain) => latestDomain.argoKey)
         }
 
-        const response = await axios.post(`${config.domainResolver.BASE_ADDRESS}/v1/add-domain`, body, {
-            headers: {
-                'Content-Type': 'application/json; charset=utf-8',
-                Authorization: `Bearer ${config.domainResolver.SECRET}`,
-            }
-        });
+        // const response = await axios.post(`${config.domainResolver.BASE_ADDRESS}/v1/add-domain`, body, {
+        //     headers: {
+        //         'Content-Type': 'application/json; charset=utf-8',
+        //         Authorization: `Bearer ${config.domainResolver.SECRET}`,
+        //     }
+        // });
 
-        if (response.status === 200) {
+        // if (response.status === 200) {
             const ids: Array<Types.ObjectId> = latestDomains.map((latestDomain: IDomain) => latestDomain._id);
             await DomainModel.updateMany({ _id: { $in: ids }}, { link });
-        }
+        // }
     }
 };
 

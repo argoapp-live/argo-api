@@ -8,7 +8,10 @@ import UserService from '../User/service';
 import axios from 'axios';
 import config from '../../config/env';
 import DeploymentService from '../Deployment/service';
-import ProjectService from '../Project/project-service';
+import ProjectService from '../Project/service';
+import DomainService from '../Domain/service';
+import WalletService from '../Wallet/service';
+import { IWalletModel } from '../Wallet/model';
 
 /**
  * @export
@@ -42,8 +45,14 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
             // TODO return null
         }
 
+        const wallet: IWalletModel = await WalletService.findOne({ organizationId: organization._id });
+        organization._doc.wallet = wallet;
+
         const projects = await ProjectService.find({ organizationId: organization._id })
-        organization._doc.projects = projects;
+        const promises = projects.map((project: any) => {
+            return _populateProject(project);
+        })
+        organization._doc.projects = await Promise.all(promises);
 
         if(organization.wallet) {
             const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
@@ -70,6 +79,15 @@ async function _populatePayment(payment: any): Promise<any> {
     payment.buildTime = deployment.buildTime;
     payment.projectName = deployment.project.name;
     return payment;
+}
+
+async function _populateProject(project: any): Promise<any> {
+    const deployment = await DeploymentService.findLatestDeployed(project._id);
+    project._doc.sitePreview = deployment ? deployment.sitePreview : undefined;
+    const domains = await DomainService.find({ projectId: project._id });
+    project._doc.domains = domains.filter(domain => domain.type === 'domain');
+    project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
+    return project;
 }
 
 /**

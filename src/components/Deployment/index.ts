@@ -9,11 +9,13 @@ import GithubAppService from '../GitHubApp/service';
 import AuthService from '../Auth/service';
 import { IRequestBody, IDeploymentBody } from './dto-interfaces';
 import { IProject } from '../Project/model';
-import ProjectService from '../Project/project-service';
+import ProjectService from '../Project/service';
 import ConfigurationService from '../Configuration/service';
 import { IConfiguration } from '../Configuration/model';
 import { IDeployment } from './model';
 import DomainService from '../Domain/service';
+import { IWalletModel } from '../Wallet/model';
+import WalletService from '../Wallet/service';
 
 
 export async function deploy(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -38,7 +40,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
 
     if (created) {
         try {
-            await DomainService.addDefault(project.name)
+            await DomainService.addDefault(project)
         } catch(err) {
             throw new Error(err.message);
         }
@@ -47,7 +49,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
     const fullGitHubPath: string = await GithubAppService.getFullGithubUrlAndFolderName(githubUrl, isPrivate, branch, installationId, owner, folderName);
 
     const deployment: IDeployment = await DeploymentService.create(uniqueTopicId, project._id, configurationId);
-    const organization: IOrganization = await OrganizationService.findOne(organizationId);
+    const wallet: IWalletModel = await WalletService.findOne({ organizationId });
 
     const body: IDeploymentBody = {
         deploymentId: deployment._id,
@@ -62,8 +64,8 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         workspace: !!workspace ? workspace : '',
         is_workspace: !!workspace,
         logsToCapture: [{ key: 'sitePreview', value: 'https://arweave.net' }, { key: 'fee', value: 'Total price:' }],
-        walletId: !!organization.wallet._id ? organization.wallet._id : 'abcdefghij',
-        walletAddress: !!organization.wallet.address ? organization.wallet.address : '0x123456789'
+        walletId: !!wallet._id ? wallet._id : 'abcdefghij',
+        walletAddress: !!wallet.address ? wallet.address : '0x123456789'
     };
 
     axios.post(`${config.flaskApi.HOST_ADDRESS}`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));

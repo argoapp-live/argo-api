@@ -1,24 +1,25 @@
-
-import * as connections from '../../config/connection/connection';
-import { Document, Schema } from 'mongoose';
+import * as connections from "../../config/connection/connection";
+import { Document, Schema } from "mongoose";
+import { IOrganization } from "../Organization/model";
 
 export interface IWalletModel extends Document {
-    address: string;
-    updateDate: Date;
-    createDate: Date;
+  address: string;
+  organizationId:  IOrganization['_id'];
 }
 
-const WalletSchema: Schema = new Schema({
+const WalletSchema: Schema = new Schema(
+  {
     address: { type: String },
-    createDate: {
-        type: Date, default: new Date()
-    },
-    updateDate: {
-        type: Date, default: new Date()
-    },
-}, {
-    collection: 'wallets',
-    versionKey: false
-});
+    organizationId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Organization',
+    }
+  },
+  {
+    collection: "wallets",
+    timestamps: true,
+    versionKey: false,
+  }
+);
 
-export default connections.db.model<IWalletModel>('WalletModel', WalletSchema);
+export default connections.db.model<IWalletModel>("WalletModel", WalletSchema);

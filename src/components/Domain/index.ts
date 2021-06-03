@@ -4,9 +4,32 @@ import AuthService from '../Auth/service';
 import { IUserModel } from '../User/model';
 import { IDomain } from './model';
 import DomainService from './service';
-import ProjectService from '../Project/project-service';
+import ProjectService from '../Project/service';
 
 export async function create(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+    try {
+        const user: IUserModel = await AuthService.authUser(req);
+        console.log(user)
+        if (!user) throw new Error('unauthorized user');    
+        
+        // if (!is<IConfiguration>(req.body)) throw new Error('not valid request body');
+        const { projectId } = req.body;
+        const projectExists = await ProjectService.findById(projectId);
+        if (!projectExists) throw new Error('Project does not exists');
+
+        const domain: IDomain = await DomainService.insert(req.body);
+        res.status(201).json({success: true, domain});
+
+    } catch (error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
+
+export async function update(
   req: Request,
   res: Response,
   next: NextFunction
@@ -20,8 +43,8 @@ export async function create(
         const projectExists = await ProjectService.findById(projectId);
         if (!projectExists) throw new Error('Project does not exists');
 
-        const domain: IDomain = await DomainService.insert(req.body);
-        res.status(201).json(domain);
+        const domain: IDomain = await DomainService.update(req.params.id, req.body);
+        res.status(201).json({success: true, domain});
 
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
@@ -95,8 +118,8 @@ export async function remove(
     next: NextFunction
   ): Promise<void> {
     try {
-        const removedDomain: IDomain = await DomainService.remove(req.body.id);
-        res.status(200).json(removedDomain);
+        await DomainService.remove(req.params.id);
+        res.status(200).json({success: true });
 
     } catch (error) {
         next(new HttpError(error.message.status, error.message));

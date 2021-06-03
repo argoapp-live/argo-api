@@ -7,17 +7,32 @@ import { Types } from 'mongoose';
  * @implements {IWalletService}
  */
 const WalletService: IWalletService = {
-    async findOne(id: string): Promise<IWalletModel> {
+    async findById(id: string): Promise<IWalletModel> {
         try {
-            return WalletModel.findOne({ _id: Types.ObjectId(id) });
+            return WalletModel.findById(id);
         } catch (error) {
             throw new Error(error.message);
         }
     },
-    async insert(address: string): Promise<IWalletModel> {
+    async findOne(query: Partial<IWalletModel>): Promise<IWalletModel> {
+        try {
+            return WalletModel.findOne(query);
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+    async insert(address: string, organizationId: string): Promise<IWalletModel> {
         try {
             //TODO validate body
-            return WalletModel.create({ address });
+            return WalletModel.create({ address, organizationId });
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+    async remove(id: string): Promise<void> {
+        try {
+            //TODO validate body
+            return WalletModel.remove({ _id: id });
         } catch (error) {
             throw new Error(error.message);
         }
