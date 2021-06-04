@@ -67,7 +67,6 @@ export async function GetUserRepos(req: Request, res: Response, next: NextFuncti
 
         const argoSession: IArgoSessionModel = await JWTTokenService.FindOneBySessionId(decodeToken.session_id);
 
-        console.log(argoSession);
         const octokit = new Octokit({ auth: `${argoSession.access_token}` });
         const response = await octokit.request("GET /user/repos", {
             type: "all",
