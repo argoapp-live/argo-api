@@ -30,11 +30,13 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
     //TODO check pending deployment
 
     //TODO check wallet exists for the organization
-    
+
     
     const result: any = await ProjectService.createIfNotExists(githubUrl, organizationId, folderName);
     const project = result.project;
     const created = result.created;
+
+    console.log(project);
 
     if (created) {
         try {

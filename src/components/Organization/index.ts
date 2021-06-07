@@ -15,6 +15,7 @@ import { IWalletModel } from '../Wallet/model';
 import { IProject } from '../Project/model';
 import { Types } from 'mongoose';
 import { IDomain } from '../Domain/model';
+import { IDeployment } from '../Deployment/model';
 
 /**
  * @export
@@ -25,9 +26,8 @@ import { IDomain } from '../Domain/model';
  */
 export async function findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const users: IOrganization[] = await OrganizationService.findAll();
-
-        res.status(200).json(users);
+        const organizations: IOrganization[] = await OrganizationService.find({});
+        res.status(200).json(organizations);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
@@ -43,7 +43,6 @@ export async function findAll(req: Request, res: Response, next: NextFunction): 
 export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         let organization: any = await OrganizationService.findOne(req.params.id);
-
         if(!organization) {
             // TODO return null
         }
@@ -52,26 +51,28 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
         organization._doc.wallet = wallet;
 
         const projects: Array<IProject> = await ProjectService.find({ organizationId: organization._id });
+
         const projectIds: Array<Types.ObjectId> = projects.map((project: IProject) => {
             return project._id;
         });
 
         const domains: Array<IDomain> = await DomainService.find({ projectId: { "$in" : projectIds }});
-
-        const promises = projects.map((project: any) => {
+        organization._doc.projects = projects.map((project: any) => {
             return _populateProject(project, domains);
-        })
-        organization._doc.projects = await Promise.all(promises);
+        });
 
         if(organization.wallet) {
             const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
             if (!payments.data) {
                 organization._doc.payments = [];
             } else {
-                const promises = payments.data.map((payment: any) => {
-                    return _populatePayment(payment);
+                const deploymentIds = payments.data.map((payment: any) => {
+                    payment.deploymentId;
+                });
+                const deployments: Array<IDeployment> = await DeploymentService.find({ _id: { "$in" : deploymentIds }});
+                organization._doc.payments = payments.data.map((payment: any) => {
+                    return _populatePayment(payment, deployments);
                 })
-                organization._doc.payments = await Promise.all(promises);
             }
         }
 
@@ -82,8 +83,10 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
     }
 }
 
-async function _populatePayment(payment: any): Promise<any> {
-    const deployment = await DeploymentService.findById(payment.deploymentId);
+async function _populatePayment(payment: any, deployments: Array<IDeployment>): Promise<any> {
+    const deployment: any = deployments.filter((deployment) => {
+        deployment.paymentId.toString() === payment._id.toString();
+    })
     payment.buildTime = deployment.buildTime;
     payment.projectName = deployment.project.name;
     return payment;

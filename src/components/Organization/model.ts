@@ -40,5 +40,4 @@ const OrganizationSchema: Schema = new Schema(
 );
 
 export const OrganizationModel: Model<IOrganization> = connections.db.model<IOrganization>('Organization', OrganizationSchema);
-// export const RepositoryModel: Model<IRepository> = connections.db.model<IRepository>('Repository', RepositorySchema);
 

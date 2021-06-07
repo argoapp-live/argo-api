@@ -16,9 +16,8 @@ const ProjectService: any = {
                 path: 'latestDeployment',
                 populate: {
                   path: 'configuration',
-                  model: 'ConfigurationModel'
                 } 
-             });
+             })
         } catch(err) {
             throw new Error(err.message);
         }
@@ -30,7 +29,6 @@ const ProjectService: any = {
                 path: 'latestDeployment',
                 populate: {
                   path: 'configuration',
-                  model: 'ConfigurationModel'
                 } 
              });
         } catch(err) {
@@ -44,7 +42,6 @@ const ProjectService: any = {
                 path: 'latestDeployment',
                 populate: {
                   path: 'configuration',
-                  model: 'ConfigurationModel'
                 } 
              });
         } catch(err) {
@@ -56,7 +53,7 @@ const ProjectService: any = {
         try {
             const existingProject = await ProjectModel.findOne({ githubUrl, organizationId });
             if(!existingProject) {
-                const project = await ProjectModel.create({ name, githubUrl, organizationId })
+                const project = await ProjectModel.create({ name, githubUrl, organizationId });
                 return { project, created: true };
             }
             return { project: existingProject, created: false };
