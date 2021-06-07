@@ -46,10 +46,4 @@ export interface IUserService {
 
     updateUserOrganization(orgId: string, userId: string): Promise<IUserModel>;
 
-    updateWalletBalance(id: string, wallet: IArgoWallet): Promise<any>;
-
-    updateWalletAddress(id: string, wallet: IArgoWallet): Promise<any>;
-    reduceWalletBalance(id: string, deduction: number): Promise<any>;
-
-    findOneAndUpdateDepTime(id: string, deploymentTime: number, gasPrice: number, status?: string): Promise<boolean>;
 }
