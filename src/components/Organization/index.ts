@@ -12,6 +12,9 @@ import ProjectService from '../Project/service';
 import DomainService from '../Domain/service';
 import WalletService from '../Wallet/service';
 import { IWalletModel } from '../Wallet/model';
+import { IProject } from '../Project/model';
+import { Types } from 'mongoose';
+import { IDomain } from '../Domain/model';
 
 /**
  * @export
@@ -45,30 +48,23 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
             // TODO return null
         }
 
-        console.time("Testong org")
         const wallet: IWalletModel = await WalletService.findOne({ organizationId: organization._id });
         organization._doc.wallet = wallet;
-        console.timeEnd("Testong org")
 
-        console.time("Testong org1")
-        const projects = await ProjectService.find({ organizationId: organization._id })
-        console.timeEnd("Testong org1")
+        const projects: Array<IProject> = await ProjectService.find({ organizationId: organization._id });
+        const projectIds: Array<Types.ObjectId> = projects.map((project: IProject) => {
+            return project._id;
+        });
 
-        console.time("Testong org2")
+        const domains: Array<IDomain> = await DomainService.find({ projectId: { "$in" : projectIds }});
+
         const promises = projects.map((project: any) => {
-            return _populateProject(project);
+            return _populateProject(project, domains);
         })
         organization._doc.projects = await Promise.all(promises);
-        console.timeEnd("Testong org2")
-
 
         if(organization.wallet) {
-        console.time("Testong org3")
             const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
-        console.timeEnd("Testong org3")
-
-        console.time("Testong org4")
-
             if (!payments.data) {
                 organization._doc.payments = [];
             } else {
@@ -77,12 +73,8 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
                 })
                 organization._doc.payments = await Promise.all(promises);
             }
-        console.timeEnd("Testong org4")
-
-            
         }
 
-        console.timeEnd("Testong org")
 
         res.status(200).json(organization);
     } catch (error) {
@@ -97,12 +89,12 @@ async function _populatePayment(payment: any): Promise<any> {
     return payment;
 }
 
-async function _populateProject(project: any): Promise<any> {
-    const deployment = await DeploymentService.findLatestDeployed(project._id);
-    project._doc.sitePreview = deployment ? deployment.sitePreview : undefined;
-    const domains = await DomainService.find({ projectId: project._id });
-    project._doc.domains = domains.filter(domain => domain.type === 'domain');
-    project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
+async function _populateProject(project: any, domains: Array<IDomain>): Promise<any> {
+    const projectDomains: Array<IDomain> = domains.filter((domain: IDomain) => {
+        domain.projectId.toString() === project._id.toString();
+    });
+    project._doc.domains = projectDomains.filter(domain => domain.type === 'domain');
+    project._doc.subdomains = projectDomains.filter(domain => domain.type === 'subdomain');
     return project;
 }
 

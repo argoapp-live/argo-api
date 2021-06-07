@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import config from '../../config/env/index';
 import axios from 'axios';
-import { IOrganization } from '../Organization/model';
 import DeploymentService from './service';
 import { IUserModel } from '../User/model';
-import OrganizationService from '../Organization/service';
 import GithubAppService from '../GitHubApp/service';
 import AuthService from '../Auth/service';
 import { IRequestBody, IDeploymentBody } from './dto-interfaces';
@@ -104,6 +102,7 @@ export async function paymentFinished(req: Request, res: Response, next: NextFun
 
     if (deployment.status === 'Deployed') {
         const project: IProject = await ProjectService.findById(deployment.project);
+        await ProjectService.setLatestDeployment(project._id, deployment._id);
         DomainService.addToResolver(project._id, deployment.sitePreview);
     }
 }

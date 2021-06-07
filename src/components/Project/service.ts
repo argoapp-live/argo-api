@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { ProjectModel, IProject } from "./model"; 
 
 const ProjectService: any = {
@@ -11,7 +12,7 @@ const ProjectService: any = {
 
     async findOne(query: Partial<IProject>): Promise<IProject> {
         try {
-            return ProjectModel.findOne(query);
+            return ProjectModel.findOne(query).populate('latestDeployment');
         } catch(err) {
             throw new Error(err.message);
         }
@@ -19,7 +20,7 @@ const ProjectService: any = {
 
     async find(query: Partial<IProject>): Promise<IProject[]> {
         try {
-            return ProjectModel.find(query);
+            return ProjectModel.find(query).populate('latestDeployment');
         } catch(err) {
             throw new Error(err.message);
         }
@@ -27,7 +28,7 @@ const ProjectService: any = {
 
     async findById(id: string): Promise<IProject> {
         try {
-            return ProjectModel.findById(id);
+            return (await ProjectModel.findById(id)).populate('latestDeployment');
         } catch(err) {
             throw new Error(err.message);
         }
@@ -41,6 +42,14 @@ const ProjectService: any = {
                 return { project, created: true };
             }
             return { project: existingProject, created: false };
+        } catch(err) {
+            throw new Error(err.message);
+        }
+    },
+
+    async setLatestDeployment(id: Types.ObjectId, deploymentId: Types.ObjectId) {
+        try {
+            return ProjectModel.updateOne({ _id: id }, { latestDeplotment: deploymentId })
         } catch(err) {
             throw new Error(err.message);
         }
