@@ -12,7 +12,13 @@ const ProjectService: any = {
 
     async findOne(query: Partial<IProject>): Promise<IProject> {
         try {
-            return ProjectModel.findOne(query).populate('latestDeployment');
+            return ProjectModel.findOne(query).populate({ 
+                path: 'latestDeployment',
+                populate: {
+                  path: 'configuration',
+                  model: 'ConfigurationModel'
+                } 
+             });
         } catch(err) {
             throw new Error(err.message);
         }
@@ -20,7 +26,13 @@ const ProjectService: any = {
 
     async find(query: Partial<IProject>): Promise<IProject[]> {
         try {
-            return ProjectModel.find(query).populate('latestDeployment');
+            return ProjectModel.find(query).populate({ 
+                path: 'latestDeployment',
+                populate: {
+                  path: 'configuration',
+                  model: 'ConfigurationModel'
+                } 
+             });
         } catch(err) {
             throw new Error(err.message);
         }
@@ -28,7 +40,13 @@ const ProjectService: any = {
 
     async findById(id: string): Promise<IProject> {
         try {
-            return (await ProjectModel.findById(id)).populate('latestDeployment');
+            return (await ProjectModel.findById(id)).populate({ 
+                path: 'latestDeployment',
+                populate: {
+                  path: 'configuration',
+                  model: 'ConfigurationModel'
+                } 
+             });
         } catch(err) {
             throw new Error(err.message);
         }
