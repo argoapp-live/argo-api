@@ -83,7 +83,7 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
     }
 }
 
-async function _populatePayment(payment: any, deployments: Array<IDeployment>): Promise<any> {
+function _populatePayment(payment: any, deployments: Array<IDeployment>): any {
     const deployment: any = deployments.filter((deployment) => {
         deployment.paymentId.toString() === payment._id.toString();
     })
@@ -92,7 +92,7 @@ async function _populatePayment(payment: any, deployments: Array<IDeployment>): 
     return payment;
 }
 
-async function _populateProject(project: any, domains: Array<IDomain>): Promise<any> {
+function _populateProject(project: any, domains: Array<IDomain>): any {
     const projectDomains: Array<IDomain> = domains.filter((domain: IDomain) => {
         domain.projectId.toString() === project._id.toString();
     });
