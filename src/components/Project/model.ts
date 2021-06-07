@@ -25,7 +25,7 @@ const ProjectSchema: Schema = new Schema(
         },
         latestDeployment: {
             type: Schema.Types.ObjectId,
-            ref: 'Deployment',
+            ref: 'DeploymentModel',
         },
     },
     {
