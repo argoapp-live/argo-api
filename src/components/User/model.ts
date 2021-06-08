@@ -166,7 +166,7 @@ const ProviderSchema: Schema = new Schema({
  *        $ref: '#/components/schemas/UserSchema'
  */
 const UserSchema: Schema = new Schema({
-    provider_profile: {
+    providerProfile: {
         id: { type: Number, unique: true },
         username: String,
         avatar_url: String,
@@ -188,27 +188,14 @@ const UserSchema: Schema = new Schema({
         followers: Number,
         following: Number
     },
-    argo_profile: {
+    argoProfile: {
         username: String,
         avatar: String,
         name: String,
         email: String,
         is_active: { type: Boolean, default: true }
     },
-    argo_wallet: {
-        wallet_address: String,
-        wallet_balance: Number
-    },
-    totalDepTime: Number,
     provider: ProviderSchema,
-    dateOfEntry: {
-        type: Date,
-        default: new Date()
-    },
-    lastUpdated: {
-        type: Date,
-        default: new Date()
-    },
     organizations: [
         {
             type: Schema.Types.ObjectId,
@@ -216,7 +203,8 @@ const UserSchema: Schema = new Schema({
         }
     ]
 }, {
-    collection: 'users',
+    collection: 'new-users',
+    timestamps: true,
     versionKey: false
 });
 
