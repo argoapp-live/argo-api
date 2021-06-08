@@ -38,7 +38,7 @@ const ProjectService: any = {
 
     async findById(id: string): Promise<IProject> {
         try {
-            return (await ProjectModel.findById(id)).populate({ 
+            return ProjectModel.findById(id).populate({ 
                 path: 'latestDeployment',
                 populate: {
                   path: 'configuration',

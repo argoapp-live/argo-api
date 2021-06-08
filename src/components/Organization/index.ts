@@ -61,21 +61,18 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
             return _populateProject(project, domains);
         });
 
-        if(organization.wallet) {
-            const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${organization.wallet._id}`);
+        if(wallet) {
+            const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${wallet._id}`);
             if (!payments.data) {
                 organization._doc.payments = [];
             } else {
-                const deploymentIds = payments.data.map((payment: any) => {
-                    payment.deploymentId;
-                });
+                const deploymentIds = payments.data.map((payment: any) => payment.deploymentId);
                 const deployments: Array<IDeployment> = await DeploymentService.find({ _id: { "$in" : deploymentIds }});
                 organization._doc.payments = payments.data.map((payment: any) => {
                     return _populatePayment(payment, deployments);
                 })
             }
         }
-
 
         res.status(200).json(organization);
     } catch (error) {
@@ -84,18 +81,14 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
 }
 
 function _populatePayment(payment: any, deployments: Array<IDeployment>): any {
-    const deployment: any = deployments.filter((deployment) => {
-        deployment.paymentId.toString() === payment._id.toString();
-    })
+    const deployment: any = deployments.filter((deployment) => deployment.paymentId.toString() === payment._id.toString())[0]
     payment.buildTime = deployment.buildTime;
     payment.projectName = deployment.project.name;
     return payment;
 }
 
 function _populateProject(project: any, domains: Array<IDomain>): any {
-    const projectDomains: Array<IDomain> = domains.filter((domain: IDomain) => {
-        domain.projectId.toString() === project._id.toString();
-    });
+    const projectDomains: Array<IDomain> = domains.filter((domain: IDomain) => domain.projectId.toString() === project._id.toString());
     project._doc.domains = projectDomains.filter(domain => domain.type === 'domain');
     project._doc.subdomains = projectDomains.filter(domain => domain.type === 'subdomain');
     return project;

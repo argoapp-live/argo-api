@@ -61,10 +61,6 @@ router.get(
                 email: req.user.profile.emails?.filter((email: any) => email.primary || email.primary === undefined)[0].value,
                 name: req.user.profile.displayName
             },
-            argo_wallet: {
-                wallet_address: '',
-                wallet_balance: 0
-            }
         });
 
         const argoSessionDto: IArgoSessionDto = {
@@ -135,10 +131,6 @@ router.get(
                 email: req.user.profile._json.email,
                 name: req.user.profile._json.name
             },
-            argo_wallet: {
-                wallet_address: '',
-                wallet_balance: 0
-            }
         });
 
         const argoSessionDto: IArgoSessionDto = {
@@ -211,7 +203,6 @@ router.get('/github/app/callback', async (req, res) => {
     });
     const userInfo = await instanceAxios.get();
 
-    console.log(userInfo.data.id, 'githubId');
     await GithubAppService.findAndCreate(userInfo.data.id, authToken.token, +req.query.installation_id);
     res.redirect(`${config.default.argoReact.BASE_ADDRESS}/github/callback/app`);
 });

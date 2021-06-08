@@ -5,7 +5,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import AuthRouter from './AuthRouter';
 import ProfileRouter from './ProfileRouter';
 import OrganizationRouter from './OrganizationRouter';
-import RepositoryRouter from './RepositoryRouter';
+import ProjectRouter from './ProjectRouter';
 import InvitationRouter from './InvitationRouter';
 import WebHookRouter from './WebHookRouter';
 
@@ -56,7 +56,7 @@ export function init(app: express.Application): void {
     *  Also, check if user authenticated
     * @constructs
     */
-    app.use('/repository', passportConfig.isAuthenticated, RepositoryRouter);
+    app.use('/project', passportConfig.isAuthenticated, ProjectRouter);
 
     /**
     * @description

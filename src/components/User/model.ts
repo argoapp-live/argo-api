@@ -54,7 +54,6 @@ export interface IUser {
     provider_profile: IProfile;
     argo_profile: IArgoUser;
     provider: IProvider;
-    argo_wallet: IArgoWallet;
     dateOfEntry?: Date;
     lastUpdated?: Date;
     organizations?: [string[]];
@@ -111,11 +110,6 @@ export interface IArgoUserModel extends Document {
     email: string;
 }
 
-export interface IArgoWalletModel extends Document {
-    wallet_address: string;
-    wallet_balance: number;
-}
-
 /**
  * @export
  * @interface IUserModel
@@ -124,12 +118,10 @@ export interface IArgoWalletModel extends Document {
 export interface IUserModel extends Document {
     provider_profile: IProfileModel;
     argo_profile: IArgoUser;
-    argo_wallet: IArgoWalletModel;
     provider: IProviderModel;
     dateOfEntry?: Date;
     lastUpdated?: Date;
     organizations?: IOrganization[];
-    totalDepTime?: number;
 }
 
 const ProviderSchema: Schema = new Schema({

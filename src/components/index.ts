@@ -1,7 +1,7 @@
 import * as AuthComponent from './Auth';
 import * as UserComponent from './User';
 import * as OrganizationComponent from './Organization';
-import * as RepositoryComponent from './Project';
+import * as ProjectComponent from './Project';
 import * as InvitationComponent from './Invite';
 import * as WebHookComponent from './WebHook';
 import * as DeploymentComponent from './Deployment';
@@ -14,7 +14,7 @@ export {
     ConfigurationComponent,
     UserComponent,
     OrganizationComponent,
-    RepositoryComponent,
+    ProjectComponent,
     InvitationComponent,
     DeploymentComponent,
     WebHookComponent,
