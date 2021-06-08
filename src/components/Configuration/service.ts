@@ -14,7 +14,6 @@ const ConfigurationService = {
 
     async findOne(query: Partial<IConfiguration>): Promise<IConfiguration> {
         try {
-            console.log(query);
             return ConfigurationModel.findOne(query);
         } catch (error) {
             throw new Error(error.message);

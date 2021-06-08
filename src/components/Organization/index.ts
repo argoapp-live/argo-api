@@ -82,8 +82,8 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
 
 function _populatePayment(payment: any, deployments: Array<IDeployment>): any {
     const deployment: any = deployments.filter((deployment) => deployment.paymentId.toString() === payment._id.toString())[0]
-    payment.buildTime = deployment.buildTime;
-    payment.projectName = deployment.project.name;
+    payment.buildTime = deployment ? deployment.buildTime : 0;
+    payment.projectName = deployment? deployment.project.name: '';
     return payment;
 }
 

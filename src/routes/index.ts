@@ -33,59 +33,18 @@ try {
 export function init(app: express.Application): void {
     const router: express.Router = express.Router();
 
-    /**
-     * @description
-     *  Forwards any requests to the /v1/users URI to our UserRouter
-     *  Also, check if user authenticated
-     * @constructs
-     */
     app.use('/profile', passportConfig.isAuthenticated, ProfileRouter);
-
-    /**
-    * @description
-    *  Forwards any requests to the /org URI to our UserRouter
-    *  Also, check if user authenticated
-    * @constructs
-    */
-
     app.use('/organization', passportConfig.isAuthenticated, OrganizationRouter);
-
-    /**
-    * @description
-    *  Forwards any requests to the /org URI to our UserRouter
-    *  Also, check if user authenticated
-    * @constructs
-    */
     app.use('/project', passportConfig.isAuthenticated, ProjectRouter);
-
-    /**
-    * @description
-    *  Forwards any requests to the /webhook URI
-    *  Also, check if user authenticated
-    * @constructs
-    */
     app.use('/webhook', WebHookRouter);
-
-    // app.use('/logs', LogsRouter);
-
-
-    /**
-     * @description Forwards any requests to the /auth URI to our AuthRouter
-     * @constructs
-     */
     app.use('/auth', AuthRouter);
-
-    /**
-    * @description Forwards any requests to the /invite URI to our AuthRouter
-    * @constructs
-    */
     app.use('/invite', passportConfig.isAuthenticated, InvitationRouter);
-
-
     app.use('/domain', passportConfig.isAuthenticated, DomainRouter);
     app.use('/logs', LogsRouter);
     app.use('/wallet', WalletRouter);
     app.use('/configuration', ConfigurationRouter);
+
+    
     /**
      * @description
      *  If swagger.json file exists in root folder, shows swagger api description

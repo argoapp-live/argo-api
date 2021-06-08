@@ -50,7 +50,6 @@ export async function removeWallet(
             signature
         }
         const verified = await axios.post(`${config.paymentApi.HOST_ADDRESS}/wallet/verify-owner`, verifyBody);
-        console.log("Owner check", verified.data)
         if(verified.data) {   
             await WalletService.remove(id);
             res.status(200).json({success: true});

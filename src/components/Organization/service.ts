@@ -96,7 +96,6 @@ const OrganizationService: IOrganizationService = {
 
     async findOneAndUpdate(Id: string, userId: string): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: Id,
             };
@@ -113,7 +112,6 @@ const OrganizationService: IOrganizationService = {
 
     async updatePayment(organisationId: string, paymentId: string): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: organisationId,
             };
@@ -130,7 +128,6 @@ const OrganizationService: IOrganizationService = {
 
     async updateOrganization(org_id: string, org: any): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: Types.ObjectId(org_id),
             };

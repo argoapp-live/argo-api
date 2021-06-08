@@ -1,11 +1,8 @@
 import * as Joi from 'joi';
-import UserModel, { IArgoUser, IArgoWallet, IUserModel } from './model';
+import UserModel, { IArgoUser, IUserModel } from './model';
 import UserValidation from './validation';
 import { IUserService } from './interface';
 import { Types } from 'mongoose';
-import { readContract, selectWeightedPstHolder } from 'smartweave';
-import Arweave = require('arweave');
-import config from '../../config/env';
 
 /**
  * @export

@@ -15,6 +15,4 @@ router.get('/installations/:installationId', ProjectComponent.getInstallationRep
 
 router.get('/installations/repo/branch', ProjectComponent.getBranches);
 
-//router.get('/github/getcommits', RepositoryComponent.GetCommits);
-
 export default router;

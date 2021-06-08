@@ -6,7 +6,6 @@ import JWTTokenService from '../components/Session/service';
 import { IUserModel } from '../components/User/model';
 import * as config from '../config/env/index';
 import GithubAppService from '../components/GitHubApp/service';
-import console = require('console');
 import { Types } from 'mongoose';
 const { createAppAuth } = require('@octokit/auth-app');
 const axios = require('axios').default;
@@ -21,24 +20,7 @@ const readAsAsync = fs.readFileSync(fullPath, 'utf8');
  */
 const router: Router = Router();
 
-/**
- * GET method route
- * @example http://localhost:PORT/auth/github
- * @swagger
- * /auth/github/:
- *  get:
- *    description: sign up user to application with github
- *    tags: ["auth"]
- *    requestBody:
- *      description: sign up body
- *    responses:
- *      301:
- *        description: user successfuly signed in
- *        content:
- *          appication/json:
- *            example:
- *              status: 301
- */
+
 router.get('/github', passport.authenticate('github'));
 
 router.get(
@@ -47,15 +29,14 @@ router.get(
         failureRedirect: `${config.default.argoReact.BASE_ADDRESS}/signup`,
     }),
     async (req, res) => {
-        console.log("Hii", req.user.profile);
         const userProfileModel: IUserModel = await AuthService.findProfileOrCreate({
-            provider_profile: {
+            providerProfile: {
                 ...req.user.profile._json,
                 username: req.user.profile.username,
                 email: req.user.profile.emails?.filter((email: any) => email.primary || email.primary === undefined)[0].value
             },
             provider: { name: req.user.profile.provider },
-            argo_profile: {
+            argoProfile: {
                 username: req.user.profile.username,
                 avatar: req.user.profile._json.avatar_url,
                 email: req.user.profile.emails?.filter((email: any) => email.primary || email.primary === undefined)[0].value,
@@ -73,7 +54,6 @@ router.get(
             argoSessionDto
         );
         const token: string = await JWTTokenService.generateToken(dtos);
-        console.log("Base address", config.default.argoReact.BASE_ADDRESS)
 
         res.redirect(`${config.default.argoReact.BASE_ADDRESS}/callback/github?token=${token}`);
     }
@@ -89,24 +69,6 @@ router.delete('/logout', async (req, res) => {
     res.status(200).json({ success: true });
 });
 
-/**
- * GET method route
- * @example http://localhost:PORT/auth/gitlab
- * @swagger
- * /auth/gitlab/:
- *  get:
- *    description: sign up user to application with gitlab
- *    tags: ["auth"]
- *    requestBody:
- *      description: sign up body
- *    responses:
- *      301:
- *        description: user successfuly signed in
- *        content:
- *          appication/json:
- *            example:
- *              status: 301
- */
 router.get(
     '/gitlab',
     passport.authenticate('gitlab', {
@@ -121,11 +83,11 @@ router.get(
     }),
     async (req, res) => {
         const userProfileModel: IUserModel = await AuthService.findProfileOrCreate({
-            provider_profile: {
+            providerProfile: {
                 ...req.user.profile._json
             },
             provider: { name: req.user.profile.provider },
-            argo_profile: {
+            argoProfile: {
                 username: req.user.profile._json.username,
                 avatar: req.user.profile._json.avatar_url,
                 email: req.user.profile._json.email,

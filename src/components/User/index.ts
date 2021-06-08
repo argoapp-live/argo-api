@@ -3,7 +3,6 @@ import { HttpError } from '../../config/error';
 import { IUserModel } from './model';
 import { NextFunction, Request, Response } from 'express';
 import JWTTokenService from '../Session/service';
-const { request, gql } = require('graphql-request')
 
 /**
  * @export

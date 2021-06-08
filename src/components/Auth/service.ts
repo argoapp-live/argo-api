@@ -21,12 +21,12 @@ const AuthService: IAuthService = {
     async findProfileOrCreate(body: IUser): Promise<IUserModel> {
         try {
             const user: IUserModel = new UserModel({
-                provider_profile: body.provider_profile,
+                providerProfile: body.providerProfile,
                 provider: body.provider,
-                argo_profile: body.argo_profile
+                argoProfile: body.argoProfile
             });
             const query: IUserModel = await UserModel.findOne({
-                'provider_profile.id': body.provider_profile.id
+                'providerProfile.id': body.providerProfile.id
             });
 
             if (query) {
@@ -36,7 +36,7 @@ const AuthService: IAuthService = {
             }
             const saved: IUserModel = await user.save();
 
-            const org: IOrganization = await OrganizationService.insertDefault(saved.provider_profile.username, saved.id);
+            const org: IOrganization = await OrganizationService.insertDefault(saved.providerProfile.username, saved.id);
 
             const filter: any = {
                 _id: Types.ObjectId(saved.id)
@@ -44,7 +44,7 @@ const AuthService: IAuthService = {
             const update: any = {
                 $addToSet: { organizations: [Types.ObjectId(org.id)] }
             };
-            const updatedModel: IUserModel = await UserModel.updateOne(filter, update);
+            await UserModel.updateOne(filter, update);
 
             return saved;
         } catch (error) {

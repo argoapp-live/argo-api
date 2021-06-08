@@ -36,8 +36,6 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
     const project = result.project;
     const created = result.created;
 
-    console.log(project);
-
     if (created) {
         try {
             await DomainService.addDefault(project)

@@ -13,7 +13,6 @@ export async function create(
 ): Promise<void> {
     try {
         const user: IUserModel = await AuthService.authUser(req);
-        console.log(user)
         if (!user) throw new Error('unauthorized user');    
         
         // if (!is<IConfiguration>(req.body)) throw new Error('not valid request body');
