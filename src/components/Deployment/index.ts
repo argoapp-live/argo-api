@@ -95,12 +95,16 @@ export async function deploymentFinished(req: Request, res: Response, next: Next
 
 export async function paymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
     console.log('Payment finished', req.body);
-    const { paymentId, deploymentId }: { paymentId: string, deploymentId: string } = req.body;
+    const { paymentId, deploymentId, status }: { paymentId: string, deploymentId: string, status: string } = req.body;
+    
+    let deployment: IDeployment = await DeploymentService.findById(deploymentId);
 
-    const deployment: IDeployment = await DeploymentService.updatePayment(deploymentId, paymentId);
-    res.status(201).json({ msg: 'Payment successfully recorded'});
+    if(status === 'created') {
+        deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
+        res.status(201).json({ msg: 'Payment successfully recorded'});   
+    }
 
-    if (deployment.status === 'Deployed') {
+    if (deployment.status === 'Deployed' && status === 'success') {
         const project: IProject = await ProjectService.findById(deployment.project);
         await ProjectService.setLatestDeployment(project._id, deployment._id);
         DomainService.addToResolver(project._id, deployment.sitePreview);
