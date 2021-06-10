@@ -13,6 +13,7 @@ import LogsRouter from './DeploymentsRouter';
 import WalletRouter from './WalletRouter';
 import DomainRouter from './DomainRouter';
 import ConfigurationRouter from './ConfigurationRouter';
+import HealthCheckRouter from './HealthCheck';
 
 let swaggerDoc: Object;
 
@@ -43,6 +44,7 @@ export function init(app: express.Application): void {
     app.use('/logs', LogsRouter);
     app.use('/wallet', WalletRouter);
     app.use('/configuration', ConfigurationRouter);
+    app.use('/status', HealthCheckRouter)
 
     
     /**
