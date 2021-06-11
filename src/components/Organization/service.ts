@@ -11,9 +11,9 @@ const OrganizationService: IOrganizationService = {
      * @returns {Promise < IOrganization[] >}
      * @memberof UserService
      */
-    async findAll(): Promise<IOrganization[]> {
+    async find(query: Partial<IOrganization>): Promise<IOrganization[]> {
         try {
-            return await OrganizationModel.find({});
+            return OrganizationModel.find(query);
         } catch (error) {
             throw new Error(error.message);
         }
@@ -96,7 +96,6 @@ const OrganizationService: IOrganizationService = {
 
     async findOneAndUpdate(Id: string, userId: string): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: Id,
             };
@@ -113,7 +112,6 @@ const OrganizationService: IOrganizationService = {
 
     async updatePayment(organisationId: string, paymentId: string): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: organisationId,
             };
@@ -130,7 +128,6 @@ const OrganizationService: IOrganizationService = {
 
     async updateOrganization(org_id: string, org: any): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: Types.ObjectId(org_id),
             };
@@ -166,33 +163,6 @@ const OrganizationService: IOrganizationService = {
             throw new Error(error.message);
         }
     },
-
-    // async hasPendingDeployment(organisationId: string): Promise<boolean> {
-    //     try {
-    //         const organization = await OrganizationModel.findById(Types.ObjectId(organisationId)).populate({ 
-    //             path: 'repositories',
-    //             populate: {
-    //               path: 'deployments',
-    //               model: 'Deployment'
-    //             } 
-    //          });
-
-    //         if (!organization) throw new Error('organization does not exists');
-
-    //         organization.repositories.forEach((repository: IRepository) => {
-    //             // console.log('Repository found', repository._id);
-    //             repository.deployments.forEach((deployment: IDeployment) => {
-    //                 // console.log('Deployment in repository found', deployment._id);
-    //                 if (deployment.deploymentStatus === 'Pending') return true;
-    //             })
-    //         });
-
-    //         return false;
-
-    //     } catch (error) {
-    //         throw new Error(error.message);
-    //     }
-    // }
 };
 
 export default OrganizationService;

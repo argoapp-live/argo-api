@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import ProjectService from '../../components/Project/service';
 import config from '../env/index';
 
 interface IConnectOptions {

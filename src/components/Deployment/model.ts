@@ -1,41 +1,48 @@
-import * as connections from '../../config/connection/connection';
-import { Document, Schema, Model } from 'mongoose';
-import { IConfiguration } from '../Configuration/model';
-import { IProject } from '../Project/model';
-
+import * as connections from "../../config/connection/connection";
+import { Document, Schema, Model } from "mongoose";
+import { IConfiguration } from "../Configuration/model";
+import { IProject } from "../Project/model";
 
 export interface IDeployment extends Document {
-    sitePreview: string;
-    commitId: String;
-    logs: [{ time: String, log: String }];
-    topic: string;
-    status: string;
-    paymentId: string,
-    buildTime: number,
-    configuration: IConfiguration['_id'],
-    project: IProject['_id'],
-    createdAt: any,
-    updatedAt: any,
+  sitePreview: string;
+  commitId: String;
+  logs: [{ time: String; log: String }];
+  topic: string;
+  status: string;
+  paymentId: string;
+  buildTime: number;
+  configuration: IConfiguration["_id"];
+  project: IProject["_id"];
+  createdAt: any;
+  updatedAt: any;
 }
 
-const DeploymentSchema: Schema = new Schema({
+const DeploymentSchema: Schema = new Schema(
+  {
     sitePreview: String,
     commitId: String,
     logs: [{ time: String, log: String }],
     topic: String,
-    status: { type: String, default: 'Pending' },
+    status: { type: String, default: "Pending" },
     paymentId: String,
     buildTime: { type: Number, default: 0 },
     configuration: {
-        type: Schema.Types.ObjectId,
-        ref: 'ConfigurationModel',
+      type: Schema.Types.ObjectId,
+      ref: "ConfigurationModel",
     },
     project: {
-        type: Schema.Types.ObjectId,
-        ref: 'ProjectModel',
+      type: Schema.Types.ObjectId,
+      ref: "ProjectModel",
     },
     createdAt: { type: String, default: new Date() },
     updatedAt: { type: String, default: new Date() },
-});
+  },
+  {
+    collection: "new-deployments",
+    timestamps: true,
+    versionKey: false,
+  }
+);
 
-export const DeploymentModel: Model<IDeployment> = connections.db.model<IDeployment>('Deployment', DeploymentSchema);
+export const DeploymentModel: Model<IDeployment> =
+  connections.db.model<IDeployment>("Deployment", DeploymentSchema);

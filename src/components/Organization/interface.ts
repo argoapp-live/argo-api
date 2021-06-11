@@ -10,7 +10,7 @@ export interface IOrganizationService {
      * @returns {Promise<IOrganization[]>}
      * @memberof IOrganizationService
      */
-    findAll(): Promise<IOrganization[]>;
+    find(query: Partial<IOrganization>): Promise<IOrganization[]>;
 
     /**
      * @param {string} id

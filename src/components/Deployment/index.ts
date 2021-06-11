@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import config from '../../config/env/index';
 import axios from 'axios';
-import { IOrganization } from '../Organization/model';
 import DeploymentService from './service';
 import { IUserModel } from '../User/model';
-import OrganizationService from '../Organization/service';
 import GithubAppService from '../GitHubApp/service';
 import AuthService from '../Auth/service';
 import { IRequestBody, IDeploymentBody } from './dto-interfaces';
@@ -31,9 +29,9 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
 
     //TODO check pending deployment
 
+    const wallet: IWalletModel = await WalletService.findOne({ organizationId });
     //TODO check wallet exists for the organization
-    
-    
+
     const result: any = await ProjectService.createIfNotExists(githubUrl, organizationId, folderName);
     const project = result.project;
     const created = result.created;
@@ -49,7 +47,6 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
     const fullGitHubPath: string = await GithubAppService.getFullGithubUrlAndFolderName(githubUrl, isPrivate, branch, installationId, owner, folderName);
 
     const deployment: IDeployment = await DeploymentService.create(uniqueTopicId, project._id, configurationId);
-    const wallet: IWalletModel = await WalletService.findOne({ organizationId });
 
     const body: IDeploymentBody = {
         deploymentId: deployment._id,
@@ -68,6 +65,8 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         walletAddress: !!wallet.address ? wallet.address : '0x123456789'
     };
 
+    await ProjectService.setLatestDeployment(project._id, deployment._id);
+    
     axios.post(`${config.flaskApi.HOST_ADDRESS}`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));
 
     res.status(200).json({
@@ -86,7 +85,7 @@ export async function deploymentFinished(req: Request, res: Response, next: Next
         const sitePreview = Object.keys(capturedLogs).length === 0 ? '' : capturedLogs.sitePreview;
     
         await DeploymentService.updateFinishedDeployment(deploymentId, sitePreview, deploymentStatus, buildTime, logs);
-    
+        
         res.status(201).json({
             msg: 'successfuly updated',
         });
@@ -97,14 +96,17 @@ export async function deploymentFinished(req: Request, res: Response, next: Next
 
 export async function paymentFinished(req: Request, res: Response, next: NextFunction): Promise<void> {
     console.log('Payment finished', req.body);
-    const { paymentId, deploymentId }: { paymentId: string, deploymentId: string } = req.body;
+    const { paymentId, deploymentId, status }: { paymentId: string, deploymentId: string, status: string } = req.body;
+    
+    let deployment: IDeployment = await DeploymentService.findById(deploymentId);
 
-    const deployment: IDeployment = await DeploymentService.updatePayment(deploymentId, paymentId);
-    res.status(201).json({ msg: 'Payment successfully recorded'});
+    if(status === 'created') {
+        deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
+        res.status(201).json({ msg: 'Payment successfully recorded'});   
+    }
 
-    if (deployment.status === 'Deployed') {
-        const project: IProject = await ProjectService.findById(deployment.project);
-        DomainService.addToResolver(project._id, deployment.sitePreview);
+    if (deployment.status === 'Deployed' && status === 'success') {
+        DomainService.addToResolver(deployment.project, deployment.sitePreview);
     }
 }
 

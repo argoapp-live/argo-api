@@ -67,7 +67,6 @@ passport.use(new GitlabStrategy(
     },
     (accessToken: any, refreshToken: any, profile: any, cb: any): Promise<void> => {
         // save profile here
-        // console.log(profile);
         return cb(null, { accessToken, refreshToken, profile });
     }
 ));

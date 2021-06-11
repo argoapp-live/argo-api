@@ -20,15 +20,11 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
     try {
         const project: any = await ProjectService.findById(req.params.id);
         if(project) {
-            const latestDep = await DeploymentService.findLatest(req.params.id)
-            project._doc.configuration = latestDep.configuration;
-            const deployments = await DeploymentService.find({ project: req.params.id })
+            const deployments = await DeploymentService.find({ project: req.params.id });
             project._doc.deployments = deployments;
             const domains = await DomainService.find({ projectId: req.params.id });
             project._doc.domains = domains.filter(domain => domain.type === 'domain');
             project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
-            // repository._doc.domains = [];
-            // repository._doc.subdomains = [];
         }
         res.status(200).json(project);
     } catch (error) {
@@ -67,7 +63,6 @@ export async function GetUserRepos(req: Request, res: Response, next: NextFuncti
 
         const argoSession: IArgoSessionModel = await JWTTokenService.FindOneBySessionId(decodeToken.session_id);
 
-        console.log(argoSession);
         const octokit = new Octokit({ auth: `${argoSession.access_token}` });
         const response = await octokit.request("GET /user/repos", {
             type: "all",

@@ -70,7 +70,6 @@ const GithubAppService: IGitHubAppTokenService = {
         const filter = {
             installationId: installationId
         }
-        console.log(filter);
         await GitHubAppTokenModel.findOneAndRemove(filter);
         return true;
     },

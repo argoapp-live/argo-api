@@ -22,6 +22,7 @@ const InvitationService: IInvitationService = {
         orgName: string,
         invitingUser: string
     ): Promise<Boolean> {
+        console.log(config.smtp.USERNAME, config.smtp.PASSWORD)
         let _transporter: nodemailer.Transporter;
         try {
             _transporter = nodemailer.createTransport({

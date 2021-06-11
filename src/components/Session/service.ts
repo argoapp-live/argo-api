@@ -56,7 +56,6 @@ const JWTTokenService: IArgoJwtTokenService = {
         }
         return new Promise((resolve, reject) => {
             sign(payload, config.secret, { expiresIn: '8h', issuer: "www.argoapplive.live" }, (err: Error, encoded: string) => {
-                console.log(encoded);
                 resolve(encoded);
             });
         })
@@ -83,7 +82,6 @@ const JWTTokenService: IArgoJwtTokenService = {
                 'session_id': Types.ObjectId(session_id)
             };
             const isDeleted: any = ArgoSessionModel.deleteOne(filter)
-            console.log(isDeleted);
             resolve(isDeleted);
         });
     },

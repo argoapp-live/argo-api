@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { ProjectModel, IProject } from "./model"; 
 
 const ProjectService: any = {
@@ -11,7 +12,12 @@ const ProjectService: any = {
 
     async findOne(query: Partial<IProject>): Promise<IProject> {
         try {
-            return ProjectModel.findOne(query);
+            return ProjectModel.findOne(query).populate({ 
+                path: 'latestDeployment',
+                populate: {
+                  path: 'configuration',
+                } 
+             })
         } catch(err) {
             throw new Error(err.message);
         }
@@ -19,7 +25,12 @@ const ProjectService: any = {
 
     async find(query: Partial<IProject>): Promise<IProject[]> {
         try {
-            return ProjectModel.find(query);
+            return ProjectModel.find(query).populate({ 
+                path: 'latestDeployment',
+                populate: {
+                  path: 'configuration',
+                } 
+             });
         } catch(err) {
             throw new Error(err.message);
         }
@@ -27,7 +38,12 @@ const ProjectService: any = {
 
     async findById(id: string): Promise<IProject> {
         try {
-            return ProjectModel.findById(id);
+            return ProjectModel.findById(id).populate({ 
+                path: 'latestDeployment',
+                populate: {
+                  path: 'configuration',
+                } 
+             });
         } catch(err) {
             throw new Error(err.message);
         }
@@ -37,10 +53,19 @@ const ProjectService: any = {
         try {
             const existingProject = await ProjectModel.findOne({ githubUrl, organizationId });
             if(!existingProject) {
-                const project = await ProjectModel.create({ name, githubUrl, organizationId })
+                const project = await ProjectModel.create({ name, githubUrl, organizationId });
                 return { project, created: true };
             }
             return { project: existingProject, created: false };
+        } catch(err) {
+            throw new Error(err.message);
+        }
+    },
+
+    async setLatestDeployment(id: Types.ObjectId, deploymentId: Types.ObjectId) {
+        try {
+            console.log(id, deploymentId)
+            return ProjectModel.updateOne({ _id: id }, { latestDeployment: deploymentId })
         } catch(err) {
             throw new Error(err.message);
         }

@@ -51,13 +51,9 @@ export interface IArgoUser {
  * @interface IUser
  */
 export interface IUser {
-    provider_profile: IProfile;
-    argo_profile: IArgoUser;
+    providerProfile: IProfile;
+    argoProfile: IArgoUser;
     provider: IProvider;
-    argo_wallet: IArgoWallet;
-    dateOfEntry?: Date;
-    lastUpdated?: Date;
-    organizations?: [string[]];
 }
 
 
@@ -89,11 +85,6 @@ export interface IProfileModel extends Document {
     following: number;
 }
 
-export interface IArgoWallet {
-    wallet_address: string;
-    wallet_balance: number;
-}
-
 /**
  * @export
  * @interface IProviderModel
@@ -111,25 +102,18 @@ export interface IArgoUserModel extends Document {
     email: string;
 }
 
-export interface IArgoWalletModel extends Document {
-    wallet_address: string;
-    wallet_balance: number;
-}
-
 /**
  * @export
  * @interface IUserModel
  * @extends {Document}
  */
 export interface IUserModel extends Document {
-    provider_profile: IProfileModel;
-    argo_profile: IArgoUser;
-    argo_wallet: IArgoWalletModel;
+    providerProfile: IProfileModel;
+    argoProfile: IArgoUser;
     provider: IProviderModel;
-    dateOfEntry?: Date;
-    lastUpdated?: Date;
-    organizations?: IOrganization[];
-    totalDepTime?: number;
+    createdAt: Date;
+    updatedAt: Date;
+    organizations: [IOrganization['_id']];
 }
 
 const ProviderSchema: Schema = new Schema({
@@ -166,7 +150,7 @@ const ProviderSchema: Schema = new Schema({
  *        $ref: '#/components/schemas/UserSchema'
  */
 const UserSchema: Schema = new Schema({
-    provider_profile: {
+    providerProfile: {
         id: { type: Number, unique: true },
         username: String,
         avatar_url: String,
@@ -188,27 +172,14 @@ const UserSchema: Schema = new Schema({
         followers: Number,
         following: Number
     },
-    argo_profile: {
+    argoProfile: {
         username: String,
         avatar: String,
         name: String,
         email: String,
         is_active: { type: Boolean, default: true }
     },
-    argo_wallet: {
-        wallet_address: String,
-        wallet_balance: Number
-    },
-    totalDepTime: Number,
     provider: ProviderSchema,
-    dateOfEntry: {
-        type: Date,
-        default: new Date()
-    },
-    lastUpdated: {
-        type: Date,
-        default: new Date()
-    },
     organizations: [
         {
             type: Schema.Types.ObjectId,
@@ -216,7 +187,8 @@ const UserSchema: Schema = new Schema({
         }
     ]
 }, {
-    collection: 'users',
+    collection: 'new-users',
+    timestamps: true,
     versionKey: false
 });
 
