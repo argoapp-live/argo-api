@@ -64,7 +64,8 @@ const ProjectService: any = {
 
     async setLatestDeployment(id: Types.ObjectId, deploymentId: Types.ObjectId) {
         try {
-            return ProjectModel.updateOne({ _id: id }, { latestDeplotment: deploymentId })
+            console.log(id, deploymentId)
+            return ProjectModel.updateOne({ _id: id }, { latestDeployment: deploymentId })
         } catch(err) {
             throw new Error(err.message);
         }
