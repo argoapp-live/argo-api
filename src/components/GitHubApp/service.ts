@@ -3,7 +3,7 @@ import { IGuHubAppToken } from "./model";
 import GitHubAppTokenModel from './model'
 import { Types } from "mongoose";
 import UserModel from "../User/model";
-// import config from '../../config/env/index';
+import config from '../../config/env/index';
 // const axios = require('axios').default;
 
 // const { createAppAuth } = require("@octokit/auth-app");
@@ -11,8 +11,9 @@ import UserModel from "../User/model";
 // import { createAppAuth } from '@octokit/auth-app';
 const fs = require('fs');
 const path = require('path');
-// const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-// const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
+
+const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
 
 
 const GithubAppService: IGitHubAppTokenService = {
