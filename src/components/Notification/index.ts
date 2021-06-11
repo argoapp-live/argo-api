@@ -3,6 +3,7 @@ const io = require('socket.io');
 import { v4 as uuidv4 } from 'uuid';
 const { createClient } = require("redis");
 const redisAdapter = require('@socket.io/redis-adapter');
+import config from '../../config/env';
 
 class NotificationService {
     private serverSocket: SocketIO.Server;
@@ -19,7 +20,7 @@ class NotificationService {
             ' Access-Control-Allow-Credentials']
           }});
         
-        const pubClient = createClient({ host: '127.0.0.1', port: 6379 });
+        const pubClient = createClient({ host: config.redis.host, port: config.redis.port, password: config.redis.password });
         const subClient = pubClient.duplicate();
         this.serverSocket.adapter(redisAdapter(pubClient, subClient));
         this.serverSocket.on('connection', (socket: SocketIO.Socket) => {

@@ -65,8 +65,12 @@ interface IConfig {
         zoneId: string;
         email: string;
         key: string;
+    },
+    redis: {
+        host: string;
+        port: number;
+        password: string;
     }
-
 }
 
 const NODE_ENV: string = process.env.NODE_ENV || 'test';
@@ -134,8 +138,13 @@ const development: IConfig = {
         zoneId: '278d3b095d1a88ee08d3370f60753744',
         email: 'mitrasish@argoapp.live',
         key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
-    }
-};
+    },
+    redis: {
+        host: process.env.REDIS_ENDPOINT || '127.0.0.1',
+        port: +process.env.REDIS_PORT || 6379,
+        password: process.env.REDIS_PASSWORD || '',
+    },
+}
 
 const production: IConfig = {
     port: process.env.PORT || 3000,
@@ -196,6 +205,11 @@ const production: IConfig = {
         zoneId: '278d3b095d1a88ee08d3370f60753744',
         email: 'mitrasish@argoapp.live',
         key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
+    },
+    redis: {
+        host: process.env.REDIS_ENDPOINT || '127.0.0.1',
+        port: +process.env.REDIS_PORT || 6379,
+        password: process.env.REDIS_PASSWORD || '',
     }
 };
 const test: IConfig = {
@@ -261,6 +275,11 @@ const test: IConfig = {
         zoneId: '278d3b095d1a88ee08d3370f60753744',
         email: 'mitrasish@argoapp.live',
         key: '5c8ffa452e33bb2e700944dbd7afc2b143b03'
+    },
+    redis: {
+        host: process.env.REDIS_ENDPOINT || '127.0.0.1',
+        port: +process.env.REDIS_PORT || 6379,
+        password: process.env.REDIS_PASSWORD || '',
     }
 };
 
