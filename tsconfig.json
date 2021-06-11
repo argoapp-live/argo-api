@@ -5,6 +5,8 @@
         "noImplicitAny": true,
         "target": "es6",
         "sourceMap": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node",
         "plugins": [
             {
                 "name": "tslint-language-service"
