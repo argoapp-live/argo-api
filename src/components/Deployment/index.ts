@@ -92,13 +92,10 @@ export async function deploy(
 
   switch (protocol) {
     case "arweave":
-      capturedLogs = [
-        { key: "sitePreview", value: "https://arweave.net" },
-        { key: "fee", value: "Total price:" },
-      ];
+      capturedLogs = config.arweave.LOGSTOCAPTURE;
       break;
     case "skynet":
-      capturedLogs = [{ key: "sitePreview", value: "https://siasky.net" }];
+      capturedLogs = config.skynet.LOGSTOCAPTURE;
   }
 
   const body: IDeploymentBody = {
