@@ -16,6 +16,7 @@
   "scripts": {
     "start": "node build/config/server/index.js",
     "build": "npm run clean && tsc -p . && npm run copy:templates",
+    "build:win": "npm run clean && tsc -p . && npm run copy:templates:windows",
     "dev": "nodemon --inspect",
     "ts:watch": "tsc -w",
     "copy:templates": "cpx './src/templates/**' './build/templates'",
@@ -30,9 +31,8 @@
     "@feathersjs/express": "^4.5.11",
     "@feathersjs/feathers": "^4.5.11",
     "@feathersjs/socketio": "^4.5.11",
-    "@octokit/auth-app": "^2.6.0",
-    "@octokit/core": "^3.4.0",
-    "@octokit/rest": "^18.0.6",
+    "@octokit/auth-app": "^3.5.0",
+    "@octokit/core": "^3.5.1",
     "@socket.io/redis-adapter": "^7.0.0",
     "@types/cloudflare": "^2.7.3",
     "@types/jsonwebtoken": "^8.5.0",
@@ -71,6 +71,7 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
+    "@octokit/types": "^6.16.4",
     "@types/bcrypt": "3.0.0",
     "@types/body-parser": "^1.19.0",
     "@types/bson": "^4.0.2",

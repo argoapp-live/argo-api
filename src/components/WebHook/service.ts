@@ -10,7 +10,7 @@ import { Request } from 'express';
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
-// const fullPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+const fullPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
 // const readAsAsync = fs.readFileSync(fullPath, 'utf8');
 
 /**

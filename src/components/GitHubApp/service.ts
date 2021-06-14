@@ -4,11 +4,9 @@ import GitHubAppTokenModel from './model'
 import { Types } from "mongoose";
 import UserModel from "../User/model";
 import config from '../../config/env/index';
-// const axios = require('axios').default;
+const axios = require('axios').default;
 
-// const { createAppAuth } = require("@octokit/auth-app");
-// const { Octokit } = require("@octokit/core");
-// import { createAppAuth } from '@octokit/auth-app';
+const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
 
@@ -78,16 +76,16 @@ const GithubAppService: IGitHubAppTokenService = {
     },
 
     async createInstallationToken (installationId: any): Promise<any> {
-        // const auth = await createAppAuth({
-        //     id: config.githubApp.GIT_HUB_APP_ID,
-        //     privateKey: gitPrivateKey,
-        //     installationId: installationId,
-        //     clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
-        //     clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
-        // });
-        // const authToken = await auth({ type: "app" });
-        // const installationToken = await auth({ type: "installation" });
-        // return installationToken;
+        const auth = await createAppAuth({
+            id: config.githubApp.GIT_HUB_APP_ID,
+            privateKey: gitPrivateKey,
+            installationId: installationId,
+            clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
+            clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
+        });
+        const authToken = await auth({ type: "app" });
+        const installationToken = await auth({ type: "installation" });
+        return installationToken;
     },
 
     async getFullGithubUrlAndFolderName(githubUrl: string, isPrivate: boolean, branch: string, installationId: string, owner: string, folderName: string): Promise<string> {
@@ -102,31 +100,31 @@ const GithubAppService: IGitHubAppTokenService = {
 
     async getBranches(id: string, branchesQuery: any): Promise<any> {
         const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: id })
-        // const instanceAxiosBranch = axios.create({
-        //     baseURL: branchesQuery,
-        //     timeout: 5000,
-        //     headers: {
-        //         'authorization': `bearer ${getUserToken.token}`,
-        //         'Accept': 'application/vnd.github.v3+json'
-        //     }
-        // });
-        // return instanceAxiosBranch.get();
-        return;
+        const instanceAxiosBranch = axios.create({
+            baseURL: branchesQuery,
+            timeout: 5000,
+            headers: {
+                'authorization': `bearer ${getUserToken.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        return instanceAxiosBranch.get();
+        // return;
     },
 
     async getInstallationRepos(id: string, installationId: any): Promise<any> {
         const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: Types.ObjectId(id) });
-        // console.log("Print", getUserToken, installationId)
-        // const instanceAxios = axios.create({
-        //     baseURL: `https://api.github.com/user/installations/${installationId}/repositories`,
-        //     timeout: 5000,
-        //     headers: {
-        //         'authorization': `bearer ${getUserToken.token}`,
-        //         'Accept': 'application/vnd.github.v3+json'
-        //     }
-        // });
-        // return instanceAxios.get();
-        return;
+        console.log("Print", getUserToken, installationId)
+        const instanceAxios = axios.create({
+            baseURL: `https://api.github.com/user/installations/${installationId}/repositories`,
+            timeout: 5000,
+            headers: {
+                'authorization': `bearer ${getUserToken.token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        return instanceAxios.get();
+        // return;
     }
 }
 export default GithubAppService;

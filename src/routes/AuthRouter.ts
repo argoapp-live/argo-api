@@ -7,14 +7,14 @@ import { IUserModel } from '../components/User/model';
 import config from '../config/env/index';
 import GithubAppService from '../components/GitHubApp/service';
 import { Types } from 'mongoose';
-// const { createAppAuth } = require('@octokit/auth-app');
+const { createAppAuth } = require('@octokit/auth-app');
 // import { createAppAuth } from '@octokit/auth-app';
-// const axios = require('axios').default;
+const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
 
-// const fullPath = path.join(__dirname, `../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-// const readAsAsync = fs.readFileSync(fullPath, 'utf8');
+const fullPath = path.join(__dirname, `../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+const readAsAsync = fs.readFileSync(fullPath, 'utf8');
 /**
  * @constant {express.Router}
  */
@@ -115,20 +115,20 @@ router.get('/github/app', async (req, res) => {
     const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
     let id = Types.ObjectId(deserializedToken.session_id);
     const getUserToken = await GithubAppService.findByUserId(id);
-    // const instanceAxios = axios.create({
-    //     baseURL: 'https://api.github.com/user/installations',
-    //     timeout: 2000,
-    //     headers: {
-    //         authorization: `bearer ${getUserToken.token}`,
-    //         Accept: 'application/vnd.github.v3+json'
-    //     }
-    // });
-    // const userInfo = await instanceAxios.get();
+    const instanceAxios = axios.create({
+        baseURL: 'https://api.github.com/user/installations',
+        timeout: 2000,
+        headers: {
+            authorization: `bearer ${getUserToken.token}`,
+            Accept: 'application/vnd.github.v3+json'
+        }
+    });
+    const userInfo = await instanceAxios.get();
 
     res.status(200).json({
         success: true,
-        // total_count: userInfo.data.total_count,
-        // installations: userInfo.data.installations
+        total_count: userInfo.data.total_count,
+        installations: userInfo.data.installations
     });
 
 });
@@ -150,22 +150,22 @@ router.get('/github/app/new', async (req, res) => {
 
 
 router.get('/github/app/callback', async (req, res) => {
-    // const auth = await createAppAuth({
-    //     id: config.githubApp.GIT_HUB_APP_ID,
-    //     privateKey: readAsAsync,
-    //     installationId: req.query.installation_id,
-    //     clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
-    //     clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
-    // });
-    // const authToken = await auth({ type: 'oauth', code: req.query.code });
-    // const instanceAxios = axios.create({
-    //     baseURL: 'https://api.github.com/user',
-    //     timeout: 1000,
-    //     headers: { authorization: `bearer ${authToken.token}` }
-    // });
-    // const userInfo = await instanceAxios.get();
+    const auth = await createAppAuth({
+        id: config.githubApp.GIT_HUB_APP_ID,
+        privateKey: readAsAsync,
+        installationId: req.query.installation_id,
+        clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
+        clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
+    });
+    const authToken = await auth({ type: 'oauth', code: req.query.code });
+    const instanceAxios = axios.create({
+        baseURL: 'https://api.github.com/user',
+        timeout: 1000,
+        headers: { authorization: `bearer ${authToken.token}` }
+    });
+    const userInfo = await instanceAxios.get();
 
-    // await GithubAppService.findAndCreate(userInfo.data.id, authToken.token, +req.query.installation_id);
+    await GithubAppService.findAndCreate(userInfo.data.id, authToken.token, +req.query.installation_id);
     res.redirect(`${config.argoReact.BASE_ADDRESS}/github/callback/app`);
 });
 
