@@ -14,7 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 const fullPath = path.join(__dirname, `../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-const readAsAsync = fs.readFileSync(fullPath, 'utf8');
+const privateKey = fs.readFileSync(fullPath, 'utf8');
 /**
  * @constant {express.Router}
  */
@@ -115,6 +115,7 @@ router.get('/github/app', async (req, res) => {
     const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
     let id = Types.ObjectId(deserializedToken.session_id);
     const getUserToken = await GithubAppService.findByUserId(id);
+    console.log(getUserToken)
     const instanceAxios = axios.create({
         baseURL: 'https://api.github.com/user/installations',
         timeout: 2000,
@@ -150,23 +151,29 @@ router.get('/github/app/new', async (req, res) => {
 
 
 router.get('/github/app/callback', async (req, res) => {
-    const auth = await createAppAuth({
-        id: config.githubApp.GIT_HUB_APP_ID,
-        privateKey: readAsAsync,
-        installationId: req.query.installation_id,
-        clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
-        clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
-    });
-    const authToken = await auth({ type: 'oauth', code: req.query.code });
-    const instanceAxios = axios.create({
-        baseURL: 'https://api.github.com/user',
-        timeout: 1000,
-        headers: { authorization: `bearer ${authToken.token}` }
-    });
-    const userInfo = await instanceAxios.get();
+    try {
+        const auth = await createAppAuth({
+            appId: config.githubApp.GIT_HUB_APP_ID,
+            privateKey,
+            installationId: req.query.installation_id,
+            clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
+            clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
+        });
+        const authToken = await auth({ type: 'oauth-user', code: req.query.code });
 
-    await GithubAppService.findAndCreate(userInfo.data.id, authToken.token, +req.query.installation_id);
-    res.redirect(`${config.argoReact.BASE_ADDRESS}/github/callback/app`);
+        const instanceAxios = axios.create({
+            baseURL: 'https://api.github.com/user',
+            timeout: 1000,
+            headers: { authorization: `bearer ${authToken.token}` }
+        });
+        const userInfo = await instanceAxios.get();
+    
+        await GithubAppService.findAndCreate(userInfo.data.id, authToken.token, +req.query.installation_id);
+        res.redirect(`${config.argoReact.BASE_ADDRESS}/github/callback/app`);
+    } catch (error) {
+        console.log("NEW ERROR" , error.message)
+    }
+    
 });
 
 router.post('/github/events', async (req, res) => {

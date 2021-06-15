@@ -42,7 +42,7 @@ const GithubAppService: IGitHubAppTokenService = {
     },
     async findAndCreate(gitHubId: number, token: string, installationId: number): Promise<boolean> {
         const filter = {
-            "provider_profile.id": gitHubId
+            "providerProfile.id": gitHubId
         };
         const user = await UserModel.findOne(filter);
         if (user) {
