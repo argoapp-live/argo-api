@@ -101,8 +101,8 @@ const development: IConfig = {
         BASE_ADDRESS: process.env.INTERNAL_API_BASE_ADDRESS || "http://localhost:5000/"
     },
     paymentApi: {
-        HOST_ADDRESS: "http://localhost:3001/payments",
-        BASE_ADDRESS: "http://localhost:3001",
+        HOST_ADDRESS: process.env.PAYMENT_HOST_ADDRESS || "http://localhost:3001/payments",
+        BASE_ADDRESS: process.env.PAYMENT_BASE_ADDRESS || "http://localhost:3001",
     },
     argoReact: {
         BASE_ADDRESS: "http://localhost:3000"
