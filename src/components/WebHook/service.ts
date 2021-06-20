@@ -1,17 +1,9 @@
 import { IWebHookService } from './interface';
 import { IWebHook } from './model';
-import JWTTokenService from '../Session/service';
-import { IArgoSessionModel } from '../Session/model';
 import GithubAppService from '../GitHubApp/service';
 import AuthService from '../Auth/service';
 const { Octokit } = require('@octokit/core');
-import config from '../../config/env/index';
 import { Request } from 'express';
-const { createAppAuth } = require("@octokit/auth-app");
-const fs = require('fs');
-const path = require('path');
-const fullPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-// const readAsAsync = fs.readFileSync(fullPath, 'utf8');
 
 /**
  * @export

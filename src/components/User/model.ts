@@ -1,7 +1,6 @@
 import * as connections from '../../config/connection/connection';
 import { Document, Schema } from 'mongoose';
 import { IOrganization } from '../Organization/model';
-import { number, string } from 'joi';
 
 /**
  * @export
