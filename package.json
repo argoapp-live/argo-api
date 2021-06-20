@@ -1,17 +1,22 @@
 {
-  "name": "argo-api",
-  "version": "2.0.10",
+  "name": "argo-hosting-api",
+  "version": "3.0.0",
+  "description": "ArGo Hosting API",
   "main": "./build/index.js",
+  "types": "build/index.d.ts",
+  "author": "ArGo",
+  "license": "MIT",
   "keywords": [
-    "yeoman-generator",
-    "typescript",
-    "node",
-    "nodejs",
-    "rest",
-    "restfull",
-    "api",
-    "builder",
-    "generator"
+    "ArGo",
+    "Typescript",
+    "Javascript",
+    "Hosting",
+    "Node",
+    "Nodejs",
+    "Rest",
+    "Restfull",
+    "Api",
+    "Badass"
   ],
   "scripts": {
     "start": "node build/config/server/index.js",
@@ -27,6 +32,9 @@
   "files": [
     "src"
   ],
+  "engines": {
+    "node": ">=10.0.0 <15.0.0"
+  },
   "dependencies": {
     "@octokit/auth-app": "^3.5.0",
     "@octokit/core": "^3.5.1",

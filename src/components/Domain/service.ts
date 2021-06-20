@@ -5,13 +5,14 @@ import * as Cloudflare from 'cloudflare';
 import config from '../../config/env';
 import { Types } from 'mongoose';
 import { IProject } from '../Project/model';
+import axios from 'axios';
 
 /**
  * @export
  * @implements {DomainService}
  */
 
-const client = new Cloudflare({ email: config.cloudflare.email, key: config.cloudflare.key });
+const client = new Cloudflare({ email: config.cloudflare.EMAIL, key: config.cloudflare.KEY });
 
 
 const DomainService = {
@@ -96,7 +97,7 @@ const DomainService = {
             const argoKey: string = uuidv4();
             const randomString: string = Math.random().toString(36).substring(7);
             const projectNameNormalized: string = project.name.replace(/\s/g, '-');
-            const name: string = `${projectNameNormalized}-${randomString}.${config.cloudflare.dns}`;
+            const name: string = `${projectNameNormalized}-${randomString}.${config.cloudflare.DOMAIN_NAME}`;
 
             let record: IDnsRecord = {
                 type: 'A',
@@ -119,7 +120,7 @@ const DomainService = {
     },
 
     async _addDnsRecord(record: IDnsRecord): Promise<any> {
-        return client.dnsRecords.add(config.cloudflare.zoneId, record);
+        return client.dnsRecords.add(config.cloudflare.ZONE_ID, record);
     },
 
     async addToResolver(projectId: string, link: string): Promise<any> {
@@ -133,17 +134,17 @@ const DomainService = {
             uuids: latestDomains.map((latestDomain: IDomain) => latestDomain.argoKey)
         }
 
-        // const response = await axios.post(`${config.domainResolver.BASE_ADDRESS}/v1/add-domain`, body, {
-        //     headers: {
-        //         'Content-Type': 'application/json; charset=utf-8',
-        //         Authorization: `Bearer ${config.domainResolver.SECRET}`,
-        //     }
-        // });
+        const response = await axios.post(`${config.domainResolver.BASE_ADDRESS}/v1/add-domain`, body, {
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+                Authorization: `Bearer ${config.domainResolver.SECRET}`,
+            }
+        });
 
-        // if (response.status === 200) {
+        if (response.status === 200) {
             const ids: Array<Types.ObjectId> = latestDomains.map((latestDomain: IDomain) => latestDomain._id);
             await DomainModel.updateMany({ _id: { $in: ids }}, { link });
-        // }
+        }
     }
 };
 

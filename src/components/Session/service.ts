@@ -3,9 +3,6 @@ import ArgoSessionModel, { IArgoSessionModel } from "./model";
 import config from '../../config/env/index';
 import { sign, verify } from 'jsonwebtoken';
 import { Types } from "mongoose";
-import { any } from "joi";
-
-
 
 const JWTTokenService: IArgoJwtTokenService = {
     async findSessionOrCreate(body: IArgoSessionDto): Promise<IArgoSessionDto> {
