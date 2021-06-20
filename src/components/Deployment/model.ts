@@ -38,7 +38,7 @@ const DeploymentSchema: Schema = new Schema(
     updatedAt: { type: String, default: new Date() },
   },
   {
-    collection: "new-deployments",
+    collection: "deployments",
     timestamps: true,
     versionKey: false,
   }

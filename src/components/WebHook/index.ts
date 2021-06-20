@@ -6,7 +6,7 @@ import WebHookService from './service';
 const io = require('socket.io-client');
 const emitter = require('socket.io')();
 // const emitter = new Server();
-const socket = io(config.flaskApi.BASE_ADDRESS);
+const socket = io(config.deployerApi.BASE_ADDRESS);
 
 /**
  * @export

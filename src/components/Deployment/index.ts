@@ -66,7 +66,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
         walletAddress: !!wallet.address ? wallet.address : '0x123456789'
     };
 
-    axios.post(`${config.flaskApi.HOST_ADDRESS}`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));
+    axios.post(`${config.deployerApi.HOST_ADDRESS}`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));
 
     res.status(200).json({
         message: 'Deployment is being processed',
@@ -116,7 +116,7 @@ export async function findDeploymentById(req: Request, res: Response, next: Next
     let deployment: any = await DeploymentService.findById(req.params.id);
 
     if (deployment.deploymentStatus === 'Pending') {
-        const liveLogs = await axios.post(`${config.flaskApi.HOST_ADDRESS}liveLogs`, { deploymentId: deployment._id });
+        const liveLogs = await axios.post(`${config.deployerApi.HOST_ADDRESS}liveLogs`, { deploymentId: deployment._id });
         deployment.logs = !liveLogs.data.logs ? [] : liveLogs.data.logs;
     }
     const paymentDetails = await axios.get(`${config.paymentApi.HOST_ADDRESS}/deployment/${deployment._id}`);

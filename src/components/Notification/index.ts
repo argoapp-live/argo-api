@@ -20,7 +20,7 @@ class NotificationService {
             ' Access-Control-Allow-Credentials']
           }});
         
-        const pubClient = createClient({ host: config.redis.host, port: config.redis.port, password: config.redis.password });
+        const pubClient = createClient({ host: config.redis.HOST, port: config.redis.PORT, password: config.redis.PASSWORD });
         const subClient = pubClient.duplicate();
         this.serverSocket.adapter(redisAdapter(pubClient, subClient));
         this.serverSocket.on('connection', (socket: SocketIO.Socket) => {

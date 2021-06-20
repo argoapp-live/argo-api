@@ -43,7 +43,7 @@ const WebHookService: IWebHookService = {
                     repo: webHookCreationDto.repo, // 'argo-api'
                     events: webHookCreationDto.events, // ['push']
                     config: {
-                        url: config.pushNotifyUrl, // URL from NGROK 'http://bbd64cf988c3.ngrok.io'
+                        // url: config.pushNotifyUrl, // URL from NGROK 'http://bbd64cf988c3.ngrok.io'
                         content_type: 'json',
                         insecure_ssl: '1',
                     },

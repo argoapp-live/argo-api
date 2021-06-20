@@ -25,6 +25,7 @@ const GitHubAppTokenSchema: Schema = new Schema({
     token: String
 }, {
     collection: 'githubtokens',
+    timestamps: true,
     versionKey: false
 });
 

@@ -187,7 +187,7 @@ const UserSchema: Schema = new Schema({
         }
     ]
 }, {
-    collection: 'new-users',
+    collection: 'users',
     timestamps: true,
     versionKey: false
 });
