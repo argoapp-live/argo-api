@@ -34,8 +34,6 @@ const DeploymentSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "ProjectModel",
     },
-    createdAt: { type: String, default: new Date() },
-    updatedAt: { type: String, default: new Date() },
   },
   {
     collection: "deployments",
