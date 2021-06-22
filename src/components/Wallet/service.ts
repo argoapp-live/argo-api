@@ -1,6 +1,5 @@
 import  WalletModel, { IWalletModel } from './model';
 import IWalletService from './interface';
-import { Types } from 'mongoose';
 
 /**
  * @export

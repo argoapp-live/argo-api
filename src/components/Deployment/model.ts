@@ -36,7 +36,7 @@ const DeploymentSchema: Schema = new Schema(
     },
   },
   {
-    collection: "new-deployments",
+    collection: "deployments",
     timestamps: true,
     versionKey: false,
   }

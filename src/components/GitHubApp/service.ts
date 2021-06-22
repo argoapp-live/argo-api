@@ -9,6 +9,7 @@ const axios = require('axios').default;
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
+
 const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
 const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
 
@@ -41,7 +42,7 @@ const GithubAppService: IGitHubAppTokenService = {
     },
     async findAndCreate(gitHubId: number, token: string, installationId: number): Promise<boolean> {
         const filter = {
-            "provider_profile.id": gitHubId
+            "providerProfile.id": gitHubId
         };
         const user = await UserModel.findOne(filter);
         if (user) {
@@ -76,11 +77,11 @@ const GithubAppService: IGitHubAppTokenService = {
 
     async createInstallationToken (installationId: any): Promise<any> {
         const auth = await createAppAuth({
-            id: config.githubApp.GIT_HUB_APP_ID,
+            id: config.githubApp.APP_ID,
             privateKey: gitPrivateKey,
             installationId: installationId,
-            clientId: config.githubApp.GITHUB_APP_CLIENT_ID,
-            clientSecret: config.githubApp.GITHUB_APP_CLIENT_SECRET,
+            clientId: config.githubApp.CLIENT_ID,
+            clientSecret: config.githubApp.CLIENT_SECRET,
         });
         const authToken = await auth({ type: "app" });
         const installationToken = await auth({ type: "installation" });
@@ -108,6 +109,7 @@ const GithubAppService: IGitHubAppTokenService = {
             }
         });
         return instanceAxiosBranch.get();
+        // return;
     },
 
     async getInstallationRepos(id: string, installationId: any): Promise<any> {
@@ -122,6 +124,7 @@ const GithubAppService: IGitHubAppTokenService = {
             }
         });
         return instanceAxios.get();
+        // return;
     }
 }
 export default GithubAppService;
