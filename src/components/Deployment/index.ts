@@ -67,7 +67,7 @@ export async function deploy(req: Request, res: Response, next: NextFunction): P
 
     await ProjectService.setLatestDeployment(project._id, deployment._id);
   
-    axios.post(`${config.deployerApi.HOST_ADDRESS}`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));
+    axios.post(`${config.deployerApi.HOST_ADDRESS}/deploy`, body).then((response: any) => console.log('FROM DEPLOYMENT', response));
 
     res.status(200).json({
         message: 'Deployment is being processed',
@@ -115,10 +115,10 @@ export async function findDeploymentById(req: Request, res: Response, next: Next
     let deployment: any = await DeploymentService.findById(req.params.id);
 
     if (deployment.deploymentStatus === 'Pending') {
-        const liveLogs = await axios.post(`${config.deployerApi.HOST_ADDRESS}liveLogs`, { deploymentId: deployment._id });
+        const liveLogs = await axios.post(`${config.deployerApi.HOST_ADDRESS}/deploy/liveLogs`, { deploymentId: deployment._id });
         deployment.logs = !liveLogs.data.logs ? [] : liveLogs.data.logs;
     }
-    const paymentDetails = await axios.get(`${config.paymentApi.HOST_ADDRESS}/deployment/${deployment._id}`);
+    const paymentDetails = await axios.get(`${config.paymentApi.HOST_ADDRESS}/payments/deployment/${deployment._id}`);
     deployment._doc.payment = paymentDetails.data;
 
     res.status(200).json({

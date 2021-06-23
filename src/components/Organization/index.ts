@@ -62,7 +62,7 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
         });
 
         if(wallet) {
-            const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/wallet/${wallet._id}`);
+            const payments: any = await axios.get(`${config.paymentApi.HOST_ADDRESS}/payments/wallet/${wallet._id}`);
             if (!payments.data) {
                 organization._doc.payments = [];
             } else {

@@ -106,13 +106,13 @@ const development: IConfig = {
   },
   deployerApi: {
     HOST_ADDRESS:
-      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000/deploy/",
+      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
     BASE_ADDRESS:
-      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000/",
+      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000",
   },
   paymentApi: {
     HOST_ADDRESS:
-      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001/payments",
+      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
     BASE_ADDRESS:
       process.env.PAYMENT_API_BASE_ADDRESS || "http://localhost:3001",
   },
@@ -170,13 +170,13 @@ const production: IConfig = {
   },
   deployerApi: {
     HOST_ADDRESS:
-      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000/deploy/",
+      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
     BASE_ADDRESS:
-      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000/",
+      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000",
   },
   paymentApi: {
     HOST_ADDRESS:
-      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001/payments",
+      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
     BASE_ADDRESS:
       process.env.PAYMENT_API_BASE_ADDRESS || "http://localhost:3001",
   },
@@ -233,13 +233,13 @@ const test: IConfig = {
   },
   deployerApi: {
     HOST_ADDRESS:
-      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000/deploy/",
+      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
     BASE_ADDRESS:
-      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000/",
+      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000",
   },
   paymentApi: {
     HOST_ADDRESS:
-      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001/payments",
+      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
     BASE_ADDRESS:
       process.env.PAYMENT_API_BASE_ADDRESS || "http://localhost:3001",
   },
