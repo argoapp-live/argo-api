@@ -145,7 +145,7 @@ const DomainService = {
             uuids: latestDomains.map((latestDomain: IDomain) => latestDomain.argoKey)
         }
 
-        const response = await axios.post(`${config.domainResolver.BASE_ADDRESS}/v1/add-domain`, body, {
+        const response = await axios.post(`${config.domainResolver.HOST_ADDRESS}/v1/add-domain`, body, {
             headers: {
                 'Content-Type': 'application/json; charset=utf-8',
                 Authorization: `Bearer ${config.domainResolver.SECRET}`,

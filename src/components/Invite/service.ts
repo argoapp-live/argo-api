@@ -38,7 +38,7 @@ const InvitationService: IInvitationService = {
             const locals: any = {
                 orgName,
                 invitingUser,
-                inviteLink: config.frontendApp.BASE_ADDRESS +
+                inviteLink: config.frontendApp.HOST_ADDRESS +
                     `/invite/callback?ref=${encodeURIComponent(inviteId)}&orgName=${encodeURIComponent(orgName)}`,
             };
 

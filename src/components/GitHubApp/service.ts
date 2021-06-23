@@ -77,13 +77,12 @@ const GithubAppService: IGitHubAppTokenService = {
 
     async createInstallationToken (installationId: any): Promise<any> {
         const auth = await createAppAuth({
-            id: config.githubApp.APP_ID,
+            appId: config.githubApp.APP_ID,
             privateKey: gitPrivateKey,
             installationId: installationId,
             clientId: config.githubApp.CLIENT_ID,
             clientSecret: config.githubApp.CLIENT_SECRET,
         });
-        const authToken = await auth({ type: "app" });
         const installationToken = await auth({ type: "installation" });
         return installationToken;
     },
