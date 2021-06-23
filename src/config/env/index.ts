@@ -43,6 +43,10 @@ interface IConfig {
     PORT: number;
     PASSWORD: string;
   };
+  namebase: {
+    ACCESS_KEY: string;
+    SECRET_KEY: string;
+  };
   deployerApi?: {
     HOST_ADDRESS: string;
     BASE_ADDRESS: string;
@@ -103,6 +107,10 @@ const development: IConfig = {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
     PORT: +process.env.REDIS_PORT || 6379,
     PASSWORD: process.env.REDIS_PASSWORD || "",
+  },
+  namebase: {
+    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
+    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
   },
   deployerApi: {
     HOST_ADDRESS:
@@ -168,6 +176,10 @@ const production: IConfig = {
     PORT: +process.env.REDIS_PORT || 6379,
     PASSWORD: process.env.REDIS_PASSWORD || "",
   },
+  namebase: {
+    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
+    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
+  },
   deployerApi: {
     HOST_ADDRESS:
       process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000/deploy/",
@@ -185,7 +197,8 @@ const production: IConfig = {
       process.env.FRONTEND_APP_BASE_ADDRESS || "http://localhost:3000",
   },
   domainResolver: {
-    BASE_ADDRESS: process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
+    BASE_ADDRESS:
+      process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
@@ -230,6 +243,10 @@ const test: IConfig = {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
     PORT: +process.env.REDIS_PORT || 6379,
     PASSWORD: process.env.REDIS_PASSWORD || "",
+  },
+  namebase: {
+    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
+    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
   },
   deployerApi: {
     HOST_ADDRESS:

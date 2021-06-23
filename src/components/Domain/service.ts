@@ -45,19 +45,30 @@ const DomainService = {
             const domain = await DomainService.findById(domainId);
             if (domain.verified) return true;
 
-            const addresses: string[][] = await _resolveTxt(domain.name);
+            if(domain.type.indexOf("handshake") !== -1) {
+                console.log("handshake")
+                const records = await _resolveHandshakeRecords(domain.name.substring(
+                    domain.name.lastIndexOf("."),
+                    domain.name.length,
+                  ));
+                const txtRecord = records.filter(r => r.type === "TXT")[0];
+                const alaisRecord = records.filter(r => r.type === "ALIAS")[0];
+            } else {
+                const addresses: string[][] = await _resolveTxt(domain.name);
 
-            let verified = false;
-            addresses.forEach((address: string[]) => {
-                const index: number = address.indexOf(`argo=${domain.argoKey}`);
+                let verified = false;
+                addresses.forEach((address: string[]) => {
+                    const index: number = address.indexOf(`argo=${domain.argoKey}`);
 
-                if (index > -1) verified = true;
-            });
+                    if (index > -1) verified = true;
+                });
 
-            domain.verified = verified;
-            await domain.save();
+                domain.verified = verified;
+                await domain.save();
 
-            return verified;
+                return verified;
+            }
+
             
         } catch (error) {
             throw new Error(error.message);
@@ -78,7 +89,7 @@ const DomainService = {
 
     async remove(id: string): Promise<void> {
         try {
-            return DomainModel.remove({_id: id});
+            return DomainModel.deleteOne({_id: id});
         } catch (error) {
             throw new Error(error.message);
         }
@@ -157,10 +168,37 @@ function _resolveTxt(hostname: string): Promise<string[][]> {
     })
 }
 
+async function _resolveHandshakeRecords(hostname: string): Promise<IHandshakeRecord[]> {
+    const namebaseCred = Buffer.from(`${config.namebase.ACCESS_KEY}:${config.namebase.SECRET_KEY}`).toString('base64');
+    const authorization = `Basic ${namebaseCred}`;
+    console.log(authorization)
+    try {
+        const records = await axios.get(`https://www.namebase.io/api/v0/dns/domains/${hostname}/nameserver`, {
+            method: 'GET',
+            headers: {
+                'Authorization': authorization,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+        return records.data.records;
+    } catch (error) {
+        console.log(error)
+    }
+    
+}
+
 interface IDnsRecord {
     type: "A" | "AAAA" | "CNAME" | "TXT";
     name: string;
     content: string;
+    ttl: number;
+}
+
+interface IHandshakeRecord {
+    type: string;
+    host: string;
+    value: string;
     ttl: number;
 }
 
