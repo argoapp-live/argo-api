@@ -45,17 +45,15 @@ interface IConfig {
   };
   deployerApi?: {
     HOST_ADDRESS: string;
-    BASE_ADDRESS: string;
   };
   paymentApi?: {
     HOST_ADDRESS: string;
-    BASE_ADDRESS: string;
   };
   frontendApp?: {
-    BASE_ADDRESS: string;
+    HOST_ADDRESS: string;
   };
   domainResolver: {
-    BASE_ADDRESS: string;
+    HOST_ADDRESS: string;
     SECRET: string;
   };
 }
@@ -107,21 +105,17 @@ const development: IConfig = {
   deployerApi: {
     HOST_ADDRESS:
       process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
-    BASE_ADDRESS:
-      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000",
   },
   paymentApi: {
     HOST_ADDRESS:
       process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
-    BASE_ADDRESS:
-      process.env.PAYMENT_API_BASE_ADDRESS || "http://localhost:3001",
   },
   frontendApp: {
-    BASE_ADDRESS:
-      process.env.FRONTEND_APP_BASE_ADDRESS || "http://localhost:3000",
+    HOST_ADDRESS:
+      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
   },
   domainResolver: {
-    BASE_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
@@ -171,21 +165,18 @@ const production: IConfig = {
   deployerApi: {
     HOST_ADDRESS:
       process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
-    BASE_ADDRESS:
-      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000",
   },
   paymentApi: {
     HOST_ADDRESS:
       process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
-    BASE_ADDRESS:
-      process.env.PAYMENT_API_BASE_ADDRESS || "http://localhost:3001",
   },
   frontendApp: {
-    BASE_ADDRESS:
+    HOST_ADDRESS:
       process.env.FRONTEND_APP_BASE_ADDRESS || "http://localhost:3000",
   },
   domainResolver: {
-    BASE_ADDRESS: process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
+    HOST_ADDRESS:
+      process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
@@ -234,21 +225,17 @@ const test: IConfig = {
   deployerApi: {
     HOST_ADDRESS:
       process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
-    BASE_ADDRESS:
-      process.env.DEPLOYER_API_BASE_ADDRESS || "http://localhost:5000",
   },
   paymentApi: {
     HOST_ADDRESS:
       process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
-    BASE_ADDRESS:
-      process.env.PAYMENT_API_BASE_ADDRESS || "http://localhost:3001",
   },
   frontendApp: {
-    BASE_ADDRESS:
+    HOST_ADDRESS:
       process.env.FRONTEND_APP_BASE_ADDRESS || "http://localhost:3000",
   },
   domainResolver: {
-    BASE_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
