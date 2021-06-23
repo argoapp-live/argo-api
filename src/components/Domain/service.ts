@@ -46,13 +46,27 @@ const DomainService = {
             if (domain.verified) return true;
 
             if(domain.type.indexOf("handshake") !== -1) {
-                console.log("handshake")
+                const isSubdomain = domain.type.indexOf("subdomain") !== -1;
                 const records = await _resolveHandshakeRecords(domain.name.substring(
                     domain.name.lastIndexOf("."),
                     domain.name.length,
-                  ));
-                const txtRecord = records.filter(r => r.type === "TXT")[0];
-                const alaisRecord = records.filter(r => r.type === "ALIAS")[0];
+                ));
+
+                let verified = false
+                if(!isSubdomain) {
+                    const txtRecord = records.filter(r => r.type === "TXT" && r.host === "_contenthash")[0];
+                    const alaisRecord = records.filter(r => r.type === "ALIAS" && r.host === "@")[0];
+                    verified = txtRecord.value === `arweave://${domain.link.split("https://arweave.net/")[1]}` && alaisRecord.value === "arweave.namebase.io."
+                } else {
+                    const txtRecord = records.filter(r => r.type === "TXT" && r.host === `_contenthash.${domain.name.substring(0, domain.name.lastIndexOf("."))}`)[0];
+                    const alaisRecord = records.filter(r => r.type === "CNAME" && r.host === domain.name.substring(0, domain.name.lastIndexOf(".")))[0];
+                    verified = txtRecord.value === `arweave://${domain.link.split("https://arweave.net/")[1]}` && alaisRecord.value === "arweave.namebase.io."
+                }
+
+                domain.verified = verified;
+                await domain.save();
+
+                return verified;
             } else {
                 const addresses: string[][] = await _resolveTxt(domain.name);
 
@@ -78,7 +92,7 @@ const DomainService = {
     async update(id: string, updateQuery: Partial<IDomain>): Promise<IDomain> {
         try {
             if (updateQuery.verified && updateQuery.type && updateQuery.argoKey) throw new Error('Not valid query'); 
-            if(updateQuery.name) {
+            if(updateQuery.name || updateQuery.type?.indexOf("handshake") !== -1 && updateQuery.link) {
                 updateQuery.verified = false
             }
             return DomainModel.updateOne({ _id: id }, updateQuery);
@@ -171,7 +185,6 @@ function _resolveTxt(hostname: string): Promise<string[][]> {
 async function _resolveHandshakeRecords(hostname: string): Promise<IHandshakeRecord[]> {
     const namebaseCred = Buffer.from(`${config.namebase.ACCESS_KEY}:${config.namebase.SECRET_KEY}`).toString('base64');
     const authorization = `Basic ${namebaseCred}`;
-    console.log(authorization)
     try {
         const records = await axios.get(`https://www.namebase.io/api/v0/dns/domains/${hostname}/nameserver`, {
             method: 'GET',
