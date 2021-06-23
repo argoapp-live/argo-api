@@ -48,7 +48,7 @@ const UserService: IUserService = {
             };
 
             const update = {
-                argo_profile: user
+                argoProfile: user
             };
 
             await UserModel.findOneAndUpdate(filter, update);

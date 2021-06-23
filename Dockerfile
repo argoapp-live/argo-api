@@ -1,39 +1,28 @@
-FROM node:12
+FROM node:14-alpine as builder
 
-#can be 'development' or 'production'
-ENV NODE_ENV=development
+RUN apk update && apk add yarn curl bash python g++ make && rm -rf /var/cache/apk/*
+RUN curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin
 
-# #your app port
-ENV PORT=8080
-
-#your mongo connection options
-ENV MONGODB_URI=${MONGODB_URI}
-ENV MONGODB_DB_MAIN=${MONGODB_DB_MAIN}
-ENV MONGODB_ATLAS_OPTION=${MONGODB_ATLAS_OPTION}
-ENV SECRET=${SECRET}
-
-#your github strategy configuration
-ENV GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
-ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
-ENV GITHUB_CALLBACK_URL=${GITHUB_CALLBACK_URL}
-
-#your gitlab strategy configuration
-ENV GITLAB_CLIENT_ID=${GITLAB_CLIENT_ID}
-ENV GITLAB_CLIENT_SECRET=${GITLAB_CLIENT_SECRET}
-ENV GITLAB_CALLBACK_URL=${GITLAB_CALLBACK_URL}
-ENV GIT_HUB_APP_ID=${GIT_HUB_APP_ID}
-
-# Create app directory
 WORKDIR /app
 
-# Bundle app source
-COPY . /app
+COPY package*.json ./ tsconfig.json ./
+COPY src ./src
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm ci
+RUN npm run build
 
+# prune unnecessary files from the node_modules folder
+RUN /usr/local/bin/node-prune
 
+RUN npm ci --production
+
+FROM node:14-alpine as production
+
+WORKDIR /app
+COPY package*.json ./
+
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 8080
-CMD [ "npm", "start"]
+CMD npm start
