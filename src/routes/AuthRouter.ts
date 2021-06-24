@@ -115,7 +115,6 @@ router.get('/github/app', async (req, res) => {
     const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
     let id = Types.ObjectId(deserializedToken.session_id);
     const getUserToken = await GithubAppService.findByUserId(id);
-    console.log(getUserToken)
     const instanceAxios = axios.create({
         baseURL: 'https://api.github.com/user/installations',
         timeout: 2000,

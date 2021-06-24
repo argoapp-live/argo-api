@@ -114,7 +114,7 @@ export async function paymentFinished(req: Request, res: Response, next: NextFun
 export async function findDeploymentById(req: Request, res: Response, next: NextFunction): Promise<void> {
     let deployment: any = await DeploymentService.findById(req.params.id);
 
-    if (deployment.deploymentStatus === 'Pending') {
+    if (deployment.status === 'Pending') {
         const liveLogs = await axios.post(`${config.deployerApi.HOST_ADDRESS}/deploy/liveLogs`, { deploymentId: deployment._id });
         deployment.logs = !liveLogs.data.logs ? [] : liveLogs.data.logs;
     }

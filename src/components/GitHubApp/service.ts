@@ -113,7 +113,6 @@ const GithubAppService: IGitHubAppTokenService = {
 
     async getInstallationRepos(id: string, installationId: any): Promise<any> {
         const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: Types.ObjectId(id) });
-        console.log("Print", getUserToken, installationId)
         const instanceAxios = axios.create({
             baseURL: `https://api.github.com/user/installations/${installationId}/repositories`,
             timeout: 5000,
