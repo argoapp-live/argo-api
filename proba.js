@@ -1,4 +1,4 @@
-const dns = require('dns');
+const dns = require("dns");
 
 // dns.resolveTxt('meetrekpero.xy', (err, addresses) => {
 //     if (err) {
@@ -31,14 +31,20 @@ const dns = require('dns');
 //     // const adr2 = await dns.promises.resolveTxt('meetrekpero.xyz');
 // })();
 
-const addresses = [ [ 'argo=91e52389-86a8-4c36-9dd6-1ea4c2fb3ad8' ] ];
+// const addresses = [ [ 'argo=91e52389-86a8-4c36-9dd6-1ea4c2fb3ad8' ] ];
 
-let verified = false;
-const domainKey = '91e52389-86a8-4c36-9dd6-1ea4c2fb3ad8'
-addresses.forEach((address) => {
-    const index = address.indexOf(`argo=${domainKey}`);
+// let verified = false;
+// const domainKey = '91e52389-86a8-4c36-9dd6-1ea4c2fb3ad8'
+// addresses.forEach((address) => {
+//     const index = address.indexOf(`argo=${domainKey}`);
 
-    if (index > -1) verified = true;
-});
+//     if (index > -1) verified = true;
+// });
 
-console.log(verified);
+// console.log(verified);
+
+// var cf = require("cloudflare")({
+//   email: "team@argoapp.live",
+//   key: "your key",
+// });
+// cf.zones.browse().then((res) => console.log(res));
