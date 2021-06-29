@@ -40,10 +40,15 @@ const DomainService = {
         }
     },
 
-    async verify(domainId: string): Promise<boolean> {
+    async verify(domainId: string): Promise<IVerified> {
         try {
-            const domain = await DomainService.findById(domainId);
-            if (domain.verified) return true;
+            let domain: IDomain = await DomainService.findById(domainId);
+            if (domain.verified) {
+                return {
+                    domain,
+                    wasVerified: true
+                }
+            }
 
             const addresses: string[][] = await _resolveTxt(domain.name);
 
@@ -56,8 +61,11 @@ const DomainService = {
 
             domain.verified = verified;
             await domain.save();
-
-            return verified;
+            domain = await DomainService.findById(domainId);
+            return {
+                domain,
+                wasVerified: false
+            }
             
         } catch (error) {
             throw new Error(error.message);
@@ -162,6 +170,11 @@ interface IDnsRecord {
     name: string;
     content: string;
     ttl: number;
+}
+
+export interface IVerified {
+    domain: IDomain,
+    wasVerified: boolean
 }
 
 export default DomainService;

@@ -24,7 +24,7 @@ export function configure(app: express.Application): void {
         extended: false
     }));
     app.use(express.json({
-        limit: '15mb'
+        limit: '1mb'
     }));
     // parse Cookie header and populate req.cookies with an object keyed by the cookie names.
     app.use(cookieParser());
