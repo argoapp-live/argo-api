@@ -172,7 +172,7 @@ const production: IConfig = {
   },
   frontendApp: {
     HOST_ADDRESS:
-      process.env.FRONTEND_APP_BASE_ADDRESS || "http://localhost:3000",
+      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
   },
   domainResolver: {
     HOST_ADDRESS:
@@ -232,7 +232,7 @@ const test: IConfig = {
   },
   frontendApp: {
     HOST_ADDRESS:
-      process.env.FRONTEND_APP_BASE_ADDRESS || "http://localhost:3000",
+      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
   },
   domainResolver: {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
