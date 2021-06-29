@@ -158,7 +158,7 @@ router.get('/github/app/callback', async (req, res) => {
             clientId: config.githubApp.CLIENT_ID,
             clientSecret: config.githubApp.CLIENT_SECRET,
         });
-        const authToken = await auth({ type: 'oauth', code: req.query.code });
+        const authToken = await auth({ type: 'oauth-user', code: req.query.code });
 
         const instanceAxios = axios.create({
             baseURL: 'https://api.github.com/user',
