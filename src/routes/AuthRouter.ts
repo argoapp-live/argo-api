@@ -26,7 +26,7 @@ router.get('/github', passport.authenticate('github'));
 router.get(
     '/github/callback',
     passport.authenticate('github', {
-        failureRedirect: `${config.frontendApp.HOST_ADDRESS}/#/signup`,
+        failureRedirect: `${config.frontendApp.HOST_ADDRESS}/signup`,
     }),
     async (req, res) => {
         const userProfileModel: IUserModel = await AuthService.findProfileOrCreate({
@@ -55,7 +55,7 @@ router.get(
         );
         const token: string = await JWTTokenService.generateToken(dtos);
 
-        res.redirect(`${config.frontendApp.HOST_ADDRESS}/#/callback/github?token=${token}`);
+        res.redirect(`${config.frontendApp.HOST_ADDRESS}/callback/github?token=${token}`);
     }
 );
 
@@ -79,7 +79,7 @@ router.get(
 router.get(
     '/gitlab/callback',
     passport.authenticate('gitlab', {
-        failureRedirect: `${config.frontendApp.HOST_ADDRESS}/#/signup`,
+        failureRedirect: `${config.frontendApp.HOST_ADDRESS}/signup`,
     }),
     async (req, res) => {
         const userProfileModel: IUserModel = await AuthService.findProfileOrCreate({
@@ -106,7 +106,7 @@ router.get(
         );
         const token: string = await JWTTokenService.generateToken(dtos);
 
-        res.redirect(`${config.frontendApp.HOST_ADDRESS}/#/callback/github?token=${token}`);
+        res.redirect(`${config.frontendApp.HOST_ADDRESS}/callback/github?token=${token}`);
     }
 );
 
@@ -137,7 +137,7 @@ router.get('/github/app/auth/:id', async (req, res) => {
     const getUserToken = await GithubAppService.findByUserId(Types.ObjectId(`${req.params.id}`));
 
     if (getUserToken) {
-        res.redirect(`${config.frontendApp.HOST_ADDRESS}/#/github/callback/app`);
+        res.redirect(`${config.frontendApp.HOST_ADDRESS}/github/callback/app`);
     }
     else {
         res.redirect(config.githubApp.CALLBACK_URL);
@@ -168,7 +168,7 @@ router.get('/github/app/callback', async (req, res) => {
         const userInfo = await instanceAxios.get();
     
         await GithubAppService.findAndCreate(userInfo.data.id, authToken.token, +req.query.installation_id);
-        res.redirect(`${config.frontendApp.HOST_ADDRESS}/#/github/callback/app`);
+        res.redirect(`${config.frontendApp.HOST_ADDRESS}/github/callback/app`);
     } catch (error) {
         console.log("NEW ERROR" , error.message)
     }
