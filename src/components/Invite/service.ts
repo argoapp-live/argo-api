@@ -39,7 +39,7 @@ const InvitationService: IInvitationService = {
                 orgName,
                 invitingUser,
                 inviteLink: config.frontendApp.HOST_ADDRESS +
-                    `/invite/callback?ref=${encodeURIComponent(inviteId)}&orgName=${encodeURIComponent(orgName)}`,
+                    `/#/invite/callback?ref=${encodeURIComponent(inviteId)}&orgName=${encodeURIComponent(orgName)}`,
             };
 
             template.render(locals, (err: any, results: any) => {
