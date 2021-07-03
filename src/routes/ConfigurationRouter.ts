@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { ConfigurationComponent } from '../components';
 
@@ -8,4 +7,4 @@ router.post('/', ConfigurationComponent.create);
 router.get('/', ConfigurationComponent.findOne);
 router.get('/:id', ConfigurationComponent.findById);
 
-export default router
+export default router;

@@ -18,20 +18,25 @@ export async function sendInvite(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-    try {
-        if (req.body) {
-            const invitedUser: IUserInvite = await InvitationService.insert(req.body);
-            const response: Boolean = await InvitationService.sendMail(req.body.userEmail, invitedUser.id, req.body.orgName, req.body.invitingUser);
+  try {
+    if (req.body) {
+      const invitedUser: IUserInvite = await InvitationService.insert(req.body);
+      const response: Boolean = await InvitationService.sendMail(
+        req.body.userEmail,
+        invitedUser.id,
+        req.body.orgName,
+        req.body.invitingUser
+      );
 
-            if (response) {
-                res.status(200).json({ message: 'Invitation send' });
-            }
-        } else {
-            res.status(400).json({ message: 'Invitaion failed' });
-        }
-    } catch (error) {
-        next(new HttpError(error.message.status, error.message));
+      if (response) {
+        res.status(200).json({ message: 'Invitation send' });
+      }
+    } else {
+      res.status(400).json({ message: 'Invitaion failed' });
     }
+  } catch (error) {
+    next(new HttpError(error.message.status, error.message));
+  }
 }
 
 /**
@@ -46,20 +51,33 @@ export async function updateInvite(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-    try {
-        if (req.body) {
-            const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-            const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
+  try {
+    if (req.body) {
+      const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(
+        req
+      );
+      const deserializedToken: any = await JWTTokenService.VerifyToken(
+        argoDecodedHeaderToken
+      );
 
-            const user: any = await InvitationService.findOneAndUpdate(req.body.id, req.body.status);
+      const user: any = await InvitationService.findOneAndUpdate(
+        req.body.id,
+        req.body.status
+      );
 
-            await OrganizationService.findOneAndUpdate(user.organization._id, deserializedToken.session_id);
-            await UserService.updateUserOrganization(user.organization._id, deserializedToken.session_id);
-            res.status(200).json(true);
-        } else {
-            res.status(400);
-        }
-    } catch (error) {
-        next(new HttpError(error.message.status, error.message));
+      await OrganizationService.findOneAndUpdate(
+        user.organization._id,
+        deserializedToken.session_id
+      );
+      await UserService.updateUserOrganization(
+        user.organization._id,
+        deserializedToken.session_id
+      );
+      res.status(200).json(true);
+    } else {
+      res.status(400);
     }
+  } catch (error) {
+    next(new HttpError(error.message.status, error.message));
+  }
 }

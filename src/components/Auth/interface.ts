@@ -1,5 +1,5 @@
-import { IUserModel, IUser } from "../User/model";
-import { Request } from "express";
+import { IUserModel, IUser } from '../User/model';
+import { Request } from 'express';
 
 /**
  * @export

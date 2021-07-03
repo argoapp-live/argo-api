@@ -10,14 +10,14 @@ import * as ConfigurationComponent from './Configuration';
 import * as DomainComponent from './Domain';
 
 export {
-    AuthComponent,
-    ConfigurationComponent,
-    UserComponent,
-    OrganizationComponent,
-    ProjectComponent,
-    InvitationComponent,
-    DeploymentComponent,
-    WebHookComponent,
-    WalletComponent,
-    DomainComponent,
+  AuthComponent,
+  ConfigurationComponent,
+  UserComponent,
+  OrganizationComponent,
+  ProjectComponent,
+  InvitationComponent,
+  DeploymentComponent,
+  WebHookComponent,
+  WalletComponent,
+  DomainComponent,
 };

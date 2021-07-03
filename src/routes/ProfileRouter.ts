@@ -12,7 +12,6 @@ router.post('/', UserComponent.create);
 router.delete('/:id', UserComponent.remove);
 router.put('/', UserComponent.update);
 
-
 /**
  * @export {express.Router}
  */

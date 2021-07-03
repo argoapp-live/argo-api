@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 import { DomainComponent } from '../components';
 
 const router: Router = Router();

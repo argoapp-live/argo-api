@@ -8,70 +8,61 @@ import { IOrganization } from './model';
  * @extends Validation
  */
 class OrganizationValidation extends Validation {
+  /**
+   * Creates an instance of UserValidation.
+   * @memberof OrganizationValidation
+   */
+  constructor() {
+    super();
+  }
 
-    /**
-     * Creates an instance of UserValidation.
-     * @memberof OrganizationValidation
-     */
-    constructor() {
-        super();
-    }
+  /**
+   * @param {IOrganization} params
+   * @returns {Joi.ValidationResult<IOrganization >}
+   * @memberof OrganizationValidation
+   */
+  createUser(params: IOrganization): Joi.ValidationResult<IOrganization> {
+    const schema: Joi.Schema = Joi.object().keys({
+      name: Joi.string().required(),
+      email: Joi.string()
+        .email({
+          minDomainAtoms: 2,
+        })
+        .required(),
+    });
 
-    /**
-     * @param {IOrganization} params
-     * @returns {Joi.ValidationResult<IOrganization >}
-     * @memberof OrganizationValidation
-     */
-    createUser(
-        params: IOrganization
-    ): Joi.ValidationResult < IOrganization > {
-        const schema: Joi.Schema = Joi.object().keys({
-            name: Joi.string().required(),
-            email: Joi.string().email({
-                minDomainAtoms: 2
-            }).required()
-        });
+    return Joi.validate(params, schema);
+  }
 
-        return Joi.validate(params, schema);
-    }
+  /**
+   * @param {{ id: string }} body
+   * @returns {Joi.ValidationResult<{ id: string }>}
+   * @memberof OrganizationValidation
+   */
+  getUser(body: { id: string }): Joi.ValidationResult<{
+    id: string;
+  }> {
+    const schema: Joi.Schema = Joi.object().keys({
+      id: this.customJoi.objectId().required(),
+    });
 
-    /**
-     * @param {{ id: string }} body
-     * @returns {Joi.ValidationResult<{ id: string }>}
-     * @memberof OrganizationValidation
-     */
-    getUser(
-        body: {
-            id: string
-        }
-    ): Joi.ValidationResult < {
-        id: string
-    } > {
-        const schema: Joi.Schema = Joi.object().keys({
-            id: this.customJoi.objectId().required()
-        });
+    return Joi.validate(body, schema);
+  }
 
-        return Joi.validate(body, schema);
-    }
+  /**
+   * @param {{ id: string }} body
+   * @returns {Joi.ValidationResult<{ id: string }>}
+   * @memberof OrganizationValidation
+   */
+  removeUser(body: { id: string }): Joi.ValidationResult<{
+    id: string;
+  }> {
+    const schema: Joi.Schema = Joi.object().keys({
+      id: this.customJoi.objectId().required(),
+    });
 
-    /**
-     * @param {{ id: string }} body
-     * @returns {Joi.ValidationResult<{ id: string }>}
-     * @memberof OrganizationValidation
-     */
-    removeUser(
-        body: {
-            id: string
-        }
-    ): Joi.ValidationResult < {
-        id: string
-    } > {
-        const schema: Joi.Schema = Joi.object().keys({
-            id: this.customJoi.objectId().required()
-        });
-
-        return Joi.validate(body, schema);
-    }
+    return Joi.validate(body, schema);
+  }
 }
 
 export default new OrganizationValidation();

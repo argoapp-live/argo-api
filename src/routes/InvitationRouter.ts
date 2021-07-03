@@ -1,8 +1,6 @@
-
 import { Router } from 'express';
 
 import { InvitationComponent } from '../components';
-
 
 const router: Router = Router();
 

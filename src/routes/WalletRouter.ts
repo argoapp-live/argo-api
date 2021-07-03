@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 
 import { WalletComponent } from '../components';

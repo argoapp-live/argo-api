@@ -13,7 +13,7 @@
 > Important Notice: ArGo is in its Alpha stage. If you have a suggestion, idea, or find a bug, please report it! The ArGo team will not be held accountable for any funds lost.
 
 ## About ArGo
-ArGo is a simple & powerful platform to deploy your frontend app to Arweave Permaweb where your app will live for eternity.
+ArGo is a simple & powerful platform to deploy your frontend app to Decentralised Cloud Protocol.
 
 ## Installation for argo-api development
 Follow below steps to run ARGO API in your local

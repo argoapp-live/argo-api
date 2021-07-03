@@ -7,26 +7,26 @@ import { IOrganization } from '../Organization/model';
  * @interface IProfile
  */
 export interface IProfile {
-    id: number;
-    username: string;
-    avatar_url: string;
-    name: string;
-    url: string;
-    html_url: string;
-    followers_url: string;
-    following_url: string;
-    gists_url: string;
-    starred_url: string;
-    subscriptions_url: string;
-    organizations_url: string;
-    repos_url: string;
-    events_url: string;
-    received_events_url: string;
-    public_repos: number;
-    public_gists: number;
-    followers: number;
-    following: number;
-    email: string;
+  id: number;
+  username: string;
+  avatar_url: string;
+  name: string;
+  url: string;
+  html_url: string;
+  followers_url: string;
+  following_url: string;
+  gists_url: string;
+  starred_url: string;
+  subscriptions_url: string;
+  organizations_url: string;
+  repos_url: string;
+  events_url: string;
+  received_events_url: string;
+  public_repos: number;
+  public_gists: number;
+  followers: number;
+  following: number;
+  email: string;
 }
 
 /**
@@ -34,15 +34,15 @@ export interface IProfile {
  * @interface IProvider
  */
 export interface IProvider {
-    name: string;
+  name: string;
 }
 
 export interface IArgoUser {
-    username: string;
-    avatar: string;
-    is_active?: boolean;
-    name: string;
-    email: string;
+  username: string;
+  avatar: string;
+  is_active?: boolean;
+  name: string;
+  email: string;
 }
 
 /**
@@ -50,11 +50,10 @@ export interface IArgoUser {
  * @interface IUser
  */
 export interface IUser {
-    providerProfile: IProfile;
-    argoProfile: IArgoUser;
-    provider: IProvider;
+  providerProfile: IProfile;
+  argoProfile: IArgoUser;
+  provider: IProvider;
 }
-
 
 /**
  * @export
@@ -62,26 +61,26 @@ export interface IUser {
  * @extends {Document}
  */
 export interface IProfileModel extends Document {
-    id: number;
-    username: string;
-    avatar_url: string;
-    name: string;
-    email: string;
-    url: string;
-    html_url: string;
-    followers_url: string;
-    following_url: string;
-    gists_url: string;
-    starred_url: string;
-    subscriptions_url: string;
-    organizations_url: string;
-    repos_url: string;
-    events_url: string;
-    received_events_url: string;
-    public_repos: number;
-    public_gists: number;
-    followers: number;
-    following: number;
+  id: number;
+  username: string;
+  avatar_url: string;
+  name: string;
+  email: string;
+  url: string;
+  html_url: string;
+  followers_url: string;
+  following_url: string;
+  gists_url: string;
+  starred_url: string;
+  subscriptions_url: string;
+  organizations_url: string;
+  repos_url: string;
+  events_url: string;
+  received_events_url: string;
+  public_repos: number;
+  public_gists: number;
+  followers: number;
+  following: number;
 }
 
 /**
@@ -90,15 +89,15 @@ export interface IProfileModel extends Document {
  * @extends {Document}
  */
 export interface IProviderModel extends Document {
-    name: string;
+  name: string;
 }
 
 export interface IArgoUserModel extends Document {
-    username: string;
-    avatar: string;
-    is_active?: boolean;
-    name: string;
-    email: string;
+  username: string;
+  avatar: string;
+  is_active?: boolean;
+  name: string;
+  email: string;
 }
 
 /**
@@ -107,16 +106,16 @@ export interface IArgoUserModel extends Document {
  * @extends {Document}
  */
 export interface IUserModel extends Document {
-    providerProfile: IProfileModel;
-    argoProfile: IArgoUser;
-    provider: IProviderModel;
-    createdAt: Date;
-    updatedAt: Date;
-    organizations: [IOrganization['_id']];
+  providerProfile: IProfileModel;
+  argoProfile: IArgoUser;
+  provider: IProviderModel;
+  createdAt: Date;
+  updatedAt: Date;
+  organizations: [IOrganization['_id']];
 }
 
 const ProviderSchema: Schema = new Schema({
-    name: String
+  name: String,
 });
 
 /**
@@ -148,52 +147,50 @@ const ProviderSchema: Schema = new Schema({
  *      items:
  *        $ref: '#/components/schemas/UserSchema'
  */
-const UserSchema: Schema = new Schema({
+const UserSchema: Schema = new Schema(
+  {
     providerProfile: {
-        id: { type: Number, unique: true },
-        username: String,
-        avatar_url: String,
-        name: String,
-        email: String,
-        url: String,
-        html_url: String,
-        followers_url: String,
-        following_url: String,
-        gists_url: String,
-        starred_url: String,
-        subscriptions_url: String,
-        organizations_url: String,
-        repos_url: String,
-        events_url: String,
-        received_events_url: String,
-        public_repos: Number,
-        public_gists: Number,
-        followers: Number,
-        following: Number
+      id: { type: Number, unique: true },
+      username: String,
+      avatar_url: String,
+      name: String,
+      email: String,
+      url: String,
+      html_url: String,
+      followers_url: String,
+      following_url: String,
+      gists_url: String,
+      starred_url: String,
+      subscriptions_url: String,
+      organizations_url: String,
+      repos_url: String,
+      events_url: String,
+      received_events_url: String,
+      public_repos: Number,
+      public_gists: Number,
+      followers: Number,
+      following: Number,
     },
     argoProfile: {
-        username: String,
-        avatar: String,
-        name: String,
-        email: String,
-        is_active: { type: Boolean, default: true }
+      username: String,
+      avatar: String,
+      name: String,
+      email: String,
+      is_active: { type: Boolean, default: true },
     },
     provider: ProviderSchema,
     organizations: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Organization'
-        }
-    ]
-}, {
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Organization',
+      },
+    ],
+  },
+  {
     collection: 'users',
     timestamps: true,
-    versionKey: false
-});
-
-
-
+    versionKey: false,
+  }
+);
 
 export default connections.db.model<IUserModel>('UserModel', UserSchema);
-
-

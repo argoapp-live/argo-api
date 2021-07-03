@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -58,15 +58,15 @@ interface IConfig {
   };
 }
 
-const NODE_ENV: string = process.env.NODE_ENV || "test";
+const NODE_ENV: string = process.env.NODE_ENV || 'test';
 
 const development: IConfig = {
   port: process.env.PORT || 3000,
   database: {
-    MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/",
-    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || "argo_db",
+    MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/',
+    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || 'argo_db',
     MONGODB_ATLAS_OPTION:
-      process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
+      process.env.MONGODB_ATLAS_OPTION || 'retryWrites=true&w=majority',
   },
   github: {
     CLIENT_ID: process.env.GITHUB_CLIENT_ID,
@@ -98,24 +98,24 @@ const development: IConfig = {
     KEY: process.env.CLOUDFLARE_KEY,
   },
   redis: {
-    HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
+    HOST: process.env.REDIS_ENDPOINT || '127.0.0.1',
     PORT: +process.env.REDIS_PORT || 6379,
-    PASSWORD: process.env.REDIS_PASSWORD || "",
+    PASSWORD: process.env.REDIS_PASSWORD || '',
   },
   deployerApi: {
     HOST_ADDRESS:
-      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
+      process.env.DEPLOYER_API_HOST_ADDRESS || 'http://localhost:5000',
   },
   paymentApi: {
     HOST_ADDRESS:
-      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
+      process.env.PAYMENT_API_HOST_ADDRESS || 'http://localhost:3001',
   },
   frontendApp: {
     HOST_ADDRESS:
-      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
+      process.env.FRONTEND_APP_HOST_ADDRESS || 'http://localhost:3000',
   },
   domainResolver: {
-    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || 'http://localhost:3000',
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
@@ -123,10 +123,10 @@ const development: IConfig = {
 const production: IConfig = {
   port: process.env.PORT || 3000,
   database: {
-    MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/",
-    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || "argo_db",
+    MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/',
+    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || 'argo_db',
     MONGODB_ATLAS_OPTION:
-      process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
+      process.env.MONGODB_ATLAS_OPTION || 'retryWrites=true&w=majority',
   },
   github: {
     CLIENT_ID: process.env.GITHUB_CLIENT_ID,
@@ -158,35 +158,35 @@ const production: IConfig = {
     KEY: process.env.CLOUDFLARE_KEY,
   },
   redis: {
-    HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
+    HOST: process.env.REDIS_ENDPOINT || '127.0.0.1',
     PORT: +process.env.REDIS_PORT || 6379,
-    PASSWORD: process.env.REDIS_PASSWORD || "",
+    PASSWORD: process.env.REDIS_PASSWORD || '',
   },
   deployerApi: {
     HOST_ADDRESS:
-      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
+      process.env.DEPLOYER_API_HOST_ADDRESS || 'http://localhost:5000',
   },
   paymentApi: {
     HOST_ADDRESS:
-      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
+      process.env.PAYMENT_API_HOST_ADDRESS || 'http://localhost:3001',
   },
   frontendApp: {
     HOST_ADDRESS:
-      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
+      process.env.FRONTEND_APP_HOST_ADDRESS || 'http://localhost:3000',
   },
   domainResolver: {
     HOST_ADDRESS:
-      process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
+      process.env.DOMAIN_RESOLVER_BASE_ADDRESS || 'http://localhost:3000',
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
 const test: IConfig = {
   port: process.env.PORT || 3000,
   database: {
-    MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/",
-    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || "argo_db",
+    MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/',
+    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || 'argo_db',
     MONGODB_ATLAS_OPTION:
-      process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
+      process.env.MONGODB_ATLAS_OPTION || 'retryWrites=true&w=majority',
   },
   github: {
     CLIENT_ID: process.env.GITHUB_CLIENT_ID,
@@ -218,24 +218,24 @@ const test: IConfig = {
     KEY: process.env.CLOUDFLARE_KEY,
   },
   redis: {
-    HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
+    HOST: process.env.REDIS_ENDPOINT || '127.0.0.1',
     PORT: +process.env.REDIS_PORT || 6379,
-    PASSWORD: process.env.REDIS_PASSWORD || "",
+    PASSWORD: process.env.REDIS_PASSWORD || '',
   },
   deployerApi: {
     HOST_ADDRESS:
-      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
+      process.env.DEPLOYER_API_HOST_ADDRESS || 'http://localhost:5000',
   },
   paymentApi: {
     HOST_ADDRESS:
-      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
+      process.env.PAYMENT_API_HOST_ADDRESS || 'http://localhost:3001',
   },
   frontendApp: {
     HOST_ADDRESS:
-      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
+      process.env.FRONTEND_APP_HOST_ADDRESS || 'http://localhost:3000',
   },
   domainResolver: {
-    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || 'http://localhost:3000',
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
