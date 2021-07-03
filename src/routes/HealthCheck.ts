@@ -11,7 +11,7 @@ router.get(
   '/paymentAlive',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const response = await axios.get(
+      const response: any = await axios.get(
         `${config.paymentApi.HOST_ADDRESS}/status`
       );
 

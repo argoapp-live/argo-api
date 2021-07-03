@@ -5,7 +5,7 @@ const router: Router = Router();
 
 router.post('/', ProjectComponent.create);
 
-router.get('/github/repo', ProjectComponent.GetUserRepos);
+router.get('/github/repo', ProjectComponent.getUserRepos);
 
 router.get('/:id', ProjectComponent.findOne);
 router.put('/:id', ProjectComponent.findOneAndUpdate);

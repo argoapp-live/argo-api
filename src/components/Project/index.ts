@@ -8,6 +8,8 @@ import ProjectService from './service';
 import DeploymentService from '../Deployment/service';
 import DomainService from '../Domain/service';
 import { Octokit } from '@octokit/core';
+import { IDeployment } from '../Deployment/model';
+import { IDomain } from '../Domain/model';
 
 /**
  * @export
@@ -25,12 +27,12 @@ export async function findOne(
     const project: any = await ProjectService.findById(req.params.id);
 
     if (project) {
-      const deployments = await DeploymentService.find({
+      const deployments: IDeployment[] = await DeploymentService.find({
         project: req.params.id,
       });
 
       project._doc.deployments = deployments;
-      const domains = await DomainService.find({ projectId: req.params.id });
+      const domains: IDomain[] = await DomainService.find({ projectId: req.params.id });
 
       project._doc.domains = domains.filter(
         (domain) => domain.type === 'domain'
@@ -76,7 +78,7 @@ export async function create(
  * @param {NextFunction} next
  * @returns {Promise < void >}
  */
-export async function GetUserRepos(
+export async function getUserRepos(
   req: Request,
   res: Response,
   next: NextFunction
@@ -88,8 +90,8 @@ export async function GetUserRepos(
     const argoSession: IArgoSessionModel =
       await JWTTokenService.FindOneBySessionId(decodeToken.session_id);
 
-    const octokit = new Octokit({ auth: `${argoSession.access_token}` });
-    const response = await octokit.request('GET /user/repos', {
+    const octokit: Octokit = new Octokit({ auth: `${argoSession.access_token}` });
+    const response: any = await octokit.request('GET /user/repos', {
       type: 'all',
       per_page: 100,
     });
@@ -129,7 +131,7 @@ export async function getInstallationRepos(
     const deserializedToken: any = await JWTTokenService.VerifyToken(
       argoDecodedHeaderToken
     );
-    const response = await GithubAppService.getInstallationRepos(
+    const response: any = await GithubAppService.getInstallationRepos(
       deserializedToken.session_id,
       req.params.installationId
     );
@@ -153,7 +155,7 @@ export async function getBranches(
     const deserializedToken: any = await JWTTokenService.VerifyToken(
       argoDecodedHeaderToken
     );
-    const response = await GithubAppService.getBranches(
+    const response: any = await GithubAppService.getBranches(
       deserializedToken.session_id,
       req.query.branches
     );

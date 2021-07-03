@@ -12,11 +12,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios';
 
-const fullPath = path.join(
+const fullPath: string = path.join(
   __dirname,
   `../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`
 );
-const privateKey = fs.readFileSync(fullPath, 'utf8');
+const privateKey: string = fs.readFileSync(fullPath, 'utf8');
 /**
  * @constant {express.Router}
  */
@@ -167,8 +167,8 @@ router.get('/github/app/new', async (req, res) => {
 router.get('/github/app/callback', async (req, res) => {
   try {
     const auth = createAppAuth({
-      appId: config.githubApp.APP_ID,
       privateKey,
+      appId: config.githubApp.APP_ID,
       installationId: +req.query.installation_id,
       clientId: config.githubApp.CLIENT_ID,
       clientSecret: config.githubApp.CLIENT_SECRET,
