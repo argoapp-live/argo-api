@@ -2,7 +2,10 @@ import { Types } from 'mongoose';
 import { IOrganization } from '../Organization/model';
 import OrganizationService from '../Organization/service';
 import UserModel, { IUserModel, IUser } from '../User/model';
+import UserService from '../User/service';
 import { IAuthService } from './interface';
+import { Request } from 'express';
+import JWTTokenService from '../Session/service';
 
 /**
  * @export
@@ -18,12 +21,12 @@ const AuthService: IAuthService = {
     async findProfileOrCreate(body: IUser): Promise<IUserModel> {
         try {
             const user: IUserModel = new UserModel({
-                provider_profile: body.provider_profile,
+                providerProfile: body.providerProfile,
                 provider: body.provider,
-                argo_profile: body.argo_profile
+                argoProfile: body.argoProfile
             });
             const query: IUserModel = await UserModel.findOne({
-                'provider_profile.id': body.provider_profile.id
+                'providerProfile.id': body.providerProfile.id
             });
 
             if (query) {
@@ -33,7 +36,7 @@ const AuthService: IAuthService = {
             }
             const saved: IUserModel = await user.save();
 
-            const org: IOrganization = await OrganizationService.insertDefault(saved.provider_profile.username, saved.id);
+            const org: IOrganization = await OrganizationService.insertDefault(saved.providerProfile.username, saved.id);
 
             const filter: any = {
                 _id: Types.ObjectId(saved.id)
@@ -41,13 +44,39 @@ const AuthService: IAuthService = {
             const update: any = {
                 $addToSet: { organizations: [Types.ObjectId(org.id)] }
             };
-            const updatedModel: IUserModel = await UserModel.updateOne(filter, update);
+            await UserModel.updateOne(filter, update);
 
             return saved;
         } catch (error) {
             throw new Error(error);
         }
     },
+
+    async deseralizeToken(req: Request): Promise<any> {
+        const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
+        return JWTTokenService.VerifyToken(argoDecodedHeaderToken);
+    },
+
+    async authUser(req: Request): Promise<IUserModel> {
+        const deserializedToken: any = await this.deseralizeToken(req);
+        const user: IUserModel = await UserService.findOne(deserializedToken.session_id);
+    
+        const { orgId }: { orgId: string } = req.body;
+        const organization: IOrganization = await OrganizationService.findOne(orgId);
+    
+        if(!organization) {
+            return null;
+        }
+            
+        const isUserInOrganization: boolean = user.organizations.some((orgUser) => {
+            return orgUser._id.equals(orgId)
+        });
+    
+        if (!isUserInOrganization) {
+            return null;
+        }
+        return user;
+    }
 };
 
 export default AuthService;

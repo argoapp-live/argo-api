@@ -1,4 +1,4 @@
-import { IOrganization, OrganizationModel } from './model';
+import { IOrganization, OrganizationModel} from './model';
 import { IOrganizationService } from './interface';
 import { Types } from 'mongoose';
 
@@ -11,9 +11,9 @@ const OrganizationService: IOrganizationService = {
      * @returns {Promise < IOrganization[] >}
      * @memberof UserService
      */
-    async findAll(): Promise<IOrganization[]> {
+    async find(query: Partial<IOrganization>): Promise<IOrganization[]> {
         try {
-            return await OrganizationModel.find({});
+            return OrganizationModel.find(query);
         } catch (error) {
             throw new Error(error.message);
         }
@@ -26,7 +26,7 @@ const OrganizationService: IOrganizationService = {
      */
     async findOne(id: string): Promise<IOrganization> {
         try {
-            const organization: IOrganization = await OrganizationModel.findOne({ _id: Types.ObjectId(id) }).populate('users').populate('repositories');
+            const organization: IOrganization = await OrganizationModel.findOne({ _id: Types.ObjectId(id) }).populate('users');
 
             return organization;
         } catch (error) {
@@ -96,7 +96,6 @@ const OrganizationService: IOrganizationService = {
 
     async findOneAndUpdate(Id: string, userId: string): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: Id,
             };
@@ -111,9 +110,24 @@ const OrganizationService: IOrganizationService = {
         }
     },
 
+    async updatePayment(organisationId: string, paymentId: string): Promise<any> {
+        try {
+            const filter: any = {
+                _id: organisationId,
+            };
+            const update: any = {
+                $addToSet: { payments: [paymentId] },
+            };
+            const updatedOrganization: any = await OrganizationModel.findOneAndUpdate(filter, update);
+
+            return updatedOrganization;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
     async updateOrganization(org_id: string, org: any): Promise<any> {
         try {
-            console.log('find one and update organization');
             const filter: any = {
                 _id: Types.ObjectId(org_id),
             };
@@ -127,6 +141,24 @@ const OrganizationService: IOrganizationService = {
             const updatedOrganization: any = await OrganizationModel.findOneAndUpdate(filter, update);
 
             return true;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async updateWallet(organisationId: string, walletId: string): Promise<any> {
+        try {
+            const filter: any = {
+                _id: Types.ObjectId(organisationId),
+            };
+
+            const wallet_id: Types.ObjectId = Types.ObjectId(walletId);
+
+            const update: any = {
+                wallet: wallet_id,
+            };
+
+            return OrganizationModel.findOneAndUpdate(filter, update);
         } catch (error) {
             throw new Error(error.message);
         }

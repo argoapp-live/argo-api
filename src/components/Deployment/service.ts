@@ -1,96 +1,68 @@
 import { Types } from "mongoose";
-import { DeploymentModel, IDeployment, IRepository, OrganizationModel, RepositoryModel } from "../Organization/model";
-import { IDeploymentDto, IDeploymentService } from "./interface";
+import { IDeployment, DeploymentModel } from './model';
+import { IDeploymentService } from "./service-interface";
 
 
 const DeploymentService: IDeploymentService = {
+    async create(topic: string, projectId: string, configurationId: string): Promise<IDeployment> {
 
-    async createAndDeployRepo(body: any, topic: string): Promise<any> {
-        // create deployment and
-        const deployment: IDeploymentDto = {
-            sitePreview: '',
-            commitId: '00192',
-            log: ['Build started'],
-            createdAt: new Date(),
-            topic: topic,
-            branch: body.branch,
-            package_manager: body.package_manager,
-            build_command: body.build_command,
-            publish_dir: body.publish_dir,
-            deploymentStatus: "Pending",
-            github_url: body.github_url,
-            framework: body.framework,
-            workspace: body.workspace
+        const deployment: any = {
+            topic,
+            project: projectId,
+            configuration: configurationId
         };
-
-        const deploymentModel: IDeployment = await DeploymentModel.create(deployment);
-        // fetch repo with url name
-        const repositoryId: any = await findOneAndCreateRepo(body, deploymentModel._id);
-        return {
-            deploymentId: deploymentModel._id,
-            repositoryId: repositoryId._id
-        }
+        
+        return DeploymentModel.create(deployment);
     },
-    async FindOneDeployment(deploymentId: string): Promise<IDeployment> {
-        // create deployment and
 
-        const filter = {
+    async findById(id: string): Promise<IDeployment> {
+        return DeploymentModel.findById(id).populate("configuration").populate("project");
+    },
+
+    async findOne(query: Partial<IDeployment>): Promise<IDeployment> {
+        return DeploymentModel.findOne(query).populate("configuration");
+    },
+
+    async findLatest(projectId: string): Promise<IDeployment> {
+        const latest = await DeploymentModel.find({ project: Types.ObjectId(projectId) }).sort({"updatedAt": "desc"}).populate("configuration")
+        return latest[0];
+    },
+
+    async findLatestDeployed(projectId: string): Promise<IDeployment> {
+        const latest = await DeploymentModel.find({ project: Types.ObjectId(projectId), status: "Deployed" }).sort({"updatedAt": "desc"}).populate("configuration")
+        return latest[0];
+    },
+
+    async find(query: Partial<IDeployment>): Promise<Array<IDeployment>> {
+        return DeploymentModel.find(query).populate("configuration").populate("project")
+    },
+
+    async updateFinishedDeployment(deploymentId: string, sitePreview: string, status: string, buildTime: number, logs: Array<string>): Promise<IDeployment> {
+        const condition = {
             '_id': Types.ObjectId(deploymentId)
         }
-        const deployment: IDeployment = await DeploymentModel.findById(filter);
-        return deployment;
-    }
-}
 
-
-const findOneAndCreateRepo = async (body: any, deploymentId: Types.ObjectId): Promise<any> => {
-    const filter = {
-        'url': body.github_url,
-        'orgId': Types.ObjectId(body.orgId)
-    }
-
-    console.log('giturl: ', body.github_url);
-    const findOneRepo: IRepository = await RepositoryModel.findOne(filter);
-
-    if (findOneRepo) {
-
-        console.log(findOneRepo);
-        const filter = {
-            '_id': Types.ObjectId(findOneRepo._id)
+        const update = {
+            sitePreview,
+            status,
+            buildTime,
+            logs,
         }
-        const updateDeploymentId = {
-            $addToSet: {
-                deployments: [deploymentId]
-            },
-            updateDate: new Date()
-        }
-        await RepositoryModel.findOneAndUpdate(filter, updateDeploymentId);
-        return findOneRepo._id;
-    }
 
-    const update = {
-        name: body.folder_name,
-        url: body.github_url,
-        'webHook': "xyz",
-        deployments: [deploymentId],
-        orgId: Types.ObjectId(body.orgId),
-        package_manager: body.package_manager,
-        build_command: body.build_command,
-        publish_dir: body.publish_dir,
-        branch: body.branch,
-        framework: body.framework,
-        workspace: body.workspace
+        return DeploymentModel.findOneAndUpdate(condition, update);
+    },
+
+    async updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment> {
+        const condition = {
+            '_id': Types.ObjectId(deploymentId)
+        }
         
-    };
-    const repository: IRepository = await RepositoryModel.create(update);
-    const orgFilter = {
-        '_id': Types.ObjectId(body.orgId)
-    };
-    const updateOrg: any = {
-        $addToSet: { repositories: [Types.ObjectId(repository._id)] },
-    };
-    await OrganizationModel.findOneAndUpdate(orgFilter, updateOrg);
-    return repository._id;
+        const update = {
+            paymentId,
+        }
+
+        return DeploymentModel.findOneAndUpdate(condition, update);
+    }
 }
 
 export default DeploymentService;

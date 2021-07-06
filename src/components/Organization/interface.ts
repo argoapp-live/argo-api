@@ -10,7 +10,7 @@ export interface IOrganizationService {
      * @returns {Promise<IOrganization[]>}
      * @memberof IOrganizationService
      */
-    findAll(): Promise<IOrganization[]>;
+    find(query: Partial<IOrganization>): Promise<IOrganization[]>;
 
     /**
      * @param {string} id
@@ -44,4 +44,10 @@ export interface IOrganizationService {
     findOneAndUpdate(Id: string, userId: string): Promise<any>;
 
     updateOrganization(org_id: string, org: any): Promise<any>;
+
+    updatePayment(organisationId: string, paymentId: string): Promise<any>;
+
+    updateWallet(organisationId: string, walletId: string): Promise<any>;
+
+    // hasPendingDeployment(organisationId: string): Promise<boolean>;
 }
