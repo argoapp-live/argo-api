@@ -21,6 +21,7 @@ export async function deploy(
   next: NextFunction
 ): Promise<void> {
   req.body as IRequestBody;
+
   const {
     organizationId,
     githubUrl,
@@ -35,6 +36,7 @@ export async function deploy(
   const configuration: IConfiguration = await ConfigurationService.findById(
     configurationId
   );
+
   if (!configuration) {
   }
   const {
@@ -48,13 +50,14 @@ export async function deploy(
   } = configuration;
 
   const user: IUserModel = await AuthService.authUser(req);
+
   if (!user) {
   }
 
-  //TODO check pending deployment
+  // TODO check pending deployment
 
   const wallet: IWalletModel = await WalletService.findOne({ organizationId });
-  //TODO check wallet exists for the organization
+  // TODO check wallet exists for the organization
 
   const result: any = await ProjectService.createIfNotExists(
     githubUrl,
@@ -119,7 +122,7 @@ export async function deploy(
   await ProjectService.setLatestDeployment(project._id, deployment._id);
 
   axios
-    .post(`${config.flaskApi.HOST_ADDRESS}`, body)
+    .post(`${config.deployerApi.HOST_ADDRESS}`, body)
     .then((response: any) => console.log("FROM DEPLOYMENT", response));
 
   res.status(200).json({
@@ -188,18 +191,20 @@ export async function findDeploymentById(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  let deployment: any = await DeploymentService.findById(req.params.id);
+  const deployment: any = await DeploymentService.findById(req.params.id);
 
-  if (deployment.deploymentStatus === "Pending") {
+  if (deployment.status === "Pending") {
     const liveLogs = await axios.post(
-      `${config.flaskApi.HOST_ADDRESS}liveLogs`,
+      `${config.deployerApi.HOST_ADDRESS}/deploy/liveLogs`,
       { deploymentId: deployment._id }
     );
+
     deployment.logs = !liveLogs.data.logs ? [] : liveLogs.data.logs;
   }
   const paymentDetails = await axios.get(
-    `${config.paymentApi.HOST_ADDRESS}/deployment/${deployment._id}`
+    `${config.paymentApi.HOST_ADDRESS}/payments/deployment/${deployment._id}`
   );
+
   deployment._doc.payment = paymentDetails.data;
 
   res.status(200).json({

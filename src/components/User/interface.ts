@@ -1,4 +1,4 @@
-import { IArgoUser, IArgoWallet, IUserModel } from './model';
+import { IArgoUser, IUserModel } from './model';
 
 /**
  * @export

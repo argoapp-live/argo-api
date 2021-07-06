@@ -49,7 +49,7 @@ export async function removeWallet(
             address: wallet.address,
             signature
         }
-        const verified = await axios.post(`${config.paymentApi.HOST_ADDRESS}/wallet/verify-owner`, verifyBody);
+        const verified = await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments/wallet/verify-owner`, verifyBody);
         if(verified.data) {   
             await WalletService.remove(id);
             res.status(200).json({success: true});

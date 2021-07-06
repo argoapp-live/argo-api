@@ -5,3 +5,5 @@ yarn.lock
 /src/routes/argoappgit.pem
 .idea/
 src/templates/user-org-invite/argoappgit.pem
+src/templates/user-org-invite/argoappprod.pem
+env.example

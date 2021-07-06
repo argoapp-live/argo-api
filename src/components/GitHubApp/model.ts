@@ -1,4 +1,3 @@
-import { number } from "joi";
 import { Schema, Types, Document } from "mongoose";
 import * as connections from '../../config/connection/connection';
 
@@ -25,6 +24,7 @@ const GitHubAppTokenSchema: Schema = new Schema({
     token: String
 }, {
     collection: 'githubtokens',
+    timestamps: true,
     versionKey: false
 });
 
