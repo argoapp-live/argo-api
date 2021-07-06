@@ -24,6 +24,12 @@ interface IConfig {
     PASSWORD: string;
   };
   secret: string;
+  skynet: {
+    LOGSTOCAPTURE: Array<any>;
+  };
+  arweave: {
+    LOGSTOCAPTURE: Array<any>;
+  };
   githubApp: {
     CLIENT_ID: string;
     CLIENT_SECRET: string;
@@ -42,6 +48,10 @@ interface IConfig {
     HOST: string;
     PORT: number;
     PASSWORD: string;
+  };
+  namebase: {
+    ACCESS_KEY: string;
+    SECRET_KEY: string;
   };
   deployerApi?: {
     HOST_ADDRESS: string;
@@ -97,10 +107,23 @@ const development: IConfig = {
     EMAIL: process.env.CLOUDFLARE_EMAIL,
     KEY: process.env.CLOUDFLARE_KEY,
   },
+  arweave: {
+    LOGSTOCAPTURE: [
+      { key: "sitePreview", value: "https://arweave.net" },
+      { key: "fee", value: "Total price:" },
+    ],
+  },
+  skynet: {
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
   redis: {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
     PORT: +process.env.REDIS_PORT || 6379,
     PASSWORD: process.env.REDIS_PASSWORD || "",
+  },
+  namebase: {
+    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
+    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
   },
   deployerApi: {
     HOST_ADDRESS:
@@ -150,6 +173,15 @@ const production: IConfig = {
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
   },
+  arweave: {
+    LOGSTOCAPTURE: [
+      { key: "sitePreview", value: "https://arweave.net" },
+      { key: "fee", value: "Total price:" },
+    ],
+  },
+  skynet: {
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
     DOMAIN_NAME: process.env.CLOUDFLARE_DOMAIN_NAME,
@@ -161,6 +193,10 @@ const production: IConfig = {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
     PORT: +process.env.REDIS_PORT || 6379,
     PASSWORD: process.env.REDIS_PASSWORD || "",
+  },
+  namebase: {
+    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
+    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
   },
   deployerApi: {
     HOST_ADDRESS:
@@ -210,6 +246,15 @@ const test: IConfig = {
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
   },
+  arweave: {
+    LOGSTOCAPTURE: [
+      { key: "sitePreview", value: "https://arweave.net" },
+      { key: "fee", value: "Total price:" },
+    ],
+  },
+  skynet: {
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
     DOMAIN_NAME: process.env.CLOUDFLARE_DOMAIN_NAME,
@@ -221,6 +266,10 @@ const test: IConfig = {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
     PORT: +process.env.REDIS_PORT || 6379,
     PASSWORD: process.env.REDIS_PASSWORD || "",
+  },
+  namebase: {
+    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
+    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
   },
   deployerApi: {
     HOST_ADDRESS:

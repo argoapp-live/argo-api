@@ -11,6 +11,7 @@ export interface IConfiguration extends Document {
     buildCommand: string, 
     workspace: string,
     publishDir: string,
+    protocol: string,
     packageManager: string,
     framework: string,
 }
@@ -21,6 +22,7 @@ const ConfigurationSchema: Schema = new Schema(
         buildCommand: String, 
         workspace: String,
         publishDir: String,
+        protocol: String,
         packageManager: String,
         framework: String,
     },
