@@ -25,6 +25,7 @@ export interface IDeploymentBody {
     branch: string,
     buildCommand: string,
     publishDir: string,
+    protocol: string,
     workspace: string,
     is_workspace: boolean,
     logsToCapture: Array<LogToCapture>,

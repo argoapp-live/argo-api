@@ -3,8 +3,9 @@ import { NextFunction, Request, Response } from 'express';
 import AuthService from '../Auth/service';
 import { IUserModel } from '../User/model';
 import { IDomain } from './model';
-import DomainService from './service';
+import DomainService, { IVerified } from './service';
 import ProjectService from '../Project/service';
+import { domain } from 'process';
 
 export async function create(
   req: Request,
@@ -103,8 +104,11 @@ export async function verify(
     next: NextFunction
   ): Promise<void> {
     try {        
-        const verified: boolean = await DomainService.verify(req.body.id);
-        res.status(200).json({ verified });
+        const result: IVerified = await DomainService.verify(req.body.id);
+        if (!result.wasVerified) {
+            await DomainService.addToResolver(result.domain.projectId, result.domain.link);
+        }
+        res.status(200).json({ verified: result.domain.verified });
 
     } catch (error) {
         next(new HttpError(error.message.status, error.message));

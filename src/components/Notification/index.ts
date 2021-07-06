@@ -10,7 +10,7 @@ class NotificationService {
 
     init(server: http.Server) {
         this.serverSocket = io(server, {  cors: {
-            origin: "http://localhost:3000",
+            origin: config.frontendApp.HOST_ADDRESS,
             credentials: true,
             methods: ['GET, POST, PUT, DELETE, OPTIONS'],
             allowedHeaders: ['Access-Control-Allow-Headers',
