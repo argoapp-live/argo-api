@@ -122,8 +122,8 @@ export async function deploy(
   await ProjectService.setLatestDeployment(project._id, deployment._id);
 
   axios
-    .post(`${config.deployerApi.HOST_ADDRESS}`, body)
-    .then((response: any) => console.log("FROM DEPLOYMENT", response));
+    .post(`${config.deployerApi.HOST_ADDRESS}/deploy`, body)
+    .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
 
   res.status(200).json({
     message: "Deployment is being processed",
