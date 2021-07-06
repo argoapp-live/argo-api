@@ -1,4 +1,3 @@
-import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
@@ -21,10 +20,12 @@ const MongoStore: mongo.MongoStoreFactory = mongo(session);
  */
 export function configure(app: express.Application): void {
     // express middleware
-    app.use(bodyParser.urlencoded({
+    app.use(express.urlencoded({
         extended: false
     }));
-    app.use(bodyParser.json());
+    app.use(express.json({
+        limit: '1mb'
+    }));
     // parse Cookie header and populate req.cookies with an object keyed by the cookie names.
     app.use(cookieParser());
     // returns the compression middleware
@@ -68,7 +69,7 @@ export function configure(app: express.Application): void {
             ' Authorization,' +
             ' Access-Control-Allow-Credentials'
         );
-        res.header('Access-Control-Allow-Origin', config.argoReact.BASE_ADDRESS);
+        res.header('Access-Control-Allow-Origin', config.frontendApp.HOST_ADDRESS);
         res.header('Access-Control-Allow-Credentials', 'true');
         next();
     });

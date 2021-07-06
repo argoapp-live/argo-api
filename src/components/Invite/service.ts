@@ -22,6 +22,7 @@ const InvitationService: IInvitationService = {
         orgName: string,
         invitingUser: string
     ): Promise<Boolean> {
+        console.log(config.smtp.USERNAME, config.smtp.PASSWORD)
         let _transporter: nodemailer.Transporter;
         try {
             _transporter = nodemailer.createTransport({
@@ -37,8 +38,8 @@ const InvitationService: IInvitationService = {
             const locals: any = {
                 orgName,
                 invitingUser,
-                inviteLink: config.argoReact.BASE_ADDRESS +
-                    `/invite/callback?ref=${encodeURIComponent(inviteId)}&orgName=${encodeURIComponent(orgName)}`,
+                inviteLink: config.frontendApp.HOST_ADDRESS +
+                    `/#/invite/callback?ref=${encodeURIComponent(inviteId)}&orgName=${encodeURIComponent(orgName)}`,
             };
 
             template.render(locals, (err: any, results: any) => {
