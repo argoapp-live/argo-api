@@ -84,6 +84,7 @@ function _populatePayment(payment: any, deployments: Array<IDeployment>): any {
     const deployment: any = deployments.filter((deployment) => deployment.paymentId?.toString() === payment._id?.toString())[0]
     payment.buildTime = deployment ? deployment.buildTime : 0;
     payment.projectName = deployment? deployment.project.name: '';
+    payment.protocol = deployment? deployment.configuration.protocol: '';
     return payment;
 }
 
