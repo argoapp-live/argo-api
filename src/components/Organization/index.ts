@@ -92,6 +92,8 @@ function _populateProject(project: any, domains: Array<IDomain>): any {
     const projectDomains: Array<IDomain> = domains.filter((domain: IDomain) => domain.projectId?.toString() === project._id?.toString());
     project._doc.domains = projectDomains.filter(domain => domain.type === 'domain');
     project._doc.subdomains = projectDomains.filter(domain => domain.type === 'subdomain');
+    project._doc.handshakeDomains = projectDomains.filter(domain => domain.type === 'handshake-domain');
+    project._doc.handshakeSubdomains = projectDomains.filter(domain => domain.type === 'handshake-subdomain');
     return project;
 }
 
