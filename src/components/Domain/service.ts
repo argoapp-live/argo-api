@@ -60,7 +60,6 @@ const DomainService = {
             domain.name.length
           )
         );
-        console.log(records)
 
         let verified = false;
         if (!isSubdomain) {
