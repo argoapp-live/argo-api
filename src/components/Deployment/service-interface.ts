@@ -1,4 +1,4 @@
-import { IDeployment } from "./model";
+import { IDeployment, IScreenshot } from "./model";
 
 export interface IDeploymentService {
     create(topic: string, projectId: string, configurationId: string): Promise<IDeployment>;
@@ -9,4 +9,6 @@ export interface IDeploymentService {
     find(query: Partial<IDeployment>): Promise<Array<IDeployment>>;
     updateFinishedDeployment(deploymentId: string, sitePreview: string, deploymentStatus: string, buildTime: number, logs: Array<string>): Promise<IDeployment>;
     updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment>;
+    updateScreenshotUrl(deploymentId: string, screenshotUrl: IScreenshot): Promise<IDeployment>;
+    uploadScreenshotToArweave(deploymentUrl:string): Promise<IScreenshot>;
 }

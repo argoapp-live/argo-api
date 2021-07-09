@@ -1,7 +1,8 @@
 import { Types } from "mongoose";
-import { IDeployment, DeploymentModel } from './model';
+import { IDeployment, DeploymentModel, IScreenshot } from './model';
 import { IDeploymentService } from "./service-interface";
-
+import * as nftlib from '@argoapp/nft-js'
+import config from '../../config/env/index';
 
 const DeploymentService: IDeploymentService = {
     async create(topic: string, projectId: string, configurationId: string): Promise<IDeployment> {
@@ -62,7 +63,26 @@ const DeploymentService: IDeploymentService = {
         }
 
         return DeploymentModel.findOneAndUpdate(condition, update);
+    },
+    
+    async updateScreenshotUrl(deploymentId: string, screenshotUrl: IScreenshot): Promise<IDeployment> {
+        const condition = {
+            '_id': Types.ObjectId(deploymentId)
+        }
+        
+        const update = {
+            screenshotUrl,
+        }
+
+        return DeploymentModel.findOneAndUpdate(condition, update);
+    },
+    async uploadScreenshotToArweave(url: string): Promise<IScreenshot>{
+        const nftServices: nftlib.Services = new nftlib.Services(config.arweave.key)
+        const nft: nftlib.Nft = new nftlib.Nft(undefined, nftServices)
+        const screenshoObj: IScreenshot = await nft.uploadScreenshotToArweave(url)
+        return screenshoObj;
     }
+
 }
 
 export default DeploymentService;

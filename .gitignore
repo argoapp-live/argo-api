@@ -6,4 +6,5 @@ yarn.lock
 .idea/
 src/templates/user-org-invite/argoappgit.pem
 src/templates/user-org-invite/argoappprod.pem
+src/templates/user-org-invite/argo-dev-app.2021-07-06.private-key.pem
 env.example
