@@ -14,7 +14,6 @@ import { IDeployment, IScreenshot } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
-
 export async function deploy(
   req: Request,
   res: Response,

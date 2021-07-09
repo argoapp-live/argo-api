@@ -15,7 +15,7 @@ export interface IDeployment extends Document {
   project: IProject["_id"];
   createdAt: any;
   updatedAt: any;
-  screenshotData: Object;
+  screenshotData: any;
 }
 export interface IScreenshot {
   id: string;
@@ -40,7 +40,11 @@ const DeploymentSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "ProjectModel",
     },
-    screenshotData: Object,
+    screenshotData: {
+      id: String,
+      fee: String,
+      url: String
+    },
   },
   {
     collection: "deployments",
