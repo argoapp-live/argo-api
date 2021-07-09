@@ -99,6 +99,10 @@ export async function deploy(
       break;
     case "skynet":
       capturedLogs = config.skynet.LOGSTOCAPTURE;
+      break;
+    case "neofs":
+      capturedLogs = config.neofs.LOGSTOCAPTURE;
+      break;   
   }
 
   const body: IDeploymentBody = {
