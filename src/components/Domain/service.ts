@@ -56,10 +56,11 @@ const DomainService = {
         const isSubdomain = domain.type.indexOf("subdomain") !== -1;
         const records = await _resolveHandshakeRecords(
           domain.name.substring(
-            domain.name.lastIndexOf("."),
+            domain.name.lastIndexOf(".") + 1,
             domain.name.length
           )
         );
+        console.log(records)
 
         let verified = false;
         if (!isSubdomain) {
