@@ -178,7 +178,7 @@ export async function paymentFinished(
     console.log(deployment.sitePreview)
     const screenshot:IScreenshot = await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview)
     deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
-    deployment = await DeploymentService.updateScreenshotUrl(deploymentId, screenshot)
+    deployment = await DeploymentService.updateScreenshot(deploymentId, screenshot)
     
     let _deployment: IDeployment = await DeploymentService.findById(deploymentId);
     console.log(_deployment)

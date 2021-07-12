@@ -65,7 +65,7 @@ const DeploymentService: IDeploymentService = {
         return DeploymentModel.findOneAndUpdate(condition, update);
     },
     
-    async updateScreenshotUrl(deploymentId: string, screenshotData: IScreenshot): Promise<IDeployment> {
+    async updateScreenshot(deploymentId: string, screenshotData: IScreenshot): Promise<IDeployment> {
         const condition = {
             '_id': Types.ObjectId(deploymentId)
         }
