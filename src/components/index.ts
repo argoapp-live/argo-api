@@ -8,6 +8,7 @@ import * as DeploymentComponent from './Deployment';
 import * as WalletComponent from './Wallet';
 import * as ConfigurationComponent from './Configuration';
 import * as DomainComponent from './Domain';
+import * as NftComponent from './Nft';
 
 export {
     AuthComponent,
@@ -20,4 +21,5 @@ export {
     WebHookComponent,
     WalletComponent,
     DomainComponent,
+    NftComponent,
 };

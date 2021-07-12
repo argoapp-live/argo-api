@@ -67,6 +67,11 @@ interface IConfig {
     HOST_ADDRESS: string;
     SECRET: string;
   };
+  nft:{
+    MNEMONIC: string;
+    RPC_PROVIDER: string;
+    NFT_SUBGRAPH: string;
+  }
 }
 
 const NODE_ENV: string = process.env.NODE_ENV || "test";
@@ -143,6 +148,11 @@ const development: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  nft:{
+    MNEMONIC:process.env.SIGNER_MNEMONIC,
+    RPC_PROVIDER: process.env.RPC_PROVIDER,
+    NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
+  }
 };
 
 const production: IConfig = {
@@ -218,6 +228,11 @@ const production: IConfig = {
       process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  nft:{
+    MNEMONIC:process.env.SIGNER_MNEMONIC,
+    RPC_PROVIDER: process.env.RPC_PROVIDER,
+    NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
+  }
 };
 const test: IConfig = {
   port: process.env.PORT || 3000,
@@ -291,6 +306,11 @@ const test: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  nft:{
+    MNEMONIC:process.env.SIGNER_MNEMONIC,
+    RPC_PROVIDER: process.env.RPC_PROVIDER,
+    NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
+  }
 };
 
 const config: {
