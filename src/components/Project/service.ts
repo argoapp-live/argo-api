@@ -49,11 +49,11 @@ const ProjectService: any = {
         }
     },
 
-    async createIfNotExists(githubUrl: string, organizationId: string, name: string): Promise<any> {
+    async createIfNotExists(githubUrl: string, organizationId: string, name: string, env: any): Promise<any> {
         try {
             const existingProject = await ProjectModel.findOne({ githubUrl, organizationId });
             if(!existingProject) {
-                const project = await ProjectModel.create({ name, githubUrl, organizationId });
+                const project = await ProjectModel.create({ name, githubUrl, organizationId, env });
                 return { project, created: true };
             }
             return { project: existingProject, created: false };
