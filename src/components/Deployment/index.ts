@@ -80,7 +80,6 @@ export async function deploy(
 
   const fullGitHubPath: string =
     await GithubAppService.getFullGithubUrlAndFolderName(
-      githubUrl,
       branch,
       installationId,
       owner,
