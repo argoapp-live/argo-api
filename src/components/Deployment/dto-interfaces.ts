@@ -8,7 +8,6 @@ export interface IRequestBody {
     installationId: string
     uniqueTopicId: string, 
     configurationId: string,
-    env: any,
 }
 
 interface LogToCapture {
