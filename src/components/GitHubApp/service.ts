@@ -87,14 +87,9 @@ const GithubAppService: IGitHubAppTokenService = {
         return installationToken;
     },
 
-    async getFullGithubUrlAndFolderName(githubUrl: string, isPrivate: boolean, branch: string, installationId: string, owner: string, folderName: string): Promise<string> {
-        if (isPrivate) {
-            let installationToken = await GithubAppService.createInstallationToken(installationId);
-            return `https://x-access-token:${installationToken.token}@github.com/${owner}/${folderName}.git`;
-        }
-        else {
-            return `${githubUrl} --branch ${branch}`;
-        }
+    async getFullGithubUrlAndFolderName(branch: string, installationId: string, owner: string, folderName: string): Promise<string> {
+        let installationToken = await GithubAppService.createInstallationToken(installationId);
+        return `https://x-access-token:${installationToken.token}@github.com/${owner}/${folderName}.git --branch ${branch}`;
     },
 
     async getBranches(id: string, branchesQuery: any): Promise<any> {

@@ -9,7 +9,7 @@ const DeploymentService: IDeploymentService = {
         const deployment: any = {
             topic,
             project: projectId,
-            configuration: configurationId
+            configuration: configurationId,
         };
         
         return DeploymentModel.create(deployment);
