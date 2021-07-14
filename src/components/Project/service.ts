@@ -69,6 +69,22 @@ const ProjectService: any = {
         } catch(err) {
             throw new Error(err.message);
         }
+    },
+
+    async UpdateEnv(id: string, partialEnv: any): Promise<any> {
+        try {
+            const project: IProject = await ProjectModel.findById(id);
+
+            for (const key in partialEnv) {
+                project.env[key] = partialEnv[key]
+            }
+
+            await project.save();
+            return ProjectModel.findById(id);
+            
+        } catch(err) {
+            throw new Error(err.message);
+        }
     }
 }
 
