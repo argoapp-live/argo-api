@@ -29,7 +29,7 @@ interface IConfig {
   };
   arweave: {
     LOGSTOCAPTURE: Array<any>;
-    key: string;
+    PRIVATE_KEY: string;
   };
   githubApp: {
     CLIENT_ID: string;
@@ -113,7 +113,7 @@ const development: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    key: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -180,7 +180,7 @@ const production: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    key: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -254,7 +254,7 @@ const test: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    key: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],

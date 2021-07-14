@@ -77,10 +77,10 @@ const DeploymentService: IDeploymentService = {
         return DeploymentModel.findOneAndUpdate(condition, update);
     },
     async uploadScreenshotToArweave(url: string): Promise<IScreenshot>{
-        const nftServices: nftlib.Services = new nftlib.Services(config.arweave.key)
+        const nftServices: nftlib.Services = new nftlib.Services(config.arweave.PRIVATE_KEY)
         const nft: nftlib.Nft = new nftlib.Nft(undefined, nftServices)
-        const screenshoObj: IScreenshot = await nft.uploadScreenshotToArweave(url)
-        return screenshoObj;
+        const screenshot: IScreenshot = await nft.uploadScreenshotToArweave(url)
+        return screenshot;
     }
 
 }
