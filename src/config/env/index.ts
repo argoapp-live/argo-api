@@ -215,7 +215,7 @@ const production: IConfig = {
   },
   domainResolver: {
     HOST_ADDRESS:
-      process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
+      process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
 };
