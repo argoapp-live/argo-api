@@ -4,6 +4,7 @@ import GitHubAppTokenModel from './model'
 import { Types } from "mongoose";
 import UserModel from "../User/model";
 import config from '../../config/env/index';
+import simpleGit, {SimpleGit} from 'simple-git';
 const axios = require('axios').default;
 
 const { createAppAuth } = require("@octokit/auth-app");
@@ -12,6 +13,8 @@ const path = require('path');
 
 const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
 const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
+const git: SimpleGit = simpleGit();
+const HASH_BYTE_LEN = 40;
 
 
 const GithubAppService: IGitHubAppTokenService = {
@@ -123,6 +126,11 @@ const GithubAppService: IGitHubAppTokenService = {
         });
         return instanceAxios.get();
         // return;
+    },
+
+    async getLatestCommitId(remoteUrl: string, brach: string): Promise<string> {
+        const res: any = await git.listRemote([remoteUrl, `refs/heads/${brach}`])
+        return res.substring(0, HASH_BYTE_LEN);
     }
 }
 export default GithubAppService;

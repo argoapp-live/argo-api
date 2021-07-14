@@ -85,10 +85,13 @@ export async function deploy(
       folderName
     );
 
+  const commitId = await GithubAppService.getLatestCommitId(fullGitHubPath, branch);
+
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
     project._id,
-    configurationId
+    configurationId,
+    commitId
   );
 
   let capturedLogs;

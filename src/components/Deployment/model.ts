@@ -5,7 +5,7 @@ import { IProject } from "../Project/model";
 
 export interface IDeployment extends Document {
   sitePreview: string;
-  commitId: String;
+  commitId: string;
   logs: [{ time: String; log: String }];
   topic: string;
   status: string;
