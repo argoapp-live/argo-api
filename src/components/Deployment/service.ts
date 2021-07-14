@@ -4,12 +4,13 @@ import { IDeploymentService } from "./service-interface";
 
 
 const DeploymentService: IDeploymentService = {
-    async create(topic: string, projectId: string, configurationId: string): Promise<IDeployment> {
+    async create(topic: string, projectId: string, configurationId: string, deploymentEnv: any): Promise<IDeployment> {
 
         const deployment: any = {
             topic,
             project: projectId,
-            configuration: configurationId
+            configuration: configurationId,
+            deploymentEnv
         };
         
         return DeploymentModel.create(deployment);
