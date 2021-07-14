@@ -32,7 +32,6 @@ export interface IDeploymentBody {
     logsToCapture: Array<LogToCapture>,
     walletId: string, 
     walletAddress: string,
-    env: any,
 }
 
 

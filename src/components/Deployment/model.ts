@@ -11,7 +11,6 @@ export interface IDeployment extends Document {
   status: string;
   paymentId: string;
   buildTime: number;
-  env: any,
   configuration: IConfiguration["_id"];
   project: IProject["_id"];
   createdAt: any;
@@ -27,7 +26,6 @@ const DeploymentSchema: Schema = new Schema(
     status: { type: String, default: "Pending" },
     paymentId: String,
     buildTime: { type: Number, default: 0 },
-    env: Object,
     configuration: {
       type: Schema.Types.ObjectId,
       ref: "ConfigurationModel",

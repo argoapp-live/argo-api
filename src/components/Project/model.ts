@@ -20,7 +20,6 @@ const ProjectSchema: Schema = new Schema(
     {
         name: String,
         githubUrl: String,
-        env: Object,
         organizationId: {
             type: Schema.Types.ObjectId,
             ref: 'Organization'

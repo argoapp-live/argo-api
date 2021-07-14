@@ -31,7 +31,6 @@ export async function deploy(
     installationId,
     uniqueTopicId,
     configurationId,
-    env
   } = req.body;
 
   const configuration: IConfiguration = await ConfigurationService.findById(
@@ -64,10 +63,8 @@ export async function deploy(
     githubUrl,
     organizationId,
     folderName,
-    env
   );
   const project = result.project;
-  const deploymentEnv = project.env;
   const created = result.created;
 
   if (created) {
@@ -90,7 +87,6 @@ export async function deploy(
     uniqueTopicId,
     project._id,
     configurationId,
-    deploymentEnv
   );
 
   let capturedLogs;
@@ -117,7 +113,6 @@ export async function deploy(
     workspace: !!workspace ? workspace : "",
     is_workspace: !!workspace,
     logsToCapture: capturedLogs,
-    env: deploymentEnv, 
     walletId: !!wallet._id ? wallet._id : "abcdefghij",
     walletAddress: !!wallet.address ? wallet.address : "0x123456789",
   };
