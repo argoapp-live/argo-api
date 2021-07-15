@@ -50,5 +50,5 @@ export interface IRepositoryService {
     RemoveDomain(id: string, repositoryId: string): Promise<any>;
     AddToProxy(repo: IProject, txId: string, depId: string): Promise<any>;
 
-    UpdateEnv(id: string, partialEnv: any): Promise<any>;
+    updateEnv(id: string, newEnv: any): Promise<any>;
 }

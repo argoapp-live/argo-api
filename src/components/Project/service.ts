@@ -71,13 +71,15 @@ const ProjectService: any = {
         }
     },
 
-    async UpdateEnv(id: string, partialEnv: any): Promise<any> {
+    async updateEnv(id: string, newEnv: any): Promise<any> {
         try {
             const project: IProject = await ProjectModel.findById(id);
 
-            for (const key in partialEnv) {
-                project.env[key] = partialEnv[key]
-            }
+            // for (const key in partialEnv) {
+            //     project.env[key] = partialEnv[key]
+            // }
+
+            project.env = newEnv;
 
             await project.save();
             return ProjectModel.findById(id);
