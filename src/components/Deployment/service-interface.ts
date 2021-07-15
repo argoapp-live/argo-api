@@ -1,7 +1,7 @@
 import { IDeployment } from "./model";
 
 export interface IDeploymentService {
-    create(topic: string, projectId: string, configurationId: string, commitId: string): Promise<IDeployment>;
+    create(topic: string, projectId: string, configurationId: string, commitId: string, commitMessage: string): Promise<IDeployment>;
     findById(id: string): Promise<IDeployment>;
     findOne(query: Partial<IDeployment>): Promise<IDeployment>;
     findLatest(id: string): Promise<IDeployment>;

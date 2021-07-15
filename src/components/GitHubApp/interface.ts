@@ -13,4 +13,5 @@ export interface IGitHubAppTokenService {
     getBranches(id: string, branchesQuery: any): Promise<any>;
     getInstallationRepos(id: string, installationId: any): Promise<any>;
     getLatestCommitId(remoteUrl: string, brach: string): Promise<string>;
+    getLatestCommitMsg(githubUrl: string, branch: string): Promise<string>
 }
