@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 import { IDeployment, DeploymentModel, IScreenshot } from './model';
 import { IDeploymentService } from "./service-interface";
-import * as nftlib from '@argoapp/nft-js'
 import * as uploaderLib from '@argoapp/nft-uploader-js'
 import config from '../../config/env/index';
 
