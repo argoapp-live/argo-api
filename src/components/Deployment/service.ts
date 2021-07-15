@@ -81,6 +81,7 @@ const DeploymentService: IDeploymentService = {
         const uploaderVendor: uploaderLib.Vendor = new uploaderLib.Vendor(config.arweave.PRIVATE_KEY)
         const uploader: uploaderLib.Uploader = new uploaderLib.Uploader(uploaderVendor)
         const screenshot: IScreenshot = await uploader.uploadScreenshotToArweave(url)
+        console.log(screenshot)
         return screenshot;
     }
 
