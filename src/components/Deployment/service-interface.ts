@@ -9,6 +9,6 @@ export interface IDeploymentService {
     find(query: Partial<IDeployment>): Promise<Array<IDeployment>>;
     updateFinishedDeployment(deploymentId: string, sitePreview: string, deploymentStatus: string, buildTime: number, logs: Array<string>): Promise<IDeployment>;
     updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment>;
-    updateScreenshot(deploymentId: string, screenshotData: IScreenshot): Promise<IDeployment>;
+    updateScreenshot(deploymentId: string, screenshot: IScreenshot): Promise<IDeployment>;
     uploadScreenshotToArweave(deploymentUrl:string): Promise<IScreenshot>;
 }
