@@ -140,7 +140,7 @@ const GithubAppService: IGitHubAppTokenService = {
         const parsed: any = gh(githubUrl);
         const res:any = await octokit.request('GET /repos/{owner}/{repo}/commits', {
             owner: parsed.owner,
-            repo: parsed.repo,
+            repo: parsed.name,
             sha: branch,
             per_page: 1,
         });
