@@ -78,7 +78,7 @@ const DeploymentService: IDeploymentService = {
         return DeploymentModel.findOneAndUpdate(condition, update);
     },
     async uploadScreenshotToArweave(url: string): Promise<IScreenshot>{
-        const uploaderVendor: uploaderLib.Vendor = new uploaderLib.Vendor(config.arweave.key)
+        const uploaderVendor: uploaderLib.Vendor = new uploaderLib.Vendor(config.arweave.PRIVATE_KEY)
         const uploader: uploaderLib.Uploader = new uploaderLib.Uploader(uploaderVendor)
         const screenshot: IScreenshot = await uploader.uploadScreenshotToArweave(url)
         return screenshot;
