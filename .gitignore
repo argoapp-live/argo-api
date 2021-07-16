@@ -7,5 +7,5 @@ yarn.lock
 src/templates/user-org-invite/argoappgit.pem
 src/templates/user-org-invite/argoappprod.pem
 proba.js
-env.example
 src/templates/user-org-invite/argoappdevgit.pem
+env.example
