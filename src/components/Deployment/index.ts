@@ -31,7 +31,7 @@ export async function deploy(
     installationId,
     uniqueTopicId,
     configurationId,
-    env
+    env,
   } = req.body;
 
   const configuration: IConfiguration = await ConfigurationService.findById(
@@ -92,7 +92,7 @@ export async function deploy(
     uniqueTopicId,
     project._id,
     configurationId,
-    deploymentEnv,
+    deploymentEnv
   );
 
   let capturedLogs;
@@ -121,7 +121,7 @@ export async function deploy(
     logsToCapture: capturedLogs,
     walletId: !!wallet._id ? wallet._id : "abcdefghij",
     walletAddress: !!wallet.address ? wallet.address : "0x123456789",
-    deploymentEnv: env
+    env: deploymentEnv,
   };
 
   await ProjectService.setLatestDeployment(project._id, deployment._id);
