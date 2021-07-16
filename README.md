@@ -36,4 +36,10 @@ Follow below steps to run ARGO API in your local
  - Now open terminal from root folder and run `docker build -t argo_api .`
  - After build run image `docker run -p 8080:8080 argo_api` It will start argo-api in attach mode
 
-For any queries DM us on our discord channel [ARGO](https://discord.gg/4y6fgG3)
+## Contributing
+Any contributions are very much welcomed. Feel free to fork and make a PR with any additions (or fixes)!
+
+## Have questions?
+
+Reach out to @rekpero#3898 on the ArGo Discord ([https://discord.gg/HTMqYAm](https://discord.gg/HTMqYAm)) or head to the #contributors-forum channel for further discussion!
+
