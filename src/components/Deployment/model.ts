@@ -5,7 +5,8 @@ import { IProject } from "../Project/model";
 
 export interface IDeployment extends Document {
   sitePreview: string;
-  commitId: String;
+  commitId: string;
+  commitMessage: string;
   logs: [{ time: String; log: String }];
   topic: string;
   status: string;
@@ -22,6 +23,7 @@ const DeploymentSchema: Schema = new Schema(
   {
     sitePreview: String,
     commitId: String,
+    commitMessage: { type: String, default: '' },
     logs: [{ time: String, log: String }],
     topic: String,
     status: { type: String, default: "Pending" },
