@@ -37,8 +37,7 @@ export async function deploy(
     configurationId
   );
 
-  if (!configuration) {
-  }
+  if (!configuration) {}
   const {
     branch,
     buildCommand,
@@ -51,13 +50,9 @@ export async function deploy(
 
   const user: IUserModel = await AuthService.authUser(req);
 
-  if (!user) {
-  }
-
-  // TODO check pending deployment
+  if (!user) {}
 
   const wallet: IWalletModel = await WalletService.findOne({ organizationId });
-  // TODO check wallet exists for the organization
 
   const result: any = await ProjectService.createIfNotExists(
     githubUrl,
@@ -91,14 +86,14 @@ export async function deploy(
     configurationId
   );
 
-  let capturedLogs;
+  let logsToCapture;
 
   switch (protocol) {
     case "arweave":
-      capturedLogs = config.arweave.LOGSTOCAPTURE;
+      logsToCapture = config.arweave.LOGSTOCAPTURE;
       break;
     case "skynet":
-      capturedLogs = config.skynet.LOGSTOCAPTURE;
+      logsToCapture = config.skynet.LOGSTOCAPTURE;
   }
 
   const body: IDeploymentBody = {
@@ -114,7 +109,7 @@ export async function deploy(
     protocol,
     workspace: !!workspace ? workspace : "",
     is_workspace: !!workspace,
-    logsToCapture: capturedLogs,
+    logsToCapture,
     walletId: !!wallet._id ? wallet._id : "abcdefghij",
     walletAddress: !!wallet.address ? wallet.address : "0x123456789",
   };

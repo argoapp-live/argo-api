@@ -4,6 +4,6 @@ import { WebHookComponent } from '../components';
 const router: Router = Router();
 
 router.post('/create', WebHookComponent.createWebHook);
-router.post('/notifyOnPush', WebHookComponent.pushNotify);
+router.post('/trigger/:id', WebHookComponent.triggerWebHook);
 
 export default router;

@@ -1,96 +1,58 @@
 import { HttpError } from '../../config/error';
 import { NextFunction, Request, Response } from 'express';
+import { IUserModel } from '../User/model';
 import WebHookService from './service';
+import AuthService from '../Auth/service';
+import { IWebHookRequest } from './dto-interfaces';
+import GithubAppService from '../GitHubApp/service';
+const gh = require('parse-github-url');
+import ProjectService from '../Project/service';
+import { IProject } from '../Project/model';
 
-/**
- * @export
- * @param {Request} req
- * @param {Response} res
- * @param {NextFunction} next
- * @returns {Promise < void >}
- */
 export async function createWebHook(
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
-        const response: any = await WebHookService.createHook(req);
+        // const user: IUserModel = await AuthService.authUser(req);
+        // if (!user) throw new Error('unauthorized');
 
+        req.body as IWebHookRequest;
+        const { name, projectId, configurationId, installationId, organizationId } = req.body;
+
+        const project: IProject= await ProjectService.findById(projectId);
+        if (!project) throw new Error('no project');
+
+        const parsed = gh(project.githubUrl);
+
+        const installationToken = await GithubAppService.createInstallationToken(installationId);
+
+        const response = await WebHookService.create(name, projectId, configurationId, installationId, organizationId, installationToken, parsed);
         res.status(200).json(response);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
 }
 
-/**
- * @export
- * @param {Request} req
- * @param {Response} res
- * @param {NextFunction} next
- * @returns {Promise < void >}
- */
-
-
-export async function pushNotify(
+export async function triggerWebHook(
     req: Request,
     res: Response,
-    next: NextFunction
-): Promise<void> {
+    next: NextFunction)
+: Promise<void> {
     try {
-        // const uniqueTopicName: string = uuidv4();
-        // const splitUrl: any = req.body.repository.clone_url.split('/');
-        // const folderName: any = splitUrl[splitUrl.length - 1].split('.')[0];
-        // const branchName: any = req.body.ref.split('/').pop();
-        // const fullGitHubPath: string = `${req.body.repository.clone_url} --branch ${branchName}`;
-        // const repoData: IRepository = await RepositoryService.findRepoByNameAndBranch(req.body.repository.name, branchName);
-        // const body: IInternalApiDto = {
-        //     github_url: fullGitHubPath,
-        //     folder_name: folderName,
-        //     topic: uniqueTopicName,
-        //     package_manager: repoData.package_manager,
-        //     branch: branchName,
-        //     build_command: repoData.build_command,
-        //     publish_dir: repoData.publish_dir
-        // };
-        // const repository = await RepositoryService.createOrUpdateExisting(github_url, orgId, deploymentObj._id, 
-        //     branch, workspace, folderName, package_manager, build_command, publish_dir, framework);
+        const id = req.params.id;
 
-        // console.log(uniqueTopicName);
-        // socket.on(uniqueTopicName, async (data: any) => {
-        //     emitter.emit(uniqueTopicName, data);
-        //     const depFilter: any = {
-        //         _id: deploymentObj.deploymentId
-        //     };
-        //     const isLink: any = data.indexOf(config.arweaveUrl) !== -1;
-        //     let updateDeployment: any;
+        const webHook = await WebHookService.findById(id);
+        if (!webHook) throw new Error('no hook with that id');
 
-        //     if (isLink) {
-        //         const arweaveLink: any = data.trim();
+        const project = await ProjectService.findById(webHook.projectId);
 
-        //         updateDeployment = {
-        //             $addToSet: { log: [data] },
-        //             sitePreview: arweaveLink,
-        //             deploymentStatus: 'Deployed'
-        //         };
-        //     } else {
-        //         updateDeployment = {
-        //             $addToSet: { log: [data] },
-        //             deploymentStatus: 'Pending'
-        //         };
-        //     }
+        console.log('WEBHOOK_TRIGGERED');
+        console.log(webHook);
+        console.log(project);
 
-        //     await DeploymentModel.findOneAndUpdate(depFilter, updateDeployment).catch((err) => console.log(err));
-        // });
-        // setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err) => console.log(err)), 2000);
-
-        res.status(200).json({
-            success: true,
-            // topic: uniqueTopicName,
-            // deploymentId: deploymentObj.deploymentId,
-            // repositoryId: deploymentObj.repositoryId
-        });
-    } catch (error) {
+    } catch(error) {
         next(new HttpError(error.message.status, error.message));
     }
 }
