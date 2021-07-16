@@ -19,13 +19,10 @@ const WebHookService = {
         try {
             // const webHookCreationDto = req.body as IWebHook;
             // const decodeToken: any = await AuthService.deseralizeToken(req);
-            
             //Why we need this?
-
             // const argoSession: IArgoSessionModel = await JWTTokenService.FindOneBySessionId(
             //     decodeToken.session_id
             // );
-
             // let installationToken = await GithubAppService.createInstallationToken(req.body.installationId);
 
             const webHook = await WebHookModel.create({ name, projectId, configurationId, installationId, organizationId });

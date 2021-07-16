@@ -7,6 +7,7 @@ import { IWebHookRequest } from './dto-interfaces';
 import GithubAppService from '../GitHubApp/service';
 const gh = require('parse-github-url');
 import ProjectService from '../Project/service';
+const { Octokit } = require('@octokit/core');
 import { IProject } from '../Project/model';
 
 export async function createWebHook(
@@ -15,8 +16,8 @@ export async function createWebHook(
     next: NextFunction
 ): Promise<void> {
     try {
-        // const user: IUserModel = await AuthService.authUser(req);
-        // if (!user) throw new Error('unauthorized');
+        const user: IUserModel = await AuthService.authUser(req);
+        if (!user) throw new Error('unauthorized');
 
         req.body as IWebHookRequest;
         const { name, projectId, configurationId, installationId, organizationId } = req.body;
@@ -43,18 +44,58 @@ export async function triggerWebHook(
     try {
         const id = req.params.id;
 
-        const webHook = await WebHookService.findById(id);
-        if (!webHook) throw new Error('no hook with that id');
+        // const webHook = await WebHookService.findById(id);
+        // if (!webHook) throw new Error('no hook with that id');
 
-        const project = await ProjectService.findById(webHook.projectId);
+        // const project = await ProjectService.findById(webHook.projectId);
 
-        console.log('WEBHOOK_TRIGGERED');
-        console.log(webHook);
-        console.log(project);
+        console.log('WEBHOOK_TRIGGERED', id);
+        // console.log(webHook);
+        // console.log(project);
+
+        res.status(200).json({ msg: 'webhook executed' });
 
     } catch(error) {
         next(new HttpError(error.message.status, error.message));
     }
 }
 
+
+export async function testWebhook(
+    req: Request,
+    res: Response,
+    next: NextFunction)
+: Promise<void> {
+    try {
+
+        const { installationId } = req.body;
+        const installationToken = await GithubAppService.createInstallationToken(installationId);
+
+        console.log(installationToken);
+
+        const octokit: any = new Octokit({ auth: `${installationToken.token}` });
+
+        console.log('here');
+
+        const response: any = await octokit.request(
+            'POST /repos/{owner}/{repo}/hooks',
+            {
+                owner: 'argoapp-live',
+                repo: 'argo-api',
+                events: ['push'],
+                config: {
+                    url: "http://dcf648393682.ngrok.io/webhook/trigger/312312312",
+                    token: installationToken.token,
+                    insecure_ssl: 1,
+                    content_type: 'application/json'
+                },
+            })
+
+        res.status(200).json({ msg: 'hook created' });
+
+    } catch(error) {
+        console.log('err', error)
+        next(new HttpError(error.message.status, error.message));
+    }
+}
 
