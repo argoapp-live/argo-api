@@ -10,7 +10,7 @@ const DeploymentService: IDeploymentService = {
             topic,
             project: projectId,
             configuration: configurationId,
-            deploymentEnv
+            env: deploymentEnv,
             commitId,
             commitMessage
         };

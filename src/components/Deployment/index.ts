@@ -93,7 +93,7 @@ export async function deploy(
     uniqueTopicId,
     project._id,
     configurationId,
-    deploymentEnv
+    deploymentEnv,
     commitId,
     commitMessage
   );
