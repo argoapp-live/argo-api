@@ -6,5 +6,6 @@ yarn.lock
 .idea/
 src/templates/user-org-invite/argoappgit.pem
 src/templates/user-org-invite/argoappprod.pem
+proba.js
 src/templates/user-org-invite/argoappdevgit.pem
 env.example

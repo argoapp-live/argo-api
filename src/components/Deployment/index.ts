@@ -31,6 +31,7 @@ export async function deploy(
     installationId,
     uniqueTopicId,
     configurationId,
+    env,
   } = req.body;
 
   const configuration: IConfiguration = await ConfigurationService.findById(
@@ -63,8 +64,10 @@ export async function deploy(
     githubUrl,
     organizationId,
     folderName,
+    env
   );
   const project = result.project;
+  const deploymentEnv = result.project.env;
   const created = result.created;
 
   if (created) {
@@ -83,10 +86,16 @@ export async function deploy(
       folderName
     );
 
+  const commitId = await GithubAppService.getLatestCommitId(githubUrl, branch);
+  const commitMessage = await GithubAppService.getLatestCommitMsg(githubUrl, branch);
+
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
     project._id,
     configurationId,
+    deploymentEnv,
+    commitId,
+    commitMessage
   );
 
   let capturedLogs;
@@ -115,6 +124,7 @@ export async function deploy(
     logsToCapture: capturedLogs,
     walletId: !!wallet._id ? wallet._id : "abcdefghij",
     walletAddress: !!wallet.address ? wallet.address : "0x123456789",
+    env: deploymentEnv,
   };
 
   await ProjectService.setLatestDeployment(project._id, deployment._id);
