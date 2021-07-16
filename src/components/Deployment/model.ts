@@ -15,7 +15,7 @@ export interface IDeployment extends Document {
   project: IProject["_id"];
   createdAt: any;
   updatedAt: any;
-  screenshot: any;
+  screenshot: IScreenshot;
 }
 export interface IScreenshot {
   id: string;
