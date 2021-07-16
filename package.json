@@ -33,10 +33,10 @@
         "src"
     ],
     "engines": {
-        "node": ">=10.0.0 <15.0.0"
+        "node": ">=10.0.0"
     },
     "dependencies": {
-        "@argoapp/nft-js": "git+https://github.com/argoapp-live/argo-nft-js.git#decoupled",
+        "@argoapp/nft-js": "git+https://github.com/argoapp-live/argo-nft-js.git",
         "@argoapp/nft-uploader-js": "https://github.com/argoapp-live/argo-nft-uploader",
         "@octokit/auth-app": "^3.5.0",
         "@octokit/core": "^3.5.1",
@@ -62,6 +62,7 @@
         "jsonwebtoken": "^8.5.1",
         "mongoose": "5.9.16",
         "nodemailer": "^6.6.1",
+        "nodesass": "^0.0.2-security",
         "passport": "0.4.0",
         "passport-github": "^1.1.0",
         "passport-gitlab2": "^5.0.0",
