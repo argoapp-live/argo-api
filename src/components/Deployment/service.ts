@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { IDeployment, DeploymentModel, IScreenshot } from './model';
 import { IDeploymentService } from "./service-interface";
-import * as nftlib from '@argoapp/nft-js'
+import * as uploaderLib from '@argoapp/nft-uploader-js'
 import config from '../../config/env/index';
 
 const DeploymentService: IDeploymentService = {
@@ -10,7 +10,7 @@ const DeploymentService: IDeploymentService = {
         const deployment: any = {
             topic,
             project: projectId,
-            configuration: configurationId
+            configuration: configurationId,
         };
         
         return DeploymentModel.create(deployment);
@@ -65,22 +65,27 @@ const DeploymentService: IDeploymentService = {
         return DeploymentModel.findOneAndUpdate(condition, update);
     },
     
+<<<<<<< HEAD
     async updateScreenshot(deploymentId: string, screenshotData: IScreenshot): Promise<IDeployment> {
+=======
+    async updateScreenshot(deploymentId: string, screenshot: IScreenshot): Promise<IDeployment> {
+>>>>>>> screenshot
         const condition = {
             '_id': Types.ObjectId(deploymentId)
         }
         
         const update = {
-            screenshotData,
+            screenshot,
         }
 
         return DeploymentModel.findOneAndUpdate(condition, update);
     },
     async uploadScreenshotToArweave(url: string): Promise<IScreenshot>{
-        const nftServices: nftlib.Services = new nftlib.Services(config.arweave.key)
-        const nft: nftlib.Nft = new nftlib.Nft(undefined, nftServices)
-        const screenshoObj: IScreenshot = await nft.uploadScreenshotToArweave(url)
-        return screenshoObj;
+        const uploaderVendor: uploaderLib.Vendor = new uploaderLib.Vendor(config.arweave.PRIVATE_KEY)
+        const uploader: uploaderLib.Uploader = new uploaderLib.Uploader(uploaderVendor)
+        const screenshot: IScreenshot = await uploader.uploadScreenshotToArweave(url)
+        console.log(screenshot)
+        return screenshot;
     }
 
 }

@@ -14,6 +14,7 @@ import { IDeployment, IScreenshot } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
+
 export async function deploy(
   req: Request,
   res: Response,
@@ -24,7 +25,6 @@ export async function deploy(
   const {
     organizationId,
     githubUrl,
-    isPrivate,
     folderName,
     owner,
     installationId,
@@ -61,7 +61,7 @@ export async function deploy(
   const result: any = await ProjectService.createIfNotExists(
     githubUrl,
     organizationId,
-    folderName
+    folderName,
   );
   const project = result.project;
   const created = result.created;
@@ -76,8 +76,6 @@ export async function deploy(
 
   const fullGitHubPath: string =
     await GithubAppService.getFullGithubUrlAndFolderName(
-      githubUrl,
-      isPrivate,
       branch,
       installationId,
       owner,
@@ -87,7 +85,7 @@ export async function deploy(
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
     project._id,
-    configurationId
+    configurationId,
   );
 
   let capturedLogs;

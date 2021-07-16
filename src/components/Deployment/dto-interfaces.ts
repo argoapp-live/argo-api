@@ -30,7 +30,7 @@ export interface IDeploymentBody {
     is_workspace: boolean,
     logsToCapture: Array<LogToCapture>,
     walletId: string, 
-    walletAddress: string
+    walletAddress: string,
 }
 
 

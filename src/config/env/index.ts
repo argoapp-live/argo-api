@@ -29,7 +29,7 @@ interface IConfig {
   };
   arweave: {
     LOGSTOCAPTURE: Array<any>;
-    key: string;
+    PRIVATE_KEY: string;
   };
   githubApp: {
     CLIENT_ID: string;
@@ -118,7 +118,7 @@ const development: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    key: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -190,7 +190,7 @@ const production: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    key: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -225,7 +225,7 @@ const production: IConfig = {
   },
   domainResolver: {
     HOST_ADDRESS:
-      process.env.DOMAIN_RESOLVER_BASE_ADDRESS || "http://localhost:3000",
+      process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
   nft:{
@@ -269,7 +269,7 @@ const test: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    key: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
