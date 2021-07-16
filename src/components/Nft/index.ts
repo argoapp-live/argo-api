@@ -1,7 +1,8 @@
 import { HttpError } from '../../config/error';
 import { NextFunction, Request, Response } from 'express';
 import { IMetadata } from './model';
-import {Nft, Vendor, Services} from '@argoapp/nft-js';
+import * as nftLib from '@argoapp/nft-js';
+import * as uploaderLib from '@argoapp/nft-uploader-js'
 import config from '../../config/env/index';
 import { JsonRpcProvider } from '@ethersproject/providers'
 import { Wallet } from '@ethersproject/wallet'
@@ -14,9 +15,10 @@ export async function getMetadataUrl(
     try {
         const httpProvider = new JsonRpcProvider(config.nft.RPC_PROVIDER)
         const signer = Wallet.fromMnemonic(config.nft.MNEMONIC).connect(httpProvider)
-        const vendor =new Vendor(httpProvider, signer,undefined,undefined, config.nft.NFT_SUBGRAPH)
-        const services = new Services(config.arweave.key)
-        const nftLib = new Nft(vendor, services)
+        const nftVendor: nftLib.Vendor = new nftLib.Vendor(httpProvider, signer,undefined,undefined, config.nft.NFT_SUBGRAPH)
+        const uploaderVendor = new uploaderLib.Vendor(config.arweave.PRIVATE_KEY)
+        const nft: nftLib.Nft = new nftLib.Nft(nftVendor)
+        const uploader: uploaderLib.Uploader = new uploaderLib.Uploader(uploaderVendor)
         console.log("Preparing Metadata", req.body);
         const {
             name,
@@ -24,8 +26,8 @@ export async function getMetadataUrl(
             url,
           }: { name: string; description: string; url: string } = req.body;
         const metadata: IMetadata = {name: name, description: description, url: url}
-        const signedMetadata:IMetadata = await nftLib.signNftData(metadata)
-        const tx = await nftLib.uploadMetadataToArweave(JSON.stringify(signedMetadata))
+        const signedMetadata:IMetadata = await nft.signNftData(metadata)
+        const tx = await uploader.uploadMetadataToArweave(JSON.stringify(signedMetadata))
         res.status(201).json({success: true, tx});
 
     } catch (error) {

@@ -36,6 +36,7 @@
         "node": ">=10.0.0 <15.0.0"
     },
     "dependencies": {
+        "@argoapp/nft-js": "git+https://github.com/argoapp-live/argo-nft-js.git#decoupled",
         "@argoapp/nft-uploader-js": "https://github.com/argoapp-live/argo-nft-uploader",
         "@octokit/auth-app": "^3.5.0",
         "@octokit/core": "^3.5.1",
@@ -51,6 +52,7 @@
         "cpx": "^1.5.0",
         "dotenv": "8.2.0",
         "email-templates": "2.x",
+        "ethers": "^5.4.1",
         "express": "4.17.1",
         "express-jwt": "^6.0.0",
         "express-session": "^1.17.1",
