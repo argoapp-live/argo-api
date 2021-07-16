@@ -4,9 +4,7 @@ import GitHubAppTokenModel from './model'
 import { Types } from "mongoose";
 import UserModel from "../User/model";
 import config from '../../config/env/index';
-import simpleGit, {SimpleGit} from 'simple-git';
 import * as gh from 'parse-github-url';
-// const gh = require('parse-github-url');
 const axios = require('axios').default;
 const { Octokit } = require("@octokit/core");
 const { createAppAuth } = require("@octokit/auth-app");
@@ -15,7 +13,6 @@ const path = require('path');
 
 const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
 const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
-const git: SimpleGit = simpleGit();
 const octokit = new Octokit();
 const HASH_BYTE_LEN = 40;
 
@@ -126,12 +123,7 @@ const GithubAppService: IGitHubAppTokenService = {
         // return;
     },
 
-    async getLatestCommitId(remoteUrl: string, branch: string): Promise<string> {
-        const res: any = await git.listRemote([remoteUrl, `refs/heads/${branch}`])
-        return res.substring(0, HASH_BYTE_LEN);
-    },
-
-    async getLatestCommitMsg(githubUrl: string, branch: string): Promise<string> {
+    async getLatestCommitInfo(githubUrl: string, branch: string): Promise<ICommitInfo> {
         const parsed: any = gh(githubUrl);
         const res:any = await octokit.request('GET /repos/{owner}/{repo}/commits', {
             owner: parsed.owner,
@@ -139,7 +131,13 @@ const GithubAppService: IGitHubAppTokenService = {
             sha: branch,
             per_page: 1,
         });
-        return res.data[0].commit.message;
+        return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };
     }
 }
+
+export interface ICommitInfo {
+    id: string
+    message: string, 
+}
+
 export default GithubAppService;

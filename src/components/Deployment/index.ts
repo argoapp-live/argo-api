@@ -14,6 +14,7 @@ import { IDeployment } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
+import { ICommitInfo } from "../GitHubApp/service";
 
 
 export async function deploy(
@@ -86,16 +87,15 @@ export async function deploy(
       folderName
     );
 
-  const commitId = await GithubAppService.getLatestCommitId(githubUrl, branch);
-  const commitMessage = await GithubAppService.getLatestCommitMsg(githubUrl, branch);
+  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(githubUrl, branch);
 
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
     project._id,
     configurationId,
     deploymentEnv,
-    commitId,
-    commitMessage
+    commitInfo.id,
+    commitInfo.message
   );
 
   let capturedLogs;

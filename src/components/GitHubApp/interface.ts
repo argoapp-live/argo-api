@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import { IGuHubAppToken } from "./model";
+import { ICommitInfo } from "./service";
 
 
 export interface IGitHubAppTokenService {
@@ -12,6 +13,5 @@ export interface IGitHubAppTokenService {
     getFullGithubUrlAndFolderName(branch: string, installationId: string, owner: string, folderName: string): Promise<string>;
     getBranches(id: string, branchesQuery: any): Promise<any>;
     getInstallationRepos(id: string, installationId: any): Promise<any>;
-    getLatestCommitId(remoteUrl: string, brach: string): Promise<string>;
-    getLatestCommitMsg(githubUrl: string, branch: string): Promise<string>
+    getLatestCommitInfo(githubUrl: string, branch: string): Promise<ICommitInfo>;
 }
