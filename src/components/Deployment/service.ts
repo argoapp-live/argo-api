@@ -5,12 +5,14 @@ import * as uploaderLib from '@argoapp/nft-uploader-js'
 import config from '../../config/env/index';
 
 const DeploymentService: IDeploymentService = {
-    async create(topic: string, projectId: string, configurationId: string): Promise<IDeployment> {
-
+    async create(topic: string, projectId: string, configurationId: string, deploymentEnv: any, commitId: string, commitMessage: string): Promise<IDeployment> {
         const deployment: any = {
             topic,
             project: projectId,
             configuration: configurationId,
+            env: deploymentEnv,
+            commitId,
+            commitMessage
         };
         
         return DeploymentModel.create(deployment);

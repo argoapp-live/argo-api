@@ -4,14 +4,17 @@ import GitHubAppTokenModel from './model'
 import { Types } from "mongoose";
 import UserModel from "../User/model";
 import config from '../../config/env/index';
+import * as gh from 'parse-github-url';
 const axios = require('axios').default;
-
+const { Octokit } = require("@octokit/core");
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
 
 const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
 const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
+const octokit = new Octokit();
+const HASH_BYTE_LEN = 40;
 
 
 const GithubAppService: IGitHubAppTokenService = {
@@ -118,6 +121,23 @@ const GithubAppService: IGitHubAppTokenService = {
         });
         return instanceAxios.get();
         // return;
+    },
+
+    async getLatestCommitInfo(githubUrl: string, branch: string): Promise<ICommitInfo> {
+        const parsed: any = gh(githubUrl);
+        const res:any = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+            owner: parsed.owner,
+            repo: parsed.name,
+            sha: branch,
+            per_page: 1,
+        });
+        return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };
     }
 }
+
+export interface ICommitInfo {
+    id: string
+    message: string, 
+}
+
 export default GithubAppService;
