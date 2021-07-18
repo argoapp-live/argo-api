@@ -13,5 +13,5 @@ export interface IGitHubAppTokenService {
     getFullGithubUrlAndFolderName(branch: string, installationId: string, owner: string, folderName: string): Promise<string>;
     getBranches(id: string, branchesQuery: any): Promise<any>;
     getInstallationRepos(id: string, installationId: any): Promise<any>;
-    getLatestCommitInfo(githubUrl: string, branch: string): Promise<ICommitInfo>;
+    getLatestCommitInfo(id: string, githubUrl: string, branch: string): Promise<ICommitInfo>;
 }

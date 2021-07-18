@@ -13,7 +13,6 @@ const path = require('path');
 
 const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
 const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
-const octokit = new Octokit();
 const HASH_BYTE_LEN = 40;
 
 
@@ -123,15 +122,24 @@ const GithubAppService: IGitHubAppTokenService = {
         // return;
     },
 
-    async getLatestCommitInfo(githubUrl: string, branch: string): Promise<ICommitInfo> {
-        const parsed: any = gh(githubUrl);
-        const res:any = await octokit.request('GET /repos/{owner}/{repo}/commits', {
-            owner: parsed.owner,
-            repo: parsed.name,
-            sha: branch,
-            per_page: 1,
-        });
-        return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };
+    async getLatestCommitInfo(id: string, githubUrl: string, branch: string): Promise<ICommitInfo> {
+        try {
+            const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: Types.ObjectId(id) });
+            const octokit = new Octokit({ auth: getUserToken.token });
+
+            const parsed: any = gh(githubUrl);
+            const res:any = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+                owner: parsed.owner,
+                repo: parsed.name,
+                sha: branch,
+                per_page: 1,
+            });
+            return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };  
+        } catch (error) {
+            console.log(error);
+            return { id: '', message: '' };
+        }
+        
     }
 }
 

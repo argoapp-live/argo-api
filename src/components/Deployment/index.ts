@@ -87,7 +87,7 @@ export async function deploy(
       folderName
     );
 
-  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(githubUrl, branch);
+  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(user._id, githubUrl, branch);
 
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
