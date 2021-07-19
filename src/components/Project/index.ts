@@ -25,6 +25,8 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
             const domains = await DomainService.find({ projectId: req.params.id });
             project._doc.domains = domains.filter(domain => domain.type === 'domain');
             project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
+            project._doc.handshakeDomains = domains.filter(domain => domain.type === 'handshake-domain');
+            project._doc.handshakeSubdomains = domains.filter(domain => domain.type === 'handshake-subdomain');
         }
         res.status(200).json(project);
     } catch (error) {
@@ -111,6 +113,19 @@ export async function getBranches(req: Request, res: Response, next: NextFunctio
         res.status(200).json({
             success: true,
             branches: response.data
+        });
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+export async function updateEnv(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+
+        const updatedProject: boolean = await ProjectService.updateEnv(req.params.id, req.body)
+        res.status(200).json({
+            updatedProject
         });
 
     } catch (error) {

@@ -9,6 +9,7 @@ router.post('/', ProjectComponent.create);
 router.get('/github/repo', ProjectComponent.GetUserRepos);
 
 router.get('/:id', ProjectComponent.findOne);
+router.put('/env/:id', ProjectComponent.updateEnv);
 router.put('/:id', ProjectComponent.findOneAndUpdate);
 
 router.get('/installations/:installationId', ProjectComponent.getInstallationRepos);

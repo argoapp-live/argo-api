@@ -8,6 +8,7 @@ export interface IRequestBody {
     installationId: string
     uniqueTopicId: string, 
     configurationId: string,
+    env: any,
 }
 
 interface LogToCapture {
@@ -25,11 +26,13 @@ export interface IDeploymentBody {
     branch: string,
     buildCommand: string,
     publishDir: string,
+    protocol: string,
     workspace: string,
     is_workspace: boolean,
     logsToCapture: Array<LogToCapture>,
     walletId: string, 
-    walletAddress: string
+    walletAddress: string,
+    env: any,
 }
 
 

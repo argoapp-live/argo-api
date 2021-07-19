@@ -49,11 +49,11 @@ const ProjectService: any = {
         }
     },
 
-    async createIfNotExists(githubUrl: string, organizationId: string, name: string): Promise<any> {
+    async createIfNotExists(githubUrl: string, organizationId: string, name: string, env: any): Promise<any> {
         try {
             const existingProject = await ProjectModel.findOne({ githubUrl, organizationId });
             if(!existingProject) {
-                const project = await ProjectModel.create({ name, githubUrl, organizationId });
+                const project = await ProjectModel.create({ name, githubUrl, organizationId, env });
                 return { project, created: true };
             }
             return { project: existingProject, created: false };
@@ -66,6 +66,24 @@ const ProjectService: any = {
         try {
             console.log(id, deploymentId)
             return ProjectModel.updateOne({ _id: id }, { latestDeployment: deploymentId })
+        } catch(err) {
+            throw new Error(err.message);
+        }
+    },
+
+    async updateEnv(id: string, newEnv: any): Promise<any> {
+        try {
+            const project: IProject = await ProjectModel.findById(id);
+
+            // for (const key in partialEnv) {
+            //     project.env[key] = partialEnv[key]
+            // }
+
+            project.env = newEnv;
+
+            await project.save();
+            return ProjectModel.findById(id);
+            
         } catch(err) {
             throw new Error(err.message);
         }

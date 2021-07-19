@@ -84,6 +84,7 @@ function _populatePayment(payment: any, deployments: Array<IDeployment>): any {
     const deployment: any = deployments.filter((deployment) => deployment.paymentId?.toString() === payment._id?.toString())[0]
     payment.buildTime = deployment ? deployment.buildTime : 0;
     payment.projectName = deployment? deployment.project.name: '';
+    payment.protocol = deployment? deployment.configuration.protocol: '';
     return payment;
 }
 
@@ -91,6 +92,8 @@ function _populateProject(project: any, domains: Array<IDomain>): any {
     const projectDomains: Array<IDomain> = domains.filter((domain: IDomain) => domain.projectId?.toString() === project._id?.toString());
     project._doc.domains = projectDomains.filter(domain => domain.type === 'domain');
     project._doc.subdomains = projectDomains.filter(domain => domain.type === 'subdomain');
+    project._doc.handshakeDomains = projectDomains.filter(domain => domain.type === 'handshake-domain');
+    project._doc.handshakeSubdomains = projectDomains.filter(domain => domain.type === 'handshake-subdomain');
     return project;
 }
 
