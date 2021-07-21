@@ -36,6 +36,7 @@ interface IConfig {
     CALLBACK_URL: string;
     APP_ID: string;
     PEM_FILE_NAME: string;
+    PEM_CONTENT: string;
   };
   cloudflare: {
     ARGO_IPV4: string;
@@ -100,6 +101,7 @@ const development: IConfig = {
     CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
+    PEM_CONTENT: process.env.PEM_CONTENT,
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -174,6 +176,7 @@ const production: IConfig = {
     CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
+    PEM_CONTENT: process.env.PEM_CONTENT,
   },
   arweave: {
     LOGSTOCAPTURE: [
@@ -248,6 +251,7 @@ const test: IConfig = {
     CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
+    PEM_CONTENT: process.env.PEM_CONTENT,
   },
   arweave: {
     LOGSTOCAPTURE: [
