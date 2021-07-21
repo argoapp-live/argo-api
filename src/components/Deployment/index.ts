@@ -21,7 +21,7 @@ const gh = require('parse-github-url');
 const DEFAULT_WEBHOOK_NAME = 'production';
 
 
-export async function deploy(
+export async function deployFromRequest(
   req: Request,
   res: Response,
   next: NextFunction
@@ -39,21 +39,6 @@ export async function deploy(
     configurationId,
     createDefaultWebhook
   } = req.body;
-
-  const configuration: IConfiguration = await ConfigurationService.findById(
-    configurationId
-  );
-
-  if (!configuration) {}
-  const {
-    branch,
-    buildCommand,
-    packageManager,
-    publishDir,
-    protocol,
-    framework,
-    workspace,
-  } = configuration;
 
   const user: IUserModel = await AuthService.authUser(req);
 
@@ -87,6 +72,32 @@ export async function deploy(
       console.log('WebHook err', err.message);
     }
   }
+
+  const responseObj: any = await deploy(githubUrl, isPrivate, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet);
+  res.status(200).json(responseObj);
+}
+
+// async function deployFromWebHook() {
+  
+// }
+
+export async function deploy(githubUrl: string, isPrivate: boolean, installationId: string, owner: string, folderName: string,
+    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel) {
+
+      const configuration: IConfiguration = await ConfigurationService.findById(
+        configurationId
+      );
+    
+      if (!configuration) {}
+      const {
+        branch,
+        buildCommand,
+        packageManager,
+        publishDir,
+        protocol,
+        framework,
+        workspace,
+      } = configuration;
 
   const fullGitHubPath: string =
     await GithubAppService.getFullGithubUrlAndFolderName(
@@ -138,13 +149,13 @@ export async function deploy(
     .post(`${config.deployerApi.HOST_ADDRESS}/deploy`, body)
     .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
 
-  res.status(200).json({
+  return {
     message: "Deployment is being processed",
     success: true,
     topic: uniqueTopicId,
     deploymentId: deployment._id,
     projectId: project._id,
-  });
+  }
 }
 
 export async function deploymentFinished(

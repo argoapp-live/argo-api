@@ -5,10 +5,16 @@ import WebHookService from './service';
 import AuthService from '../Auth/service';
 import { IWebHookRequest } from './dto-interfaces';
 import GithubAppService from '../GitHubApp/service';
+import { DeploymentComponent } from '..';
 const gh = require('parse-github-url');
 import ProjectService from '../Project/service';
 const { Octokit } = require('@octokit/core');
 import { IProject } from '../Project/model';
+import { IOrganization } from '../Organization/model';
+import OrganizationService from '../Organization/service';
+import { IWalletModel } from '../Wallet/model';
+import WalletService from '../Wallet/service';
+import { v4 as uuidv4 } from "uuid";
 
 export async function createWebHook(
     req: Request,
@@ -44,15 +50,18 @@ export async function triggerWebHook(
     try {
         const id = req.params.id;
 
-        // const webHook = await WebHookService.findById(id);
-        // if (!webHook) throw new Error('no hook with that id');
+        const webHook = await WebHookService.findById(id);
+        if (!webHook) throw new Error('no hook with that id');
 
-        // const project = await ProjectService.findById(webHook.projectId);
+        const wallet: IWalletModel = await WalletService.findOne({ organizationId: webHook.organizationId });
 
-        // console.log(req);
-        console.log('WEBHOOK_TRIGGERED', req);
-        // console.log(webHook);
-        // console.log(project);
+        const project: IProject = await ProjectService.findById(webHook.projectId);
+        const parsed = gh(project.githubUrl);
+
+        const responseObj: any = await DeploymentComponent.deploy(project.githubUrl, false, webHook.installationId, parsed.owner, 
+            parsed.name, uuidv4(), project, webHook.configurationId, wallet);
+
+        console.log('WEBHOOK_TRIGGERED', responseObj);
 
         res.status(200).json({ msg: 'webhook executed' });
 
