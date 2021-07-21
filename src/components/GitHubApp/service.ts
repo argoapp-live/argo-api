@@ -11,10 +11,17 @@ const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
 
-const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
-const HASH_BYTE_LEN = 40;
+let gitPrivateKey: string;
 
+if (config.githubApp.PEM_CONTENT !== '') {
+    gitPrivateKey = config.githubApp.PEM_CONTENT;
+} else {
+    const gitPrivateKeyPath: string = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+
+    gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
+}
+
+const HASH_BYTE_LEN = 40;
 
 const GithubAppService: IGitHubAppTokenService = {
     async findByUserId(id: Types.ObjectId): Promise<IGuHubAppToken> {
@@ -134,18 +141,18 @@ const GithubAppService: IGitHubAppTokenService = {
                 sha: branch,
                 per_page: 1,
             });
-            return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };  
+            return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };
         } catch (error) {
             console.log(error);
             return { id: '', message: '' };
         }
-        
+
     }
 }
 
 export interface ICommitInfo {
     id: string
-    message: string, 
+    message: string,
 }
 
 export default GithubAppService;
