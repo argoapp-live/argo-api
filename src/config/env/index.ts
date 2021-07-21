@@ -66,6 +66,7 @@ interface IConfig {
     HOST_ADDRESS: string;
     SECRET: string;
   };
+  selfUrl: string;
 }
 
 const NODE_ENV: string = process.env.NODE_ENV || "test";
@@ -141,6 +142,7 @@ const development: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  selfUrl: process.env.SELF_URL
 };
 
 const production: IConfig = {
@@ -215,6 +217,7 @@ const production: IConfig = {
       process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  selfUrl: process.env.SELF_URL
 };
 const test: IConfig = {
   port: process.env.PORT || 3000,
@@ -287,6 +290,7 @@ const test: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  selfUrl: process.env.SELF_URL
 };
 
 const config: {

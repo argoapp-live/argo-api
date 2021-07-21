@@ -1,11 +1,41 @@
-/**
- * @export
- * @interface IWebHook
- */
-export interface IWebHook {
-    owner: String;
-    repo: String;
-    events: String[];
-    installationId?: number;
-    repositoryId?: number;
+import * as connections from '../../config/connection/connection';
+import { Document, Schema } from 'mongoose';
+import { IProject } from '../Project/model';
+import { IConfiguration } from '../Configuration/model';
+import { IOrganization } from '../Organization/model';
+
+
+export interface IWebHook extends Document {
+    name: string;
+    installationId: string,
+    organizationId: IOrganization['_id'],
+    projectId: IProject['_id'];
+    configurationId: IConfiguration['_id'];
 }
+
+const WebHookSchema: Schema = new Schema(
+    {
+        name: String,
+        installationId: String,
+        branch: String,
+        organizationId: {
+            type: Schema.Types.ObjectId,
+            ref: 'OrganizationModel',
+        },
+        configurationId: {
+            type: Schema.Types.ObjectId,
+            ref: 'ConfigurationModel',
+        },
+        projectId: {
+            type: Schema.Types.ObjectId,
+            ref: 'ProjectModel',
+        }
+    },
+    {
+        collection: 'webhooks',
+        timestamps: true,
+        versionKey: false,
+    }
+);
+
+export default connections.db.model<IWebHook>('WebHookModel', WebHookSchema);
