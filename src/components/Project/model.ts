@@ -11,6 +11,7 @@ import { IDeployment } from '../Deployment/model';
 export interface IProject extends Document {
     name: string, 
     githubUrl: string,
+    env: any,
     organizationId: IOrganization['_id'],
     latestDeployment: IDeployment['_id'],
 }
@@ -19,6 +20,7 @@ const ProjectSchema: Schema = new Schema(
     {
         name: String,
         githubUrl: String,
+        env: Object,
         organizationId: {
             type: Schema.Types.ObjectId,
             ref: 'Organization'
