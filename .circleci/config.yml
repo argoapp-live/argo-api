@@ -8,7 +8,6 @@ workflows:
   build-deploy:
     jobs:
       - aws-ecr/build-and-push-image:
-          name: push-dev-image
           region: AWS_REGION
           account-url: AWS_ECR_ACCOUNT_URL
           aws-access-key-id: AWS_ACCESS_KEY_ID
