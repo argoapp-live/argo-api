@@ -58,8 +58,8 @@ export async function triggerWebHook(
         const project: IProject = await ProjectService.findById(webHook.projectId);
         const parsed = gh(project.githubUrl);
 
-        const responseObj: any = await DeploymentComponent.deploy(project.githubUrl, false, webHook.installationId, parsed.owner, 
-            parsed.name, uuidv4(), project, webHook.configurationId, wallet);
+        const responseObj: any = await DeploymentComponent.deploy(project.githubUrl, webHook.installationId, parsed.owner, 
+            parsed.name, uuidv4(), project, webHook.configurationId, wallet, project.env);
 
         console.log('WEBHOOK_TRIGGERED', responseObj);
 

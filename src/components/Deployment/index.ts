@@ -76,7 +76,7 @@ export async function deployFromRequest(
     }
   }
 
-  const responseObj: any = await deploy(githubUrl, isPrivate, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet);
+  const responseObj: any = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv);
   res.status(200).json(responseObj);
 }
 
@@ -84,8 +84,8 @@ export async function deployFromRequest(
   
 // }
 
-export async function deploy(githubUrl: string, isPrivate: boolean, installationId: string, owner: string, folderName: string,
-    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel) {
+export async function deploy(githubUrl: string, installationId: number, owner: string, folderName: string,
+    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any) {
 
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
@@ -110,7 +110,7 @@ export async function deploy(githubUrl: string, isPrivate: boolean, installation
       folderName
     );
 
-  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(user._id, githubUrl, branch);
+  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(installationId, githubUrl, branch);
 
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
