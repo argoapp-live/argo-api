@@ -77,7 +77,8 @@ export async function deploy(
     }
   }
 
-  if (createDefaultWebhook && !created) {
+  //TODO if (createDefaultWebhook && created)
+  if (createDefaultWebhook) {
     try {
       const installationToken = await GithubAppService.createInstallationToken(installationId);
       const parsed = gh(githubUrl);
