@@ -17,6 +17,7 @@ const WebHookSchema: Schema = new Schema(
     {
         name: String,
         installationId: String,
+        branch: String,
         organizationId: {
             type: Schema.Types.ObjectId,
             ref: 'OrganizationModel',

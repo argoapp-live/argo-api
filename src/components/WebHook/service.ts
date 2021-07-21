@@ -4,6 +4,8 @@ import AuthService from '../Auth/service';
 const { Octokit } = require('@octokit/core');
 import { Request } from 'express';
 import config from '../../config/env';
+import { IConfiguration } from '../Configuration/model';
+import ConfigurationService from '../Configuration/service';
 
 const WebHookService = {
 

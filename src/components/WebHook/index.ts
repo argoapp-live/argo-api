@@ -49,10 +49,25 @@ export async function triggerWebHook(
 
         // const project = await ProjectService.findById(webHook.projectId);
 
-        console.log('WEBHOOK_TRIGGERED', id);
+        // console.log(req);
+        console.log('WEBHOOK_TRIGGERED', req);
         // console.log(webHook);
         // console.log(project);
 
+        res.status(200).json({ msg: 'webhook executed' });
+
+    } catch(error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
+
+export async function triggerWebHook2(
+    req: Request,
+    res: Response,
+    next: NextFunction)
+: Promise<void> {
+    try {
+        console.log(req);
         res.status(200).json({ msg: 'webhook executed' });
 
     } catch(error) {
@@ -80,14 +95,15 @@ export async function testWebhook(
         const response: any = await octokit.request(
             'POST /repos/{owner}/{repo}/hooks',
             {
-                owner: 'argoapp-live',
-                repo: 'argo-api',
+                accept: "application/vnd.github.v3+json",
+                owner: 'rekpero',
+                repo: 'weavy',
                 events: ['push'],
                 config: {
-                    url: "http://dcf648393682.ngrok.io/webhook/trigger/312312312",
+                    url: "http://024557f07eab.ngrok.io/webhook/trigger/312312312",
                     token: installationToken.token,
                     insecure_ssl: 1,
-                    content_type: 'application/json'
+                    content_type: 'json'
                 },
             })
 

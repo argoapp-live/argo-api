@@ -14,6 +14,12 @@ import { IDeployment } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
+import { IWebHook } from "../WebHook/model";
+import WebHookService from "../WebHook/service";
+const gh = require('parse-github-url');
+
+const DEFAULT_WEBHOOK_NAME = 'production';
+
 
 export async function deploy(
   req: Request,
@@ -31,6 +37,7 @@ export async function deploy(
     installationId,
     uniqueTopicId,
     configurationId,
+    createDefaultWebhook
   } = req.body;
 
   const configuration: IConfiguration = await ConfigurationService.findById(
@@ -67,6 +74,16 @@ export async function deploy(
       await DomainService.addDefault(project);
     } catch (err) {
       throw new Error(err.message);
+    }
+  }
+
+  if (createDefaultWebhook) {
+    try {
+      const installationToken = await GithubAppService.createInstallationToken(installationId);
+      const parsed = gh(githubUrl);
+      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, installationToken, parsed);
+    } catch(err) {
+      console.log('WebHook err', err.message);
     }
   }
 
