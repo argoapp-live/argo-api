@@ -7,6 +7,7 @@ import { IOrganization } from '../Organization/model';
 
 export interface IWebHook extends Document {
     name: string;
+    branch: string;
     installationId: string,
     organizationId: IOrganization['_id'],
     projectId: IProject['_id'];

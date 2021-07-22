@@ -67,7 +67,8 @@ export async function deployFromRequest(
     try {
       const installationToken = await GithubAppService.createInstallationToken(installationId);
       const parsed = gh(githubUrl);
-      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, installationToken, parsed);
+      await WebHookService.connectWithGithub(project.id, installationToken, parsed);
+      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, installationToken);
     } catch(err) {
       console.log('WebHook err', err.message);
     }

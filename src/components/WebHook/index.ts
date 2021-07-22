@@ -15,6 +15,36 @@ import OrganizationService from '../Organization/service';
 import { IWalletModel } from '../Wallet/model';
 import WalletService from '../Wallet/service';
 import { v4 as uuidv4 } from "uuid";
+import { IConfiguration } from '../Configuration/model';
+import ConfigurationService from '../Configuration/service';
+import { IWebHook } from './model';
+
+export async function connect(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const user: IUserModel = await AuthService.authUser(req);
+        if (!user) throw new Error('unauthorized');
+
+        req.body as IWebHookRequest;
+        const { projectId, installationId } = req.body;
+
+        const project: IProject= await ProjectService.findById(projectId);
+        if (!project) throw new Error('no project');
+
+        const parsed = gh(project.githubUrl);
+
+        const installationToken = await GithubAppService.createInstallationToken(installationId);
+        const response = await WebHookService.connectWithGithub(projectId, installationToken, parsed);
+
+        res.status(200).json(response);
+    } catch (error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
+
 
 export async function createWebHook(
     req: Request,
@@ -30,13 +60,13 @@ export async function createWebHook(
 
         const project: IProject= await ProjectService.findById(projectId);
         if (!project) throw new Error('no project');
+        
+        const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
+        if (!configuration) throw new Error('no configuration');
 
-        const parsed = gh(project.githubUrl);
 
-        const installationToken = await GithubAppService.createInstallationToken(installationId);
-
-        const response = await WebHookService.create(name, projectId, configurationId, installationId, organizationId, installationToken, parsed);
-        res.status(200).json(response);
+        const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, installationId, organizationId, configuration.branch);
+        res.status(200).json(webHook);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
@@ -48,9 +78,9 @@ export async function triggerWebHook(
     next: NextFunction)
 : Promise<void> {
     try {
-        const id = req.params.id;
+        const projectId = req.params.projectId;
 
-        const webHook = await WebHookService.findById(id);
+        const webHook: IWebHook = await WebHookService.findOne({ projectId, branch: req.body.ref });
         if (!webHook) throw new Error('no hook with that id');
 
         const wallet: IWalletModel = await WalletService.findOne({ organizationId: webHook.organizationId });
@@ -66,60 +96,6 @@ export async function triggerWebHook(
         res.status(200).json({ msg: 'webhook executed' });
 
     } catch(error) {
-        next(new HttpError(error.message.status, error.message));
-    }
-}
-
-export async function triggerWebHook2(
-    req: Request,
-    res: Response,
-    next: NextFunction)
-: Promise<void> {
-    try {
-        console.log(req);
-        res.status(200).json({ msg: 'webhook executed' });
-
-    } catch(error) {
-        next(new HttpError(error.message.status, error.message));
-    }
-}
-
-
-export async function testWebhook(
-    req: Request,
-    res: Response,
-    next: NextFunction)
-: Promise<void> {
-    try {
-
-        const { installationId } = req.body;
-        const installationToken = await GithubAppService.createInstallationToken(installationId);
-
-        console.log(installationToken);
-
-        const octokit: any = new Octokit({ auth: `${installationToken.token}` });
-
-        console.log('here');
-
-        const response: any = await octokit.request(
-            'POST /repos/{owner}/{repo}/hooks',
-            {
-                accept: "application/vnd.github.v3+json",
-                owner: 'rekpero',
-                repo: 'weavy',
-                events: ['push'],
-                config: {
-                    url: "http://024557f07eab.ngrok.io/webhook/trigger/312312312",
-                    token: installationToken.token,
-                    insecure_ssl: 1,
-                    content_type: 'json'
-                },
-            })
-
-        res.status(200).json({ msg: 'hook created' });
-
-    } catch(error) {
-        console.log('err', error)
         next(new HttpError(error.message.status, error.message));
     }
 }
