@@ -64,6 +64,8 @@ export async function createWebHook(
         const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
         if (!configuration) throw new Error('no configuration');
 
+        const existingWebHook: IWebHook = await WebHookService.findOne({ projectId, branch: configuration.branch });
+        if (existingWebHook) throw new Error('webhook already exists');
 
         const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, 
             installationId, organizationId, configuration.branch);
