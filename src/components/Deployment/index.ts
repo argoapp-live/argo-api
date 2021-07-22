@@ -14,6 +14,7 @@ import { IDeployment } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
+import { ICommitInfo } from "../GitHubApp/service";
 import { IWebHook } from "../WebHook/model";
 import WebHookService from "../WebHook/service";
 const gh = require('parse-github-url');
@@ -31,12 +32,12 @@ export async function deployFromRequest(
   const {
     organizationId,
     githubUrl,
-    isPrivate,
     folderName,
     owner,
     installationId,
     uniqueTopicId,
     configurationId,
+    env,
     createDefaultWebhook
   } = req.body;
 
@@ -49,9 +50,11 @@ export async function deployFromRequest(
   const result: any = await ProjectService.createIfNotExists(
     githubUrl,
     organizationId,
-    folderName
+    folderName,
+    env
   );
   const project = result.project;
+  const deploymentEnv = result.project.env;
   const created = result.created;
 
   if (created) {
@@ -74,7 +77,7 @@ export async function deployFromRequest(
     }
   }
 
-  const responseObj: any = await deploy(githubUrl, isPrivate, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet);
+  const responseObj: any = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv);
   res.status(200).json(responseObj);
 }
 
@@ -82,8 +85,8 @@ export async function deployFromRequest(
   
 // }
 
-export async function deploy(githubUrl: string, isPrivate: boolean, installationId: string, owner: string, folderName: string,
-    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel) {
+export async function deploy(githubUrl: string, installationId: number, owner: string, folderName: string,
+    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any) {
 
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
@@ -102,18 +105,21 @@ export async function deploy(githubUrl: string, isPrivate: boolean, installation
 
   const fullGitHubPath: string =
     await GithubAppService.getFullGithubUrlAndFolderName(
-      githubUrl,
-      isPrivate,
       branch,
       installationId,
       owner,
       folderName
     );
 
+  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(installationId, githubUrl, branch);
+
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
     project._id,
-    configurationId
+    configurationId,
+    deploymentEnv,
+    commitInfo.id,
+    commitInfo.message
   );
 
   let logsToCapture;
@@ -142,6 +148,7 @@ export async function deploy(githubUrl: string, isPrivate: boolean, installation
     logsToCapture,
     walletId: !!wallet._id ? wallet._id : "abcdefghij",
     walletAddress: !!wallet.address ? wallet.address : "0x123456789",
+    env: deploymentEnv,
   };
 
   await ProjectService.setLatestDeployment(project._id, deployment._id);

@@ -8,7 +8,7 @@ import { IOrganization } from '../Organization/model';
 export interface IWebHook extends Document {
     name: string;
     branch: string;
-    installationId: string,
+    installationId: number,
     organizationId: IOrganization['_id'],
     projectId: IProject['_id'];
     configurationId: IConfiguration['_id'];
@@ -17,7 +17,7 @@ export interface IWebHook extends Document {
 const WebHookSchema: Schema = new Schema(
     {
         name: String,
-        installationId: String,
+        installationId: Number,
         branch: String,
         organizationId: {
             type: Schema.Types.ObjectId,

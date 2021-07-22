@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { IUserModel } from '../User/model';
 import WebHookService from './service';
 import AuthService from '../Auth/service';
-import { IWebHookRequest } from './dto-interfaces';
+import { IWebHookRequest, IWebHookConnectionRequest } from './dto-interfaces';
 import GithubAppService from '../GitHubApp/service';
 import { DeploymentComponent } from '..';
 const gh = require('parse-github-url');
@@ -28,7 +28,7 @@ export async function connect(
         const user: IUserModel = await AuthService.authUser(req);
         if (!user) throw new Error('unauthorized');
 
-        req.body as IWebHookRequest;
+        req.body as IWebHookConnectionRequest;
         const { projectId, installationId } = req.body;
 
         const project: IProject= await ProjectService.findById(projectId);
@@ -58,14 +58,15 @@ export async function createWebHook(
         req.body as IWebHookRequest;
         const { name, projectId, configurationId, installationId, organizationId } = req.body;
 
-        const project: IProject= await ProjectService.findById(projectId);
+        const project: IProject = await ProjectService.findById(projectId);
         if (!project) throw new Error('no project');
         
         const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
         if (!configuration) throw new Error('no configuration');
 
 
-        const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, installationId, organizationId, configuration.branch);
+        const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, 
+            installationId, organizationId, configuration.branch);
         res.status(200).json(webHook);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
@@ -88,8 +89,8 @@ export async function triggerWebHook(
         const project: IProject = await ProjectService.findById(webHook.projectId);
         const parsed = gh(project.githubUrl);
 
-        const responseObj: any = await DeploymentComponent.deploy(project.githubUrl, false, webHook.installationId, parsed.owner, 
-            parsed.name, uuidv4(), project, webHook.configurationId, wallet);
+        const responseObj: any = await DeploymentComponent.deploy(project.githubUrl, webHook.installationId, 
+            parsed.owner, parsed.name, uuidv4(), project, webHook.configurationId, wallet, project.env);
 
         console.log('WEBHOOK_TRIGGERED', responseObj);
 

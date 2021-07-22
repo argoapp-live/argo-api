@@ -1,13 +1,13 @@
 export interface IRequestBody {
     orgId: string, 
     githubUrl: string, 
-    isPrivate: boolean, 
     owner: string, 
     branch: string, 
     projectId: string, 
-    installationId: string
+    installationId: number
     uniqueTopicId: string, 
     configurationId: string,
+    env: any,
 }
 
 interface LogToCapture {
@@ -30,7 +30,8 @@ export interface IDeploymentBody {
     is_workspace: boolean,
     logsToCapture: Array<LogToCapture>,
     walletId: string, 
-    walletAddress: string
+    walletAddress: string,
+    env: any,
 }
 
 

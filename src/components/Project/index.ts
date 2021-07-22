@@ -120,3 +120,16 @@ export async function getBranches(req: Request, res: Response, next: NextFunctio
     }
 }
 
+export async function updateEnv(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+
+        const updatedProject: boolean = await ProjectService.updateEnv(req.params.id, req.body)
+        res.status(200).json({
+            updatedProject
+        });
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
