@@ -88,7 +88,9 @@ export async function triggerWebHook(
             return;
         }
 
-        const webHook: IWebHook = await WebHookService.findOne({ projectId, branch: req.body.ref });
+        const refParsed = req.body.ref.split('/')
+        const branch = refParsed[refParsed.length - 1];
+        const webHook: IWebHook = await WebHookService.findOne({ projectId, branch });
         if (!webHook) throw new Error('no hook with that id');
 
         const wallet: IWalletModel = await WalletService.findOne({ organizationId: webHook.organizationId });
