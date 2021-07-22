@@ -70,8 +70,11 @@ export async function deployFromRequest(
     try {
       const installationToken = await GithubAppService.createInstallationToken(installationId);
       const parsed = gh(githubUrl);
+      const configuration: IConfiguration = await ConfigurationService.findById(
+        configurationId
+      );
       await WebHookService.connectWithGithub(project.id, installationToken, parsed);
-      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, installationToken);
+      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, configuration.branch);
     } catch(err) {
       console.log('WebHook err', err.message);
     }
