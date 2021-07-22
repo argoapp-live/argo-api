@@ -81,6 +81,13 @@ export async function triggerWebHook(
     try {
         const projectId = req.params.projectId;
 
+        const shouldTrigger = !!req.body.ref;
+
+        if (!shouldTrigger) { 
+            res.status(200).json({ msg: 'webhook created' }); 
+            return;
+        }
+
         const webHook: IWebHook = await WebHookService.findOne({ projectId, branch: req.body.ref });
         if (!webHook) throw new Error('no hook with that id');
 
