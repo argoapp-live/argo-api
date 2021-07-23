@@ -13,7 +13,7 @@ const path = require('path');
 
 let gitPrivateKey: string;
 
-if (config.githubApp.PEM_CONTENT !== '') {
+if (config.githubApp.PEM_CONTENT) {
     gitPrivateKey = config.githubApp.PEM_CONTENT;
 } else {
     const gitPrivateKeyPath: string = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
@@ -21,7 +21,6 @@ if (config.githubApp.PEM_CONTENT !== '') {
     gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
 }
 
-const HASH_BYTE_LEN = 40;
 
 const GithubAppService: IGitHubAppTokenService = {
     async findByUserId(id: Types.ObjectId): Promise<IGuHubAppToken> {
