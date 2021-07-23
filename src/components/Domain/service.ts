@@ -143,22 +143,23 @@ const DomainService = {
     }
   },
 
-  async update(id: string, updateQuery: Partial<IDomain>): Promise<IDomain> {
+  async update(id: string, name: string, link: string): Promise<IDomain> {
     try {
-      if (updateQuery.verified && updateQuery.type && updateQuery.argoKey)
-        throw new Error("Not valid query");
-      if (
-        updateQuery.name ||
-        (updateQuery.type?.indexOf("handshake") !== -1 && updateQuery.link)
-      ) {
-        updateQuery.verified = false;
+      const domain: IDomain = await DomainService.findById(id);
+      if (name) domain.name = name;
+      if (link) domain.link = link;
+      if (name || (domain.type.indexOf("handshake") !== -1 && link)) {
+        domain.verified = false;
       }
 
-      return DomainModel.updateOne({ _id: id }, updateQuery);
+      await domain.save();
+      return domain;
+      // return DomainModel.findById(id, { }, { new: true });
     } catch (error) {
       throw new Error(error.message);
     }
   },
+
 
   async remove(id: string): Promise<void> {
     try {
