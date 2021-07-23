@@ -1,41 +1,35 @@
-import { IWebHookService } from './interface';
-import { IWebHook } from './model';
+import WebHookModel, { IWebHook } from './model';
 import GithubAppService from '../GitHubApp/service';
 import AuthService from '../Auth/service';
 const { Octokit } = require('@octokit/core');
 import { Request } from 'express';
+import config from '../../config/env';
+import { IConfiguration } from '../Configuration/model';
+import ConfigurationService from '../Configuration/service';
 
-/**
- * @export
- * @implements {IWebHookService}
- */
-const WebHookService: IWebHookService = {
-    /**
-     * @param {IUserInvite} userInvite
-     * @returns {Promise <IUserInvite>}
-     * @memberof InvitationService
-     */
-    async createHook(req: Request): Promise<any> {
+const WebHookService = {
+
+    async findById(id: string): Promise<IWebHook> {
         try {
-            const webHookCreationDto = req.body as IWebHook;
-            const decodeToken: any = await AuthService.deseralizeToken(req);
-            
-            //Why we need this?
+          return WebHookModel.findById(id);
+        } catch (error) {
+          throw new Error(error.message);
+        }
+    },
 
-            // const argoSession: IArgoSessionModel = await JWTTokenService.FindOneBySessionId(
-            //     decodeToken.session_id
-            // );
+    async create(name: string, projectId: string, configurationId: string, installationId: string, organizationId: string, installationToken: any, parsed: any): Promise<any> {
+        try {
+            const webHook: IWebHook = await WebHookModel.create({ name, projectId, configurationId, installationId, organizationId });
 
-            let installationToken = await GithubAppService.createInstallationToken(req.body.installationId);
             const octokit: any = new Octokit({ auth: `${installationToken.token}` });
             const response: any = await octokit.request(
                 'POST /repos/{owner}/{repo}/hooks',
                 {
-                    owner: webHookCreationDto.owner, // 'argoapp-live'
-                    repo: webHookCreationDto.repo, // 'argo-api'
-                    events: webHookCreationDto.events, // ['push']
+                    owner: parsed.owner,
+                    repo: parsed.name,
+                    events: ['push'],
                     config: {
-                        // url: config.pushNotifyUrl, // URL from NGROK 'http://bbd64cf988c3.ngrok.io'
+                        url: `${config.selfUrl}/webhook/trigger/${webHook.id}`,
                         content_type: 'json',
                         insecure_ssl: '1',
                     },
