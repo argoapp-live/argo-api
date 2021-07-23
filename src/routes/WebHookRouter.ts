@@ -3,8 +3,10 @@ import { WebHookComponent } from '../components';
 
 const router: Router = Router();
 
-router.post('/create', WebHookComponent.testWebhook);
-router.post('/trigger/:id', WebHookComponent.triggerWebHook);
-router.post('/trigger2/', WebHookComponent.triggerWebHook2);
+router.post('/connect', WebHookComponent.connect);
+router.post('/create', WebHookComponent.createWebHook);
+router.post('/trigger/:projectId', WebHookComponent.triggerWebHook);
+router.put('/:id', WebHookComponent.update);
+router.delete('/:id', WebHookComponent.remove);
 
 export default router;

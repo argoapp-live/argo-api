@@ -1,11 +1,10 @@
 export interface IRequestBody {
     orgId: string, 
     githubUrl: string, 
-    isPrivate: boolean, 
     owner: string, 
     branch: string, 
     projectId: string, 
-    installationId: string
+    installationId: number
     uniqueTopicId: string, 
     configurationId: string,
     env: any,

@@ -96,7 +96,7 @@ const GithubAppService: IGitHubAppTokenService = {
         return installationToken;
     },
 
-    async getFullGithubUrlAndFolderName(branch: string, installationId: string, owner: string, folderName: string): Promise<string> {
+    async getFullGithubUrlAndFolderName(branch: string, installationId: number, owner: string, folderName: string): Promise<string> {
         let installationToken = await GithubAppService.createInstallationToken(installationId);
         return `https://x-access-token:${installationToken.token}@github.com/${owner}/${folderName}.git --branch ${branch}`;
     },
@@ -129,9 +129,9 @@ const GithubAppService: IGitHubAppTokenService = {
         // return;
     },
 
-    async getLatestCommitInfo(id: string, githubUrl: string, branch: string): Promise<ICommitInfo> {
+    async getLatestCommitInfo(installationId: number, githubUrl: string, branch: string): Promise<ICommitInfo> {
         try {
-            const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: Types.ObjectId(id) });
+            const getUserToken = await GitHubAppTokenModel.findOne({ installationId });
             const octokit = new Octokit({ auth: getUserToken.token });
 
             const parsed: any = gh(githubUrl);
