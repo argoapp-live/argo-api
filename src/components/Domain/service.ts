@@ -143,11 +143,12 @@ const DomainService = {
     }
   },
 
-  async update(id: string, name: string, link: string): Promise<IDomain> {
+  async update(id: string, name: string, link: string, isLatest: boolean): Promise<IDomain> {
     try {
       const domain: IDomain = await DomainService.findById(id);
       if (name) domain.name = name;
       if (link) domain.link = link;
+      domain.isLatest = isLatest;
       if (name || (domain.type.indexOf("handshake") !== -1 && link)) {
         domain.verified = false;
       }
@@ -248,6 +249,28 @@ const DomainService = {
       );
       await DomainModel.updateMany({ _id: { $in: ids } }, { link });
     }
+  },
+
+  async addStaticToResolver(domain: string, argoKey: string, link: string): Promise<boolean> {
+    if (link === "") return false;
+
+    const body = {
+      transaction: link,
+      domains: [domain],
+      uuids: [argoKey],
+    };
+
+    const response = await axios.post(
+      `${config.domainResolver.HOST_ADDRESS}/v1/add-domain`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${config.domainResolver.SECRET}`,
+        },
+      }
+    );
+    return response.status === 200;
   },
 };
 
