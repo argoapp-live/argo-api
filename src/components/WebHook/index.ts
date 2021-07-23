@@ -112,3 +112,39 @@ export async function triggerWebHook(
     }
 }
 
+
+export async function update(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+      try {
+          const user: IUserModel = await AuthService.authUser(req);
+          if (!user) throw new Error('unauthorized user');    
+  
+          const webHook: IWebHook = await WebHookService.update(req.params.id, req.body);
+          res.status(201).json({success: true, webHook});
+  
+      } catch (error) {
+          next(new HttpError(error.message.status, error.message));
+      }
+}
+
+export async function remove(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+
+        const user: IUserModel = await AuthService.authUser(req);
+        if (!user) throw new Error('unauthorized user'); 
+
+        await WebHookService.remove(req.params.id);
+        res.status(200).json({success: true });
+
+    } catch (error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
+

@@ -21,9 +21,25 @@ const WebHookService = {
         }
     },
 
-    async findOne(query: Partial<IWebHook>) {
+    async findOne(query: Partial<IWebHook>): Promise<IWebHook> {
         try {
             return WebHookModel.findOne(query);
+        } catch(error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async update(id: string, query: Partial<IWebHook>): Promise<IWebHook> {
+        try {
+            return WebHookModel.updateOne({ _id: id }, query);
+        } catch(error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async remove(id: string): Promise<any> {
+        try {
+            return WebHookModel.deleteOne({ _id: id });
         } catch(error) {
             throw new Error(error.message);
         }
