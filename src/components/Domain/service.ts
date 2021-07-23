@@ -248,6 +248,18 @@ const DomainService = {
       await DomainModel.updateMany({ _id: { $in: ids } }, { link });
     }
   },
+  
+  async hasDefault(project: IProject): Promise<boolean> {
+    try {
+      const projectNameNormalized: string = project.name.replace(/\s/g, "-");
+      const regex = `${projectNameNormalized}-.{6}\.${config.cloudflare.DOMAIN_NAME}`
+      const domain: IDomain = await DomainModel.findOne({ projectId: project.id, name: { $regex: regex, $options: 'i' }});
+      if (domain) return true;
+      return false;
+    } catch(error) {
+      throw new Error(error.message);
+    }
+  },
 };
 
 function _resolveTxt(hostname: string): Promise<string[][]> {

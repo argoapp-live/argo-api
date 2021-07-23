@@ -63,6 +63,16 @@ export async function deployFromRequest(
     } catch (err) {
       throw new Error(err.message);
     }
+  } else {
+    //Check if the project has the default subdomain (backward compatibility from V1 to V2)
+    try {
+      const hasDefault: boolean = await DomainService.hasDefault(project);
+      if (!hasDefault) {
+        await DomainService.addDefault(project);
+      }
+    } catch(err) {
+      throw new Error(err.message);
+    }
   }
 
   //TODO if (createDefaultWebhook && created)

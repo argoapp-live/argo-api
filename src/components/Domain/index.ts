@@ -122,9 +122,6 @@ export async function remove(
   ): Promise<void> {
     try {
 
-        const user: IUserModel = await AuthService.authUser(req);
-        if (!user) throw new Error('unauthorized user'); 
-
         await DomainService.remove(req.params.id);
         res.status(200).json({success: true });
 
