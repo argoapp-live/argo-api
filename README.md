@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/argoapp-live/argoapp-live.svg?style=shield)](https://circleci.com/gh/argoapp-live/argoapp-live)
+[![CircleCI](https://circleci.com/gh/argoapp-live/argo-api/tree/dev.svg?style=shield)](https://circleci.com/gh/argoapp-live/argo-api/tree/dev)
 
 <p align="center">
   <a href="https://argoapp.live/">
