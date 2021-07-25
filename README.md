@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/argoapp-live/argoapp-live.svg?style=shield)](https://circleci.com/gh/argoapp-live/argoapp-live)
+
 <p align="center">
   <a href="https://argoapp.live/">
     <a href="https://imgur.com/J5O9d2O"><img src="https://i.imgur.com/J5O9d2O.png" title="source: imgur.com" alt="ArGo logo (light version)" width="210" /></a>
