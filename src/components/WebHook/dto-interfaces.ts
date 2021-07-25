@@ -3,5 +3,10 @@ export interface IWebHookRequest {
     projectId: string, 
     configurationId: string, 
     organizationId: string,
-    installationId: string,
+    installationId: number,
+}
+
+export interface IWebHookConnectionRequest {
+    projectId: string, 
+    installationId: number,
 }

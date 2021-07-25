@@ -1,11 +1,7 @@
 import WebHookModel, { IWebHook } from './model';
-import GithubAppService from '../GitHubApp/service';
-import AuthService from '../Auth/service';
 const { Octokit } = require('@octokit/core');
-import { Request } from 'express';
 import config from '../../config/env';
-import { IConfiguration } from '../Configuration/model';
-import ConfigurationService from '../Configuration/service';
+import { create } from '../User';
 
 const WebHookService = {
 
@@ -17,9 +13,40 @@ const WebHookService = {
         }
     },
 
-    async create(name: string, projectId: string, configurationId: string, installationId: string, organizationId: string, installationToken: any, parsed: any): Promise<any> {
+    async create(name: string, projectId: string, configurationId: string, installationId: string, organizationId: string, branch: string): Promise<IWebHook> {
         try {
-            const webHook: IWebHook = await WebHookModel.create({ name, projectId, configurationId, installationId, organizationId });
+            return WebHookModel.create({ name, projectId, configurationId, installationId, organizationId, branch });
+        } catch(error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async findOne(query: Partial<IWebHook>): Promise<IWebHook> {
+        try {
+            return WebHookModel.findOne(query);
+        } catch(error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async update(id: string, query: Partial<IWebHook>): Promise<IWebHook> {
+        try {
+            return WebHookModel.updateOne({ _id: id }, query);
+        } catch(error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async remove(id: string): Promise<any> {
+        try {
+            return WebHookModel.deleteOne({ _id: id });
+        } catch(error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async connectWithGithub(projectId: string, installationToken: any, parsed: any): Promise<any> {
+        try {
 
             const octokit: any = new Octokit({ auth: `${installationToken.token}` });
             const response: any = await octokit.request(
@@ -29,7 +56,7 @@ const WebHookService = {
                     repo: parsed.name,
                     events: ['push'],
                     config: {
-                        url: `${config.selfUrl}/webhook/trigger/${webHook.id}`,
+                        url: `${config.selfUrl}/webhook/trigger/${projectId}`,
                         content_type: 'json',
                         insecure_ssl: '1',
                     },
