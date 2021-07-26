@@ -62,6 +62,21 @@ const DomainService = {
         );
 
         let verified = false;
+        let separator = {
+          base: "",
+          sep: "",
+        };
+        if (domain.link.indexOf("arweave.net") !== -1) {
+          separator = {
+            base: "arweave",
+            sep: "https://arweave.net/",
+          };
+        } else if (domain.link.indexOf("siasky.net") !== -1) {
+          separator = {
+            base: "sia",
+            sep: "https://siasky.net/",
+          };
+        }
         if (!isSubdomain) {
           const txtRecord = records.filter(
             (r) => r.type === "TXT" && r.host === "_contenthash"
@@ -69,10 +84,11 @@ const DomainService = {
           const alaisRecord = records.filter(
             (r) => r.type === "ALIAS" && r.host === "@"
           )[0];
+
           verified =
             txtRecord.value ===
-              `arweave://${domain.link.split("https://arweave.net/")[1]}` &&
-            alaisRecord.value === "arweave.namebase.io.";
+              `${separator.base}://${domain.link.split(separator.sep)[1]}` &&
+            alaisRecord.value === `${separator.base}.namebase.io.`;
         } else {
           const txtRecord = records.filter(
             (r) =>
@@ -90,8 +106,8 @@ const DomainService = {
           )[0];
           verified =
             txtRecord.value ===
-              `arweave://${domain.link.split("https://arweave.net/")[1]}` &&
-            alaisRecord.value === "arweave.namebase.io.";
+              `${separator.base}://${domain.link.split(separator.sep)[1]}` &&
+            alaisRecord.value === `${separator.base}.namebase.io.`;
         }
 
         domain.verified = verified;

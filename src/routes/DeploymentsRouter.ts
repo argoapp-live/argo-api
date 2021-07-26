@@ -3,7 +3,7 @@ import { DeploymentComponent } from "../components";
 
 const router: Router = Router();
 
-router.post("/", DeploymentComponent.deploy);
+router.post("/", DeploymentComponent.deployFromRequest);
 router.post("/created", DeploymentComponent.deploymentFinished);
 router.post("/payment", DeploymentComponent.paymentFinished);
 router.get("/:id", DeploymentComponent.findDeploymentById);
