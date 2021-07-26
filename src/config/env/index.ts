@@ -27,6 +27,9 @@ interface IConfig {
   skynet: {
     LOGSTOCAPTURE: Array<any>;
   };
+  neofs: {
+    LOGSTOCAPTURE: Array<any>;
+  };
   arweave: {
     LOGSTOCAPTURE: Array<any>;
   };
@@ -119,6 +122,9 @@ const development: IConfig = {
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
   },
+  neofs: {
+    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
+  },
   redis: {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
     PORT: +process.env.REDIS_PORT || 6379,
@@ -186,6 +192,9 @@ const production: IConfig = {
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
+  neofs: {
+    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -261,6 +270,9 @@ const test: IConfig = {
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
+  neofs: {
+    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,

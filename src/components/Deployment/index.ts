@@ -133,6 +133,10 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
       break;
     case "skynet":
       logsToCapture = config.skynet.LOGSTOCAPTURE;
+      break;
+    case "neofs":
+      logsToCapture = config.neofs.LOGSTOCAPTURE;
+      break;
   }
 
   const body: IDeploymentBody = {
