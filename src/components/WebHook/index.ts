@@ -1,21 +1,43 @@
 import { HttpError } from '../../config/error';
 import { NextFunction, Request, Response } from 'express';
+import { IUserModel } from '../User/model';
 import WebHookService from './service';
+import AuthService from '../Auth/service';
+import { IWebHookRequest, IWebHookConnectionRequest } from './dto-interfaces';
+import GithubAppService from '../GitHubApp/service';
+import { DeploymentComponent } from '..';
+const gh = require('parse-github-url');
+import ProjectService from '../Project/service';
+const { Octokit } = require('@octokit/core');
+import { IProject } from '../Project/model';
+import { IOrganization } from '../Organization/model';
+import OrganizationService from '../Organization/service';
+import { IWalletModel } from '../Wallet/model';
+import WalletService from '../Wallet/service';
+import { v4 as uuidv4 } from "uuid";
+import { IConfiguration } from '../Configuration/model';
+import ConfigurationService from '../Configuration/service';
+import { IWebHook } from './model';
 
-/**
- * @export
- * @param {Request} req
- * @param {Response} res
- * @param {NextFunction} next
- * @returns {Promise < void >}
- */
-export async function createWebHook(
+export async function connect(
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
-        const response: any = await WebHookService.createHook(req);
+        const user: IUserModel = await AuthService.authUser(req);
+        if (!user) throw new Error('unauthorized');
+
+        req.body as IWebHookConnectionRequest;
+        const { projectId, installationId } = req.body;
+
+        const project: IProject= await ProjectService.findById(projectId);
+        if (!project) throw new Error('no project');
+
+        const parsed = gh(project.githubUrl);
+
+        const installationToken = await GithubAppService.createInstallationToken(installationId);
+        const response = await WebHookService.connectWithGithub(projectId, installationToken, parsed);
 
         res.status(200).json(response);
     } catch (error) {
@@ -23,76 +45,106 @@ export async function createWebHook(
     }
 }
 
-/**
- * @export
- * @param {Request} req
- * @param {Response} res
- * @param {NextFunction} next
- * @returns {Promise < void >}
- */
 
-
-export async function pushNotify(
+export async function createWebHook(
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
-        // const uniqueTopicName: string = uuidv4();
-        // const splitUrl: any = req.body.repository.clone_url.split('/');
-        // const folderName: any = splitUrl[splitUrl.length - 1].split('.')[0];
-        // const branchName: any = req.body.ref.split('/').pop();
-        // const fullGitHubPath: string = `${req.body.repository.clone_url} --branch ${branchName}`;
-        // const repoData: IRepository = await RepositoryService.findRepoByNameAndBranch(req.body.repository.name, branchName);
-        // const body: IInternalApiDto = {
-        //     github_url: fullGitHubPath,
-        //     folder_name: folderName,
-        //     topic: uniqueTopicName,
-        //     package_manager: repoData.package_manager,
-        //     branch: branchName,
-        //     build_command: repoData.build_command,
-        //     publish_dir: repoData.publish_dir
-        // };
-        // const repository = await RepositoryService.createOrUpdateExisting(github_url, orgId, deploymentObj._id, 
-        //     branch, workspace, folderName, package_manager, build_command, publish_dir, framework);
+        const user: IUserModel = await AuthService.authUser(req);
+        if (!user) throw new Error('unauthorized');
 
-        // console.log(uniqueTopicName);
-        // socket.on(uniqueTopicName, async (data: any) => {
-        //     emitter.emit(uniqueTopicName, data);
-        //     const depFilter: any = {
-        //         _id: deploymentObj.deploymentId
-        //     };
-        //     const isLink: any = data.indexOf(config.arweaveUrl) !== -1;
-        //     let updateDeployment: any;
+        req.body as IWebHookRequest;
+        const { name, projectId, configurationId, installationId, organizationId } = req.body;
 
-        //     if (isLink) {
-        //         const arweaveLink: any = data.trim();
+        const project: IProject = await ProjectService.findById(projectId);
+        if (!project) throw new Error('no project');
+        
+        const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
+        if (!configuration) throw new Error('no configuration');
 
-        //         updateDeployment = {
-        //             $addToSet: { log: [data] },
-        //             sitePreview: arweaveLink,
-        //             deploymentStatus: 'Deployed'
-        //         };
-        //     } else {
-        //         updateDeployment = {
-        //             $addToSet: { log: [data] },
-        //             deploymentStatus: 'Pending'
-        //         };
-        //     }
+        const existingWebHook: IWebHook = await WebHookService.findOne({ projectId, branch: configuration.branch });
+        if (existingWebHook) throw new Error('webhook already exists');
 
-        //     await DeploymentModel.findOneAndUpdate(depFilter, updateDeployment).catch((err) => console.log(err));
-        // });
-        // setTimeout(() => axios.post(config.flaskApi.HOST_ADDRESS, body).catch((err) => console.log(err)), 2000);
-
-        res.status(200).json({
-            success: true,
-            // topic: uniqueTopicName,
-            // deploymentId: deploymentObj.deploymentId,
-            // repositoryId: deploymentObj.repositoryId
-        });
+        const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, 
+            installationId, organizationId, configuration.branch);
+        res.status(200).json(webHook);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
 }
 
+export async function triggerWebHook(
+    req: Request,
+    res: Response,
+    next: NextFunction)
+: Promise<void> {
+    try {
+        const projectId = req.params.projectId;
+
+        const shouldTrigger = !!req.body.ref;
+
+        if (!shouldTrigger) { 
+            res.status(200).json({ msg: 'webhook created' }); 
+            return;
+        }
+
+        const refParsed = req.body.ref.split('/')
+        const branch = refParsed[refParsed.length - 1];
+        const webHook: IWebHook = await WebHookService.findOne({ projectId, branch });
+        if (!webHook) throw new Error('no hook with that id');
+
+        const wallet: IWalletModel = await WalletService.findOne({ organizationId: webHook.organizationId });
+
+        const project: IProject = await ProjectService.findById(webHook.projectId);
+        const parsed = gh(project.githubUrl);
+
+        const responseObj: any = await DeploymentComponent.deploy(project.githubUrl, webHook.installationId, 
+            parsed.owner, parsed.name, uuidv4(), project, webHook.configurationId, wallet, project.env);
+
+        console.log('WEBHOOK_TRIGGERED', responseObj);
+
+        res.status(200).json({ msg: 'webhook executed' });
+
+    } catch(error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
+
+
+export async function update(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+      try {
+          const user: IUserModel = await AuthService.authUser(req);
+          if (!user) throw new Error('unauthorized user');    
+  
+          const webHook: IWebHook = await WebHookService.update(req.params.id, req.body);
+          res.status(201).json({success: true, webHook});
+  
+      } catch (error) {
+          next(new HttpError(error.message.status, error.message));
+      }
+}
+
+export async function remove(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+
+        const user: IUserModel = await AuthService.authUser(req);
+        if (!user) throw new Error('unauthorized user'); 
+
+        await WebHookService.remove(req.params.id);
+        res.status(200).json({success: true });
+
+    } catch (error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
 

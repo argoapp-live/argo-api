@@ -4,15 +4,27 @@ import GitHubAppTokenModel from './model'
 import { Types } from "mongoose";
 import UserModel from "../User/model";
 import config from '../../config/env/index';
+import * as gh from 'parse-github-url';
 const axios = require('axios').default;
-
+const { Octokit } = require("@octokit/core");
 const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
 
-const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
+let gitPrivateKey: string;
 
+if (config.githubApp.PEM_CONTENT_BASE64 !== '') {
+    const base64Encoded: string = config.githubApp.PEM_CONTENT_BASE64;
+    const buff: Buffer = new Buffer(base64Encoded, 'base64');
+
+    gitPrivateKey = buff.toString('ascii');
+} else {
+    const gitPrivateKeyPath: string = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+
+    gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
+}
+
+const HASH_BYTE_LEN = 40;
 
 const GithubAppService: IGitHubAppTokenService = {
     async findByUserId(id: Types.ObjectId): Promise<IGuHubAppToken> {
@@ -87,7 +99,7 @@ const GithubAppService: IGitHubAppTokenService = {
         return installationToken;
     },
 
-    async getFullGithubUrlAndFolderName(branch: string, installationId: string, owner: string, folderName: string): Promise<string> {
+    async getFullGithubUrlAndFolderName(branch: string, installationId: number, owner: string, folderName: string): Promise<string> {
         let installationToken = await GithubAppService.createInstallationToken(installationId);
         return `https://x-access-token:${installationToken.token}@github.com/${owner}/${folderName}.git --branch ${branch}`;
     },
@@ -118,6 +130,32 @@ const GithubAppService: IGitHubAppTokenService = {
         });
         return instanceAxios.get();
         // return;
+    },
+
+    async getLatestCommitInfo(installationId: number, githubUrl: string, branch: string): Promise<ICommitInfo> {
+        try {
+            const getUserToken = await GitHubAppTokenModel.findOne({ installationId });
+            const octokit = new Octokit({ auth: getUserToken.token });
+
+            const parsed: any = gh(githubUrl);
+            const res:any = await octokit.request('GET /repos/{owner}/{repo}/commits', {
+                owner: parsed.owner,
+                repo: parsed.name,
+                sha: branch,
+                per_page: 1,
+            });
+            return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };
+        } catch (error) {
+            console.log(error);
+            return { id: '', message: '' };
+        }
+
     }
 }
+
+export interface ICommitInfo {
+    id: string
+    message: string,
+}
+
 export default GithubAppService;

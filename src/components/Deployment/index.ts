@@ -14,8 +14,15 @@ import { IDeployment, IScreenshot } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
+import { ICommitInfo } from "../GitHubApp/service";
+import { IWebHook } from "../WebHook/model";
+import WebHookService from "../WebHook/service";
+const gh = require('parse-github-url');
 
-export async function deploy(
+const DEFAULT_WEBHOOK_NAME = 'production';
+
+
+export async function deployFromRequest(
   req: Request,
   res: Response,
   next: NextFunction
@@ -30,40 +37,24 @@ export async function deploy(
     installationId,
     uniqueTopicId,
     configurationId,
+    env,
+    createDefaultWebhook
   } = req.body;
-
-  const configuration: IConfiguration = await ConfigurationService.findById(
-    configurationId
-  );
-
-  if (!configuration) {
-  }
-  const {
-    branch,
-    buildCommand,
-    packageManager,
-    publishDir,
-    protocol,
-    framework,
-    workspace,
-  } = configuration;
 
   const user: IUserModel = await AuthService.authUser(req);
 
-  if (!user) {
-  }
-
-  // TODO check pending deployment
+  if (!user) {}
 
   const wallet: IWalletModel = await WalletService.findOne({ organizationId });
-  // TODO check wallet exists for the organization
 
   const result: any = await ProjectService.createIfNotExists(
     githubUrl,
     organizationId,
     folderName,
+    env
   );
   const project = result.project;
+  const deploymentEnv = result.project.env;
   const created = result.created;
 
   if (created) {
@@ -74,6 +65,47 @@ export async function deploy(
     }
   }
 
+  //TODO if (createDefaultWebhook && created)
+  if (createDefaultWebhook) {
+    try {
+      const installationToken = await GithubAppService.createInstallationToken(installationId);
+      const parsed = gh(githubUrl);
+      const configuration: IConfiguration = await ConfigurationService.findById(
+        configurationId
+      );
+      await WebHookService.connectWithGithub(project.id, installationToken, parsed);
+      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, configuration.branch);
+    } catch(err) {
+      console.log('WebHook err', err.message);
+    }
+  }
+
+  const responseObj: any = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv);
+  res.status(200).json(responseObj);
+}
+
+// async function deployFromWebHook() {
+
+// }
+
+export async function deploy(githubUrl: string, installationId: number, owner: string, folderName: string,
+    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any) {
+
+      const configuration: IConfiguration = await ConfigurationService.findById(
+        configurationId
+      );
+
+      if (!configuration) {}
+      const {
+        branch,
+        buildCommand,
+        packageManager,
+        publishDir,
+        protocol,
+        framework,
+        workspace,
+      } = configuration;
+
   const fullGitHubPath: string =
     await GithubAppService.getFullGithubUrlAndFolderName(
       branch,
@@ -82,20 +114,29 @@ export async function deploy(
       folderName
     );
 
+  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(installationId, githubUrl, branch);
+
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
     project._id,
     configurationId,
+    deploymentEnv,
+    commitInfo.id,
+    commitInfo.message
   );
 
-  let capturedLogs;
+  let logsToCapture;
 
   switch (protocol) {
     case "arweave":
-      capturedLogs = config.arweave.LOGSTOCAPTURE;
+      logsToCapture = config.arweave.LOGSTOCAPTURE;
       break;
     case "skynet":
-      capturedLogs = config.skynet.LOGSTOCAPTURE;
+      logsToCapture = config.skynet.LOGSTOCAPTURE;
+      break;
+    case "neofs":
+      logsToCapture = config.neofs.LOGSTOCAPTURE;
+      break;
   }
 
   const body: IDeploymentBody = {
@@ -111,9 +152,10 @@ export async function deploy(
     protocol,
     workspace: !!workspace ? workspace : "",
     is_workspace: !!workspace,
-    logsToCapture: capturedLogs,
+    logsToCapture,
     walletId: !!wallet._id ? wallet._id : "abcdefghij",
     walletAddress: !!wallet.address ? wallet.address : "0x123456789",
+    env: deploymentEnv,
   };
 
   await ProjectService.setLatestDeployment(project._id, deployment._id);
@@ -122,13 +164,13 @@ export async function deploy(
     .post(`${config.deployerApi.HOST_ADDRESS}/deploy`, body)
     .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
 
-  res.status(200).json({
+  return {
     message: "Deployment is being processed",
     success: true,
     topic: uniqueTopicId,
     deploymentId: deployment._id,
     projectId: project._id,
-  });
+  }
 }
 
 export async function deploymentFinished(
@@ -177,7 +219,7 @@ export async function paymentFinished(
     const screenshot:IScreenshot = await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview)
     deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
     deployment = await DeploymentService.updateScreenshot(deploymentId, screenshot)
-    
+
     let _deployment: IDeployment = await DeploymentService.findById(deploymentId);
     console.log(_deployment)
     res.status(201).json({ msg: "Payment successfully recorded" });
