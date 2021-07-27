@@ -10,7 +10,7 @@ import { IProject } from "../Project/model";
 import ProjectService from "../Project/service";
 import ConfigurationService from "../Configuration/service";
 import { IConfiguration } from "../Configuration/model";
-import { IDeployment } from "./model";
+import { IDeployment, IScreenshot } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
@@ -85,7 +85,7 @@ export async function deployFromRequest(
 }
 
 // async function deployFromWebHook() {
-  
+
 // }
 
 export async function deploy(githubUrl: string, installationId: number, owner: string, folderName: string,
@@ -94,7 +94,7 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
       );
-    
+
       if (!configuration) {}
       const {
         branch,
@@ -214,9 +214,14 @@ export async function paymentFinished(
   }: { paymentId: string; deploymentId: string; status: string } = req.body;
 
   let deployment: IDeployment = await DeploymentService.findById(deploymentId);
-
   if (status === "created") {
+    console.log(deployment.sitePreview)
+    const screenshot:IScreenshot = await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview)
     deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
+    deployment = await DeploymentService.updateScreenshot(deploymentId, screenshot)
+
+    let _deployment: IDeployment = await DeploymentService.findById(deploymentId);
+    console.log(_deployment)
     res.status(201).json({ msg: "Payment successfully recorded" });
   }
 

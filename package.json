@@ -36,6 +36,8 @@
     "node": ">=10.0.0 <15.0.0"
   },
   "dependencies": {
+    "@argoapp/nft-js": "git+https://github.com/argoapp-live/argo-nft-js.git",
+    "@argoapp/nft-uploader-js": "https://github.com/argoapp-live/argo-nft-uploader",
     "@octokit/auth-app": "^3.5.0",
     "@octokit/core": "^3.5.1",
     "@socket.io/redis-adapter": "^7.0.0",

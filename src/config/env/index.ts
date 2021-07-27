@@ -32,6 +32,7 @@ interface IConfig {
   };
   arweave: {
     LOGSTOCAPTURE: Array<any>;
+    PRIVATE_KEY: string;
   };
   githubApp: {
     CLIENT_ID: string;
@@ -71,6 +72,11 @@ interface IConfig {
     SECRET: string;
   };
   selfUrl: string;
+  nft:{
+    MNEMONIC: string;
+    RPC_PROVIDER: string;
+    NFT_SUBGRAPH: string;
+  }
 }
 
 const NODE_ENV: string = process.env.NODE_ENV || "test";
@@ -118,6 +124,7 @@ const development: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -150,7 +157,12 @@ const development: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
+  nft:{
+    MNEMONIC:process.env.SIGNER_MNEMONIC,
+    RPC_PROVIDER: process.env.RPC_PROVIDER,
+    NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
+  }
 };
 
 const production: IConfig = {
@@ -189,6 +201,7 @@ const production: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -229,7 +242,12 @@ const production: IConfig = {
       process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
+  nft:{
+    MNEMONIC:process.env.SIGNER_MNEMONIC,
+    RPC_PROVIDER: process.env.RPC_PROVIDER,
+    NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
+  }
 };
 const test: IConfig = {
   port: process.env.PORT || 3000,
@@ -267,6 +285,7 @@ const test: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
+    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -306,7 +325,12 @@ const test: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
+  nft:{
+    MNEMONIC:process.env.SIGNER_MNEMONIC,
+    RPC_PROVIDER: process.env.RPC_PROVIDER,
+    NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
+  }
 };
 
 const config: {
