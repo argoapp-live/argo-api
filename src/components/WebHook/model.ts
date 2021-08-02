@@ -6,12 +6,12 @@ import { IOrganization } from '../Organization/model';
 
 
 export interface IWebHook extends Document {
-    name: string;
-    branch: string;
+    name: string,
+    branch: string,
     installationId: number,
     organizationId: IOrganization['_id'],
-    projectId: IProject['_id'];
-    configurationId: IConfiguration['_id'];
+    projectId: IProject['_id'],
+    configurationId: IConfiguration['_id'],
 }
 
 const WebHookSchema: Schema = new Schema(
@@ -30,7 +30,7 @@ const WebHookSchema: Schema = new Schema(
         projectId: {
             type: Schema.Types.ObjectId,
             ref: 'ProjectModel',
-        }
+        },
     },
     {
         collection: 'webhooks',

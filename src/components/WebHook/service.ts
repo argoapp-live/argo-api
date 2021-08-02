@@ -1,7 +1,6 @@
 import WebHookModel, { IWebHook } from './model';
 const { Octokit } = require('@octokit/core');
 import config from '../../config/env';
-import { create } from '../User';
 
 const WebHookService = {
 
@@ -60,6 +59,44 @@ const WebHookService = {
                         content_type: 'json',
                         insecure_ssl: '1',
                     },
+                }
+            );
+
+            return response;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async disconnectWithGithub(installationToken: any, parsed: any, hookId: number): Promise<any> {
+        try {
+
+            const octokit: any = new Octokit({ auth: `${installationToken.token}` });
+            const response: any = await octokit.request(
+                'DELETE /repos/{owner}/{repo}/hooks/{hook_id}',
+                {
+                    owner: parsed.owner,
+                    repo: parsed.name,
+                    hook_id: hookId,
+                }
+            );
+
+            return response;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async getGitHook(installationToken: any, parsed: any, hookId: number): Promise<any> {
+        try {
+
+            const octokit: any = new Octokit({ auth: `${installationToken.token}` });
+            const response: any = await octokit.request(
+                'GET /repos/{owner}/{repo}/hooks/{hook_id}',
+                {
+                    owner: parsed.owner,
+                    repo: parsed.name,
+                    hook_id: hookId,
                 }
             );
 

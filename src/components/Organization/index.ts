@@ -50,7 +50,7 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
         const wallet: IWalletModel = await WalletService.findOne({ organizationId: organization._id });
         organization._doc.wallet = wallet;
 
-        const projects: Array<IProject> = await ProjectService.find({ organizationId: organization._id });
+        const projects: Array<IProject> = await ProjectService.findMantained({ organizationId: organization._id});
 
         const projectIds: Array<Types.ObjectId> = projects.map((project: IProject) => {
             return project._id;

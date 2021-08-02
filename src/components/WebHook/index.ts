@@ -39,7 +39,15 @@ export async function connect(
         const installationToken = await GithubAppService.createInstallationToken(installationId);
         const response = await WebHookService.connectWithGithub(projectId, installationToken, parsed);
 
-        res.status(200).json(response);
+        if (response.status === 201) {
+            await ProjectService.updateOne(projectId, { gitHookId: response.body.id });
+        } else {
+            throw new Error('webhook not created');
+        }
+
+        res.status(200).json({
+            message: 'REPO CONNECTED'
+        });
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
