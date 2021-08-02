@@ -57,6 +57,14 @@ export async function deployFromRequest(
   const deploymentEnv = result.project.env;
   const created = result.created;
 
+  if (project.state === 'ARCHIVED') {
+    res.status(401).json({
+      message: 'THIS REPO IS ARCHIVED AND CANNOT BE DEPLOYED'
+    });
+
+    return;
+  }
+
   if (created) {
     try {
       await DomainService.addDefault(project);
