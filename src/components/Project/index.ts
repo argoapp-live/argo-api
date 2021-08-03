@@ -8,6 +8,7 @@ import ProjectService from './service';
 import DeploymentService from '../Deployment/service';
 import DomainService from '../Domain/service';
 import WebHookService from '../WebHook/service';
+import { IWebHook } from '../WebHook/model';
 const gh = require('parse-github-url');
 const { Octokit } = require("@octokit/core");
 
@@ -29,6 +30,9 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
             project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
             project._doc.handshakeDomains = domains.filter(domain => domain.type === 'handshake-domain');
             project._doc.handshakeSubdomains = domains.filter(domain => domain.type === 'handshake-subdomain');
+
+            const webHooks: Array<IWebHook> = await WebHookService.find({ projectId: project.id });
+            project._doc.webHooks = webHooks;
         }
         res.status(200).json(project);
     } catch (error) {

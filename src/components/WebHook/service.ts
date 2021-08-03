@@ -28,6 +28,15 @@ const WebHookService = {
         }
     },
 
+
+    async find(query: Partial<IWebHook>): Promise<Array<IWebHook>> {
+        try {
+            return WebHookModel.find(query);
+        } catch(error) {
+            throw new Error(error.message);
+        }
+    },
+
     async update(id: string, query: Partial<IWebHook>): Promise<IWebHook> {
         try {
             return WebHookModel.updateOne({ _id: id }, query);
