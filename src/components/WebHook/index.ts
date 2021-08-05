@@ -78,8 +78,11 @@ export async function createWebHook(
         const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
         if (!configuration) throw new Error('no configuration');
 
-        const existingWebHook: IWebHook = await WebHookService.findOne({ projectId, branch: configuration.branch });
-        if (existingWebHook) throw new Error('webhook already exists');
+        const existingWebHook1: IWebHook = await WebHookService.findOne({ projectId, branch: configuration.branch });
+        if (existingWebHook1) throw new Error('webhook already exists');
+
+        const existingWebHook2: IWebHook = await WebHookService.findOne({ projectId, name });
+        if (existingWebHook2) throw new Error('webhook already exists');
 
         const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, 
             installationId, orgId, configuration.branch);

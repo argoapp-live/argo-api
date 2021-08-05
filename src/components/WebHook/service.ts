@@ -66,7 +66,7 @@ const WebHookService = {
                     config: {
                         url: `${config.selfUrl}/webhook/trigger/${projectId}`,
                         content_type: 'json',
-                        insecure_ssl: '1',
+                        insecure_ssl: '0',
                     },
                 }
             );
