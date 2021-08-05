@@ -13,9 +13,9 @@ const path = require('path');
 
 let gitPrivateKey: string;
 
-if (config.githubApp.PEM_CONTENT_BASE64 !== '') {
+if (config.githubApp.PEM_CONTENT_BASE64) {
     const base64Encoded: string = config.githubApp.PEM_CONTENT_BASE64;
-    const buff: Buffer = new Buffer(base64Encoded, 'base64');
+    const buff: Buffer = Buffer.from(base64Encoded, 'base64');
 
     gitPrivateKey = buff.toString('ascii');
 } else {
