@@ -38,7 +38,7 @@ const ProjectSchema: Schema = new Schema(
             enum: ['MAINTAINED', 'ARCHIVED'],
             default: 'MAINTAINED'
         },
-        gitHookId: Number,
+        gitHookId: { type: Number, default: -1 },
     },
     {
         collection: 'projects',

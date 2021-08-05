@@ -31,7 +31,7 @@ const WebHookService = {
 
     async find(query: Partial<IWebHook>): Promise<Array<IWebHook>> {
         try {
-            return WebHookModel.find(query);
+            return WebHookModel.find(query).populate("configurationId");
         } catch(error) {
             throw new Error(error.message);
         }
