@@ -3,7 +3,7 @@ import SubscriptionPackageModel, { ISubscription } from "./model";
 
 
 const SubscriptionService = {
-    async insertActive(subscriptionPackage: ISubscriptionPackage, organizationId: string): Promise<ISubscription> {
+    async insertDemanded(subscriptionPackage: ISubscriptionPackage, organizationId: string, renew: boolean): Promise<ISubscription> {
 
         const currentDate = new Date();
 
@@ -15,6 +15,7 @@ const SubscriptionService = {
             dateOfIssue, 
             dateOfExpiration,
             state: 'DEMANDED',
+            renew,
             organizationId,
             subscriptionPackageId: subscriptionPackage.id
         }
@@ -22,11 +23,12 @@ const SubscriptionService = {
         return SubscriptionPackageModel.create(data);
     },
 
-    async insertPending(subscriptionPackage: ISubscriptionPackage, organizationId: string): Promise<ISubscription> {
+    async insertPending(subscriptionPackage: ISubscriptionPackage, organizationId: string, renew: boolean): Promise<ISubscription> {
         const data: any = {
             dateOfIssue: -1, 
             dateOfExpiration: -1,
             state: 'PENDING',
+            renew,
             organizationId,
             subscriptionPackageId: subscriptionPackage.id
         }

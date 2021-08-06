@@ -15,7 +15,7 @@ import { ISubscriptionPaymentRequest } from "./interfaces";
 export async function subscribe(req: Request, res: Response, next: NextFunction) {
     try {
         //TODO authorize
-        const { subscriptionPackageId, organizationId }: { subscriptionPackageId: string, organizationId: string } = req.body;
+        const { subscriptionPackageId, organizationId, renew }: { subscriptionPackageId: string, organizationId: string, renew: boolean} = req.body;
     
         const organization: IOrganization = await OrganizationService.findById(organizationId);
         if (!organization) throw new Error('no organization');
@@ -26,7 +26,11 @@ export async function subscribe(req: Request, res: Response, next: NextFunction)
         const subscription: ISubscription = await SubscriptionService.findOne({ state: { $in: ['ACTIVE', 'PENDING', 'DEMANDED'] }, organizationId });
         if (subscription) throw new Error('active, pending or demanded subscription already exists');
     
-        const newSubscription: ISubscription = await SubscriptionService.insertActive(subscriptionPackage, organizationId);
+        const newSubscription: ISubscription = await SubscriptionService.insertDemanded(subscriptionPackage, organizationId, renew);
+
+        if(renew) {
+            await SubscriptionService.insertPending(subscriptionPackage, organizationId, renew);
+        }
     
         res.status(200).json(newSubscription);
 
@@ -41,7 +45,7 @@ export async function subscribe(req: Request, res: Response, next: NextFunction)
         const subscriptionResponse: any = await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments/subscibe`, subscriptionPaymentRequest);
 
         if (subscriptionResponse.status !== 200) {
-            await SubscriptionService.updateOne(newSubscription.id, { state: 'ERROR'});
+            await SubscriptionService.updateOne(newSubscription.id, { state: 'ERROR' });
         }
 
     } catch(error) {
@@ -71,7 +75,7 @@ export async function changeSubscriptionPackage(req: Request, res: Response, nex
             return;
         }
 
-        const newPendingSubscription: ISubscription = await SubscriptionService.insertPending(subscriptionPackage, organizationId);
+        const newPendingSubscription: ISubscription = await SubscriptionService.insertPending(subscriptionPackage, organizationId, activeSubscription.renew);
         res.status(200).json(newPendingSubscription);
 
     } catch(error) {
@@ -87,6 +91,29 @@ export async function activateOrRejectSubscription(req: Request, res: Response, 
         if (!subscription) throw new Error('no subscription to update from payment');
         
         await SubscriptionService.updateOne(subscriptionId, { state });
+
+        if(state=== 'REJECTED') {
+            const prendingSubscription: ISubscription = await SubscriptionService.findOne({ organizationId: subscription.organizationId, state: 'PENDING' });
+            await SubscriptionService.updateOne(prendingSubscription.id, { state: 'CANCELED' });
+        }
+
+    } catch(error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
+
+
+export async function cancelSubscription(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { organizationId }: { organizationId: string } = req.body;
+
+        const organization: IOrganization = await OrganizationService.findById(organizationId);
+        if (!organization) throw new Error('no organization');
+
+        const subscription: ISubscription = await SubscriptionService.findOne({ organizationId, state: 'PENDING' });
+        if (!subscription) throw new Error('no subscription to update from payment');
+        
+        await SubscriptionService.updateOne(subscription.id, { state: 'CANCELED' });
 
     } catch(error) {
         next(new HttpError(error.message.status, error.message));

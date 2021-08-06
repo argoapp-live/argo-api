@@ -7,6 +7,7 @@ export interface ISubscription extends Document {
     dateOfIssue: number,
     dateOfExpiration: number,
     status: string, 
+    renew: boolean,
     organizationId: IOrganization['_id'],
     subscriptionPackageId: ISubscriptionPackage['_id']
 }
@@ -15,9 +16,10 @@ const SubscriptionSchema: Schema = new Schema(
     {
         dateOfIssue: Number,
         dateOfExpiration: Number,
+        renew: Boolean,
         status: {
             type: String,
-            enum: ['ACTIVE', 'EXPIRED', 'PENDING', 'DEMANDED', 'ERROR', 'REJECTED'],
+            enum: ['ACTIVE', 'EXPIRED', 'PENDING', 'DEMANDED', 'ERROR', 'REJECTED', 'CANCELED'],
         }, 
         organizationId: {
             type: Schema.Types.ObjectId,
