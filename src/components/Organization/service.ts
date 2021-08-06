@@ -1,6 +1,7 @@
 import { IOrganization, OrganizationModel} from './model';
 import { IOrganizationService } from './interface';
 import { Types } from 'mongoose';
+import { findById } from '../Configuration';
 
 /**
  * @export
@@ -29,6 +30,14 @@ const OrganizationService: IOrganizationService = {
             const organization: IOrganization = await OrganizationModel.findOne({ _id: Types.ObjectId(id) }).populate('users');
 
             return organization;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    },
+
+    async findById(id: string): Promise<IOrganization> {
+        try {
+            return OrganizationModel.findById(id);
         } catch (error) {
             throw new Error(error.message);
         }
