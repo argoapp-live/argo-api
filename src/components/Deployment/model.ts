@@ -7,7 +7,7 @@ export interface IDeployment extends Document {
   sitePreview: string;
   commitId: string;
   commitMessage: string;
-  logs: [{ time: String; log: String }];
+  logs: [{ time: string; log: string }];
   topic: string;
   status: string;
   paymentId: string;
