@@ -16,6 +16,8 @@ import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
 import { ICommitInfo } from "../GitHubApp/service";
 import { IWebHook } from "../WebHook/model";
+import * as toDelete from "./../SQSProducer";
+console.log(toDelete);
 import WebHookService from "../WebHook/service";
 const gh = require('parse-github-url');
 
