@@ -12,6 +12,9 @@ router.get('/:id', ProjectComponent.findOne);
 router.put('/env/:id', ProjectComponent.updateEnv);
 router.put('/:id', ProjectComponent.findOneAndUpdate);
 
+router.put('/changeStateToArchived/:id', ProjectComponent.changeStateToArchived);
+router.put('/changeStateToMaintained/:id', ProjectComponent.changeStateToMaintained);
+
 router.get('/installations/:installationId', ProjectComponent.getInstallationRepos);
 
 router.get('/installations/repo/branch', ProjectComponent.getBranches);
