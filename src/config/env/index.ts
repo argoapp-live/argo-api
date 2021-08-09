@@ -27,6 +27,9 @@ interface IConfig {
   skynet: {
     LOGSTOCAPTURE: Array<any>;
   };
+  neofs: {
+    LOGSTOCAPTURE: Array<any>;
+  };
   arweave: {
     LOGSTOCAPTURE: Array<any>;
     PRIVATE_KEY: string;
@@ -37,6 +40,7 @@ interface IConfig {
     CALLBACK_URL: string;
     APP_ID: string;
     PEM_FILE_NAME: string;
+    PEM_CONTENT_BASE64: string;
   };
   cloudflare: {
     ARGO_IPV4: string;
@@ -67,6 +71,7 @@ interface IConfig {
     HOST_ADDRESS: string;
     SECRET: string;
   };
+  selfUrl: string;
 }
 
 const NODE_ENV: string = process.env.NODE_ENV || "test";
@@ -100,6 +105,7 @@ const development: IConfig = {
     CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
+    PEM_CONTENT_BASE64: process.env.PEM_CONTENT_BASE64,
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -117,6 +123,9 @@ const development: IConfig = {
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
+  neofs: {
+    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
   },
   redis: {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
@@ -143,6 +152,7 @@ const development: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  selfUrl: process.env.SELF_URL
 };
 
 const production: IConfig = {
@@ -174,6 +184,7 @@ const production: IConfig = {
     CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
+    PEM_CONTENT_BASE64: process.env.PEM_CONTENT_BASE64,
   },
   arweave: {
     LOGSTOCAPTURE: [
@@ -184,6 +195,9 @@ const production: IConfig = {
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
+  neofs: {
+    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -218,6 +232,7 @@ const production: IConfig = {
       process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  selfUrl: process.env.SELF_URL
 };
 const test: IConfig = {
   port: process.env.PORT || 3000,
@@ -248,6 +263,7 @@ const test: IConfig = {
     CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
     APP_ID: process.env.GITHUB_APP_ID,
     PEM_FILE_NAME: process.env.PEM_FILE_NAME,
+    PEM_CONTENT_BASE64: process.env.PEM_CONTENT_BASE64,
   },
   arweave: {
     LOGSTOCAPTURE: [
@@ -258,6 +274,9 @@ const test: IConfig = {
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
+  neofs: {
+    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -291,6 +310,7 @@ const test: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
+  selfUrl: process.env.SELF_URL
 };
 
 const config: {
