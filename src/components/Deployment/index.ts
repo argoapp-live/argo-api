@@ -21,6 +21,8 @@ const gh = require('parse-github-url');
 
 const DEFAULT_WEBHOOK_NAME = 'production';
 
+console.log(process.env)
+
 export async function deployFromRequest(
   req: Request,
   res: Response,
