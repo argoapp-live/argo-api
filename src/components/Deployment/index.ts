@@ -184,7 +184,6 @@ export async function deploymentFinished(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  console.log("DEPLOYMENT FINISHED", req.body);
   try {
     const { deploymentId, capturedLogs, deploymentStatus, buildTime, logs } =
       req.body;
@@ -212,7 +211,6 @@ export async function paymentFinished(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  console.log("Payment finished", req.body);
   const {
     paymentId,
     deploymentId,
