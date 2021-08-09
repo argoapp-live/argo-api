@@ -221,18 +221,16 @@ export async function paymentFinished(
 
   let deployment: IDeployment = await DeploymentService.findById(deploymentId);
   if (status === "created") {
-    console.log(deployment.sitePreview)
-    const screenshot:IScreenshot = await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview)
     deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
-    deployment = await DeploymentService.updateScreenshot(deploymentId, screenshot)
-    
-    let _deployment: IDeployment = await DeploymentService.findById(deploymentId);
-    console.log(_deployment)
     res.status(201).json({ msg: "Payment successfully recorded" });
   }
 
   if (deployment.status === "Deployed" && status === "success") {
     DomainService.addToResolver(deployment.project, deployment.sitePreview);
+    console.log("SITE PREVIEW", deployment.sitePreview)
+    const screenshot: IScreenshot = await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview)
+    deployment = await DeploymentService.updateScreenshot(deploymentId, screenshot)
+
   }
 }
 
