@@ -119,7 +119,7 @@ const development: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -191,7 +191,7 @@ const production: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -270,7 +270,7 @@ const test: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_PRIVATE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
