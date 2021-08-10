@@ -18,6 +18,8 @@ import { v4 as uuidv4 } from "uuid";
 import { IConfiguration } from '../Configuration/model';
 import ConfigurationService from '../Configuration/service';
 import { IWebHook } from './model';
+import { ISubscription } from '../Subscription/model';
+import SubscriptionService from '../Subscription/service';
 
 export async function connect(
     req: Request,
@@ -100,8 +102,12 @@ export async function triggerWebHook(
         const project: IProject = await ProjectService.findById(webHook.projectId);
         const parsed = gh(project.githubUrl);
 
+        const activeSubscription : ISubscription = await SubscriptionService.findOne({organizationId : project.organizationId, status : 'ACTIVE'});
+        let deploymentWithSubscription = false ; 
+        if(activeSubscription) deploymentWithSubscription = true;
+        
         const responseObj: any = await DeploymentComponent.deploy(project.githubUrl, webHook.installationId, 
-            parsed.owner, parsed.name, uuidv4(), project, webHook.configurationId, wallet, project.env);
+            parsed.owner, parsed.name, uuidv4(), project, webHook.configurationId, wallet, project.env, deploymentWithSubscription);
 
         console.log('WEBHOOK_TRIGGERED', responseObj);
 

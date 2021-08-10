@@ -93,8 +93,10 @@ export async function activateOrRejectSubscription(req: Request, res: Response, 
         await SubscriptionService.updateOne(subscriptionId, { state });
 
         if(state=== 'REJECTED') {
-            const prendingSubscription: ISubscription = await SubscriptionService.findOne({ organizationId: subscription.organizationId, state: 'PENDING' });
-            await SubscriptionService.updateOne(prendingSubscription.id, { state: 'CANCELED' });
+            const pendingSubscription: ISubscription = await SubscriptionService.findOne({ organizationId: subscription.organizationId, state: 'PENDING' });
+            if(pendingSubscription){
+                await SubscriptionService.updateOne(pendingSubscription.id, { state: 'CANCELED' });
+            }
         }
 
     } catch(error) {

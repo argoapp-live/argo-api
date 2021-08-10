@@ -19,6 +19,10 @@ import { IWebHook } from "../WebHook/model";
 import * as toDelete from "./../SQSProducer";
 console.log(toDelete);
 import WebHookService from "../WebHook/service";
+import { ISubscription } from "../Subscription/model";
+import SubscriptionService from "../Subscription/service";
+import SubscriptionPackageService from "../SubscriptionPackage/service";
+import { ISubscriptionPackage } from "../SubscriptionPackage/model";
 const gh = require('parse-github-url');
 
 const DEFAULT_WEBHOOK_NAME = 'production';
@@ -81,17 +85,47 @@ export async function deployFromRequest(
       console.log('WebHook err', err.message);
     }
   }
-
-  const responseObj: any = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv);
+  const activeSubscription :ISubscription = await SubscriptionService.findOne({organizationId, status : 'ACTIVE'});
+  let responseObj: any;
+  if(activeSubscription){
+    const constraintsSatisfied : Boolean = await checkSubscriptionConstraints(activeSubscription,organizationId);
+    if(!constraintsSatisfied){
+      res.status(200).json({
+        message : "Subscription constraints not satisfied"
+      })
+      return;
+    }
+    responseObj = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv,true);
+  }else { 
+    responseObj = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv, false);    
+  }
   res.status(200).json(responseObj);
 }
 
 // async function deployFromWebHook() {
   
 // }
-
+async function checkSubscriptionConstraints(subscription : ISubscription, organizationId : string) : Promise<Boolean>{
+  const subscriptionPackage : ISubscriptionPackage = await SubscriptionPackageService.findById(subscription.subscriptionPackageId);
+  // checking constratint {numberOfDeployments}
+  let numberOfDeploymentsForOrganization = 0 ;
+  const projects : IProject[] = await ProjectService.find({organizationId});
+  projects.forEach(async p => {    
+    const pDeployments : IDeployment[]  = await DeploymentService.find({project : p.id });
+    pDeployments.forEach(d => { 
+      let createdAtTimestamp = Date.parse(d.createdAt);
+      if(createdAtTimestamp > subscription.dateOfIssue){
+        numberOfDeploymentsForOrganization++;
+      }
+    })
+  });
+  if(numberOfDeploymentsForOrganization>subscriptionPackage.numberOfAllowedDeployments){
+    return false;
+  }
+  return true;
+}
 export async function deploy(githubUrl: string, installationId: number, owner: string, folderName: string,
-    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any) {
+    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any, withSubscription : boolean) {
 
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
@@ -161,11 +195,15 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
   };
 
   await ProjectService.setLatestDeployment(project._id, deployment._id);
-
-  axios
-    .post(`${config.deployerApi.HOST_ADDRESS}/deploy`, body)
-    .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
-
+  if(!withSubscription){
+    axios
+      .post(`${config.deployerApi.HOST_ADDRESS}/deploy`, body)
+      .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
+  }else { 
+    axios
+      .post(`${config.deployerApi.HOST_ADDRESS}/deployWithSubscription`, body)
+      .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
+  }
   return {
     message: "Deployment is being processed",
     success: true,
