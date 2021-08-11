@@ -36,12 +36,13 @@ workflows:
     jobs:
       - test
       - aws-ecr/build-and-push-image:
-          region: AWS_REGION
-          account-url: AWS_ECR_ACCOUNT_URL
+          region: AWS_REGION_DEV
+          account-url: AWS_ECR_ACCOUNT_URL_DEV
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           create-repo: false
           dockerfile: Dockerfile
+          name: aws-ecr-build-push-dev
           repo: hosting-api
           tag: dev
           extra-build-args: --build-arg CODE_VERSION=${CIRCLE_SHA1:0:7}
@@ -50,12 +51,37 @@ workflows:
           filters:
             branches:
               only: dev
-      - aws-ecs/deploy-service-update:
-          cluster-name: 'hosting-api-dev'
-          container-image-name-updates: 'container=hosting-api-dev-api,tag=dev'
-          family: 'hosting-api-dev-api'
+      - aws-ecr/build-and-push-image:
+          region: AWS_REGION_PROD
+          account-url: AWS_ECR_ACCOUNT_URL_PROD
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          create-repo: false
+          dockerfile: Dockerfile
+          name: aws-ecr-build-push-prod
+          repo: hosting-api
+          tag: prod
+          extra-build-args: --build-arg CODE_VERSION=${CIRCLE_SHA1:0:7}
           requires:
-            - aws-ecr/build-and-push-image
+            - test
+          filters:
+            branches:
+              only: master
+      - aws-ecs/deploy-service-update:
+          cluster-name: "hosting-api-dev"
+          container-image-name-updates: "container=hosting-api-dev-api,tag=dev"
+          family: "hosting-api-dev-api"
+          requires:
+            - aws-ecr-build-push-dev
           filters:
             branches:
               only: dev
+      - aws-ecs/deploy-service-update:
+          cluster-name: "hosting-api-prod"
+          container-image-name-updates: "container=hosting-api-prod-api,tag=prod"
+          family: "hosting-api-prod-api"
+          requires:
+            - aws-ecr-build-push-prod
+          filters:
+            branches:
+              only: master
