@@ -42,6 +42,7 @@ workflows:
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           create-repo: false
           dockerfile: Dockerfile
+          name: aws-ecr-build-push-dev
           repo: hosting-api
           tag: dev
           extra-build-args: --build-arg CODE_VERSION=${CIRCLE_SHA1:0:7}
@@ -57,6 +58,7 @@ workflows:
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           create-repo: false
           dockerfile: Dockerfile
+          name: aws-ecr-build-push-prod
           repo: hosting-api
           tag: prod
           extra-build-args: --build-arg CODE_VERSION=${CIRCLE_SHA1:0:7}
@@ -66,20 +68,20 @@ workflows:
             branches:
               only: master
       - aws-ecs/deploy-service-update:
-          cluster-name: 'hosting-api-dev'
-          container-image-name-updates: 'container=hosting-api-dev-api,tag=dev'
-          family: 'hosting-api-dev-api'
+          cluster-name: "hosting-api-dev"
+          container-image-name-updates: "container=hosting-api-dev-api,tag=dev"
+          family: "hosting-api-dev-api"
           requires:
-            - aws-ecr/build-and-push-image
+            - aws-ecr-build-push-dev
           filters:
             branches:
               only: dev
       - aws-ecs/deploy-service-update:
-          cluster-name: 'hosting-api-prod'
-          container-image-name-updates: 'container=hosting-api-prod-api,tag=prod'
-          family: 'hosting-api-prod-api'
+          cluster-name: "hosting-api-prod"
+          container-image-name-updates: "container=hosting-api-prod-api,tag=prod"
+          family: "hosting-api-prod-api"
           requires:
-            - aws-ecr/build-and-push-image
+            - aws-ecr-build-push-prod
           filters:
             branches:
               only: master
