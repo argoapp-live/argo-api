@@ -37,7 +37,7 @@ workflows:
       - test
       - aws-ecr/build-and-push-image:
           region: AWS_REGION_DEV
-          account-url: AWS_ECR_ACCOUNT_URL
+          account-url: AWS_ECR_ACCOUNT_URL_DEV
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           create-repo: false
@@ -53,7 +53,7 @@ workflows:
               only: dev
       - aws-ecr/build-and-push-image:
           region: AWS_REGION_PROD
-          account-url: AWS_ECR_ACCOUNT_URL
+          account-url: AWS_ECR_ACCOUNT_URL_PROD
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           create-repo: false
