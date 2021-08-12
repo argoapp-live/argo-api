@@ -44,6 +44,3 @@ Any contributions are very much welcomed. Feel free to fork and make a PR with a
 ## Have questions?
 
 Reach out to @rekpero#3898 on the ArGo Discord ([https://discord.gg/HTMqYAm](https://discord.gg/HTMqYAm)) or head to the #contributors-forum channel for further discussion!
-
-Testing hooks 6
-
