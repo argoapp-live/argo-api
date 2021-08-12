@@ -30,26 +30,32 @@ export async function create(
 }
 
 export async function update(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-    try {
-        const user: IUserModel = await AuthService.authUser(req);
-        if (!user) throw new Error('unauthorized user');    
-        
-        // if (!is<IConfiguration>(req.body)) throw new Error('not valid request body');
-        const { projectId } = req.body;
-        const projectExists = await ProjectService.findById(projectId);
-        if (!projectExists) throw new Error('Project does not exists');
-
-        const domain: IDomain = await DomainService.update(req.params.id, req.body);
-        res.status(201).json({success: true, domain});
-
-    } catch (error) {
-        next(new HttpError(error.message.status, error.message));
-    }
-}
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+      try {
+          const user: IUserModel = await AuthService.authUser(req);
+          if (!user) throw new Error('unauthorized user');    
+          
+          // if (!is<IConfiguration>(req.body)) throw new Error('not valid request body');
+          req.body as IUpdateRequests;
+          const { projectId, name, link, isLatest } = req.body;
+          const projectExists = await ProjectService.findById(projectId);
+          if (!projectExists) throw new Error('Project does not exists');
+  
+          const domain: IDomain = await DomainService.update(req.params.id, name, link, isLatest);
+  
+          if (domain.verified && !!link && domain.type.indexOf("handshake") === -1) {
+              await DomainService.addStaticToResolver(domain.name, domain.argoKey, domain.link);
+          }
+  
+          res.status(201).json({success: true, domain});
+  
+      } catch (error) {
+          next(new HttpError(error.message.status, error.message));
+      }
+  }
 
 
 export async function findById(
@@ -106,7 +112,8 @@ export async function verify(
     try {        
         const result: IVerified = await DomainService.verify(req.body.id);
         if (!result.wasVerified) {
-            await DomainService.addToResolver(result.domain.projectId, result.domain.link);
+            console.log("TFEFFD")
+            await DomainService.addStaticToResolver(result.domain.name, result.domain.argoKey, result.domain.link);
         }
         res.status(200).json({ verified: result.domain.verified });
 
@@ -120,10 +127,7 @@ export async function remove(
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    try {
-
-        const user: IUserModel = await AuthService.authUser(req);
-        if (!user) throw new Error('unauthorized user'); 
+    try { 
 
         await DomainService.remove(req.params.id);
         res.status(200).json({success: true });
@@ -131,4 +135,12 @@ export async function remove(
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
+}
+
+interface IUpdateRequests {
+    name: string, 
+    link: string, 
+    type: string,
+    projectId: string,
+    isLatest: boolean,
 }
