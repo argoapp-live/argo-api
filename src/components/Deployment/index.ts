@@ -79,8 +79,13 @@ export async function deployFromRequest(
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
       );
-      await WebHookService.connectWithGithub(project.id, installationToken, parsed);
-      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, configuration.branch);
+      const response = await WebHookService.connectWithGithub(project.id, installationToken, parsed);
+      if (response.status === 201) {
+        await ProjectService.updateOne(project.id, { gitHookId: response.data.id });
+        await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, configuration.branch);
+      } else {
+        console.log("Webhook not created")
+      }
     } catch(err) {
       console.log('WebHook err', err.message);
     }
