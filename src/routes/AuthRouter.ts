@@ -15,8 +15,11 @@ const path = require('path');
 
 let privateKey: string;
 
-if (config.githubApp.PEM_CONTENT !== '') {
-    privateKey = config.githubApp.PEM_CONTENT;
+if (config.githubApp.PEM_CONTENT_BASE64) {
+    const base64Encoded: string = config.githubApp.PEM_CONTENT_BASE64;
+    const buff: Buffer = Buffer.from(base64Encoded, 'base64');
+
+    privateKey = buff.toString('ascii');
 } else {
     const fullPath: string = path.join(__dirname, `../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
 

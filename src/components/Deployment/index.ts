@@ -10,7 +10,7 @@ import { IProject } from "../Project/model";
 import ProjectService from "../Project/service";
 import ConfigurationService from "../Configuration/service";
 import { IConfiguration } from "../Configuration/model";
-import { IDeployment } from "./model";
+import { IDeployment, IScreenshot } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
@@ -20,7 +20,6 @@ import WebHookService from "../WebHook/service";
 const gh = require('parse-github-url');
 
 const DEFAULT_WEBHOOK_NAME = 'production';
-
 
 export async function deployFromRequest(
   req: Request,
@@ -57,6 +56,14 @@ export async function deployFromRequest(
   const deploymentEnv = result.project.env;
   const created = result.created;
 
+  if (project.state === 'ARCHIVED') {
+    res.status(401).json({
+      message: 'THIS REPO IS ARCHIVED AND CANNOT BE DEPLOYED'
+    });
+
+    return;
+  }
+
   if (created) {
     try {
       await DomainService.addDefault(project);
@@ -65,8 +72,7 @@ export async function deployFromRequest(
     }
   }
 
-  //TODO if (createDefaultWebhook && created)
-  if (createDefaultWebhook) {
+  if (createDefaultWebhook && project.gitHookId === -1) {
     try {
       const installationToken = await GithubAppService.createInstallationToken(installationId);
       const parsed = gh(githubUrl);
@@ -133,6 +139,10 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
       break;
     case "skynet":
       logsToCapture = config.skynet.LOGSTOCAPTURE;
+      break;
+    case "neofs":
+      logsToCapture = config.neofs.LOGSTOCAPTURE;
+      break;
   }
 
   const body: IDeploymentBody = {
@@ -174,7 +184,6 @@ export async function deploymentFinished(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  console.log("DEPLOYMENT FINISHED", req.body);
   try {
     const { deploymentId, capturedLogs, deploymentStatus, buildTime, logs } =
       req.body;
@@ -202,7 +211,6 @@ export async function paymentFinished(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  console.log("Payment finished", req.body);
   const {
     paymentId,
     deploymentId,
@@ -210,7 +218,6 @@ export async function paymentFinished(
   }: { paymentId: string; deploymentId: string; status: string } = req.body;
 
   let deployment: IDeployment = await DeploymentService.findById(deploymentId);
-
   if (status === "created") {
     deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
     res.status(201).json({ msg: "Payment successfully recorded" });
@@ -218,6 +225,10 @@ export async function paymentFinished(
 
   if (deployment.status === "Deployed" && status === "success") {
     DomainService.addToResolver(deployment.project, deployment.sitePreview);
+    console.log("SITE PREVIEW", deployment.sitePreview)
+    const screenshot: IScreenshot = await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview)
+    deployment = await DeploymentService.updateScreenshot(deploymentId, screenshot)
+
   }
 }
 

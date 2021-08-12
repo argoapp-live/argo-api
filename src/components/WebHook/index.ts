@@ -31,15 +31,62 @@ export async function connect(
         req.body as IWebHookConnectionRequest;
         const { projectId, installationId } = req.body;
 
-        const project: IProject= await ProjectService.findById(projectId);
+        const project: IProject = await ProjectService.findById(projectId);
         if (!project) throw new Error('no project');
+        if(project.gitHookId !== -1) {
+            res.status(200).json({
+                message: 'REPO CONNECTED'
+            });
+            return
+        }
 
         const parsed = gh(project.githubUrl);
 
         const installationToken = await GithubAppService.createInstallationToken(installationId);
         const response = await WebHookService.connectWithGithub(projectId, installationToken, parsed);
 
-        res.status(200).json(response);
+        if (response.status === 201) {
+            await ProjectService.updateOne(projectId, { gitHookId: response.data.id });
+        } else {
+            throw new Error('webhook not created');
+        }
+
+        res.status(200).json({
+            message: 'REPO CONNECTED'
+        });
+    } catch (error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}
+
+
+export async function createWebHook(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const user: IUserModel = await AuthService.authUser(req);
+        if (!user) throw new Error('unauthorized');
+
+        req.body as IWebHookRequest;
+        const { name, projectId, configurationId, installationId, orgId } = req.body;
+
+        const project: IProject = await ProjectService.findById(projectId);
+        if (!project) throw new Error('no project');
+        
+        const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
+        if (!configuration) throw new Error('no configuration');
+
+        const existingWebHook1: IWebHook = await WebHookService.findOne({ projectId, branch: configuration.branch });
+        if (existingWebHook1) throw new Error('webhook already exists');
+
+        const existingWebHook2: IWebHook = await WebHookService.findOne({ projectId, name });
+        if (existingWebHook2) throw new Error('webhook already exists');
+
+        const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, 
+            installationId, orgId, configuration.branch);
+        res.status(200).json(webHook);
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
     }
