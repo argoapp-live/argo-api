@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/argoapp-live/argo-api/tree/dev.svg?style=shield)](https://circleci.com/gh/argoapp-live/argo-api/tree/dev)
+
 <p align="center">
   <a href="https://argoapp.live/">
     <a href="https://imgur.com/J5O9d2O"><img src="https://i.imgur.com/J5O9d2O.png" title="source: imgur.com" alt="ArGo logo (light version)" width="210" /></a>
@@ -42,4 +44,3 @@ Any contributions are very much welcomed. Feel free to fork and make a PR with a
 ## Have questions?
 
 Reach out to @rekpero#3898 on the ArGo Discord ([https://discord.gg/HTMqYAm](https://discord.gg/HTMqYAm)) or head to the #contributors-forum channel for further discussion!
-

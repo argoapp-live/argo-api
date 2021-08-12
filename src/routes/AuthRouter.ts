@@ -13,8 +13,19 @@ const axios = require('axios').default;
 const fs = require('fs');
 const path = require('path');
 
-const fullPath = path.join(__dirname, `../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-const privateKey = fs.readFileSync(fullPath, 'utf8');
+let privateKey: string;
+
+if (config.githubApp.PEM_CONTENT_BASE64) {
+    const base64Encoded: string = config.githubApp.PEM_CONTENT_BASE64;
+    const buff: Buffer = Buffer.from(base64Encoded, 'base64');
+
+    privateKey = buff.toString('ascii');
+} else {
+    const fullPath: string = path.join(__dirname, `../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+
+    privateKey = fs.readFileSync(fullPath, 'utf8');
+}
+
 /**
  * @constant {express.Router}
  */
@@ -166,13 +177,13 @@ router.get('/github/app/callback', async (req, res) => {
             headers: { authorization: `bearer ${authToken.token}` }
         });
         const userInfo = await instanceAxios.get();
-    
+
         await GithubAppService.findAndCreate(userInfo.data.id, authToken.token, +req.query.installation_id);
         res.redirect(`${config.frontendApp.HOST_ADDRESS}/#/github/callback/app`);
     } catch (error) {
         console.log("NEW ERROR" , error.message)
     }
-    
+
 });
 
 router.post('/github/events', async (req, res) => {

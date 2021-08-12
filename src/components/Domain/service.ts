@@ -143,22 +143,24 @@ const DomainService = {
     }
   },
 
-  async update(id: string, updateQuery: Partial<IDomain>): Promise<IDomain> {
+  async update(id: string, name: string, link: string, isLatest: boolean): Promise<IDomain> {
     try {
-      if (updateQuery.verified && updateQuery.type && updateQuery.argoKey)
-        throw new Error("Not valid query");
-      if (
-        updateQuery.name ||
-        (updateQuery.type?.indexOf("handshake") !== -1 && updateQuery.link)
-      ) {
-        updateQuery.verified = false;
+      const domain: IDomain = await DomainService.findById(id);
+      if (name) domain.name = name;
+      if (link) domain.link = link;
+      domain.isLatest = isLatest;
+      if (name || (domain.type.indexOf("handshake") !== -1 && link)) {
+        domain.verified = false;
       }
 
-      return DomainModel.updateOne({ _id: id }, updateQuery);
+      await domain.save();
+      return domain;
+      // return DomainModel.findById(id, { }, { new: true });
     } catch (error) {
       throw new Error(error.message);
     }
   },
+
 
   async remove(id: string): Promise<void> {
     try {
@@ -247,6 +249,28 @@ const DomainService = {
       );
       await DomainModel.updateMany({ _id: { $in: ids } }, { link });
     }
+  },
+
+  async addStaticToResolver(domain: string, argoKey: string, link: string): Promise<boolean> {
+    if (link === "") return false;
+
+    const body = {
+      transaction: link,
+      domains: [domain],
+      uuids: [argoKey],
+    };
+
+    const response = await axios.post(
+      `${config.domainResolver.HOST_ADDRESS}/v1/add-domain`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          Authorization: `Bearer ${config.domainResolver.SECRET}`,
+        },
+      }
+    );
+    return response.status === 200;
   },
 };
 

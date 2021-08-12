@@ -7,7 +7,7 @@ export interface IDeployment extends Document {
   sitePreview: string;
   commitId: string;
   commitMessage: string;
-  logs: [{ time: String; log: String }];
+  logs: [{ time: string; log: string }];
   topic: string;
   status: string;
   paymentId: string;
@@ -17,6 +17,12 @@ export interface IDeployment extends Document {
   project: IProject["_id"];
   createdAt: any;
   updatedAt: any;
+  screenshot: IScreenshot;
+}
+export interface IScreenshot {
+  id: string;
+  fee: string;
+  url: string;
 }
 
 const DeploymentSchema: Schema = new Schema(
@@ -37,6 +43,11 @@ const DeploymentSchema: Schema = new Schema(
     project: {
       type: Schema.Types.ObjectId,
       ref: "ProjectModel",
+    },
+    screenshot: {
+      id: String,
+      fee: String,
+      url: String
     },
   },
   {

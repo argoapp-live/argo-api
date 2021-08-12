@@ -11,9 +11,18 @@ const { createAppAuth } = require("@octokit/auth-app");
 const fs = require('fs');
 const path = require('path');
 
-const gitPrivateKeyPath = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
-const gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
-const HASH_BYTE_LEN = 40;
+let gitPrivateKey: string;
+
+if (config.githubApp.PEM_CONTENT_BASE64) {
+    const base64Encoded: string = config.githubApp.PEM_CONTENT_BASE64;
+    const buff: Buffer = Buffer.from(base64Encoded, 'base64');
+
+    gitPrivateKey = buff.toString('ascii');
+} else {
+    const gitPrivateKeyPath: string = path.join(__dirname, `../../templates/user-org-invite/${config.githubApp.PEM_FILE_NAME}`);
+
+    gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, 'utf8');
+}
 
 
 const GithubAppService: IGitHubAppTokenService = {
@@ -89,7 +98,7 @@ const GithubAppService: IGitHubAppTokenService = {
         return installationToken;
     },
 
-    async getFullGithubUrlAndFolderName(branch: string, installationId: string, owner: string, folderName: string): Promise<string> {
+    async getFullGithubUrlAndFolderName(branch: string, installationId: number, owner: string, folderName: string): Promise<string> {
         let installationToken = await GithubAppService.createInstallationToken(installationId);
         return `https://x-access-token:${installationToken.token}@github.com/${owner}/${folderName}.git --branch ${branch}`;
     },
@@ -122,9 +131,9 @@ const GithubAppService: IGitHubAppTokenService = {
         // return;
     },
 
-    async getLatestCommitInfo(id: string, githubUrl: string, branch: string): Promise<ICommitInfo> {
+    async getLatestCommitInfo(installationId: number, githubUrl: string, branch: string): Promise<ICommitInfo> {
         try {
-            const getUserToken = await GitHubAppTokenModel.findOne({ argoUserId: Types.ObjectId(id) });
+            const getUserToken = await GitHubAppTokenModel.findOne({ installationId });
             const octokit = new Octokit({ auth: getUserToken.token });
 
             const parsed: any = gh(githubUrl);
@@ -134,18 +143,18 @@ const GithubAppService: IGitHubAppTokenService = {
                 sha: branch,
                 per_page: 1,
             });
-            return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };  
+            return { id: res.data[0].commit.url.split('commits/')[1], message: res.data[0].commit.message };
         } catch (error) {
             console.log(error);
             return { id: '', message: '' };
         }
-        
+
     }
 }
 
 export interface ICommitInfo {
     id: string
-    message: string, 
+    message: string,
 }
 
 export default GithubAppService;

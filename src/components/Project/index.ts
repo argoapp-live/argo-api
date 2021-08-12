@@ -7,6 +7,9 @@ import GithubAppService from '../GitHubApp/service';
 import ProjectService from './service';
 import DeploymentService from '../Deployment/service';
 import DomainService from '../Domain/service';
+import WebHookService from '../WebHook/service';
+import { IWebHook } from '../WebHook/model';
+const gh = require('parse-github-url');
 const { Octokit } = require("@octokit/core");
 
 /**
@@ -27,6 +30,9 @@ export async function findOne(req: Request, res: Response, next: NextFunction): 
             project._doc.subdomains = domains.filter(domain => domain.type === 'subdomain');
             project._doc.handshakeDomains = domains.filter(domain => domain.type === 'handshake-domain');
             project._doc.handshakeSubdomains = domains.filter(domain => domain.type === 'handshake-subdomain');
+
+            const webHooks: Array<IWebHook> = await WebHookService.find({ projectId: project.id });
+            project._doc.webHooks = webHooks;
         }
         res.status(200).json(project);
     } catch (error) {
@@ -122,10 +128,89 @@ export async function getBranches(req: Request, res: Response, next: NextFunctio
 
 export async function updateEnv(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-
         const updatedProject: boolean = await ProjectService.updateEnv(req.params.id, req.body)
         res.status(200).json({
             updatedProject
+        });
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+export async function changeStateToArchived(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+
+        const projectId: string = req.params.id;
+
+        const project: IProject = await ProjectService.findById(projectId);
+        if (project.state === 'ARCHIVED') {
+            res.status(200).json({
+                message: 'STATUS ALREADY ARCHIVED'
+            });
+
+            return next();
+        }
+        
+        
+        const { installationId } = req.body;
+        const installationToken = await GithubAppService.createInstallationToken(installationId);
+        const parsed = gh(project.githubUrl);
+        const existsResponse = await WebHookService.getGitHook(installationToken, parsed, project.gitHookId);
+        
+        if (existsResponse.status === 200) {
+            await WebHookService.disconnectWithGithub(installationToken, parsed, project.gitHookId);
+        }
+        
+        await ProjectService.updateOne(req.params.id, { state: 'ARCHIVED', gitHookId: -1 });
+        res.status(200).json({
+            message: 'HOOK ALREADY DELETED',
+        });
+
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+
+export async function changeStateToMaintained(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const projectId: string = req.params.id;
+        const project: IProject = await ProjectService.findById(projectId);
+
+        if (project.state === 'MAINTAINED') {
+            res.status(200).json({
+                message: 'STATUS ALREADY MAINTAINED'
+            });
+
+            return next();
+        }
+
+        const updatedProject: IProject = await ProjectService.updateOne(projectId, { state: 'MAINTAINED' });
+        
+        const { installationId } = req.body;
+        const installationToken = await GithubAppService.createInstallationToken(installationId);
+        const parsed = gh(updatedProject.githubUrl);
+        const existsResponse = await WebHookService.getGitHook(installationToken, parsed, project.gitHookId);
+
+        if (existsResponse.status === 200) {
+            res.status(200).json({
+                message: 'HOOK ALREADY EXISTS'
+            });
+
+            return next();
+        }
+
+        const response: any = await WebHookService.connectWithGithub(projectId, installationId, parsed);
+
+        if (response.status === 201) {
+            await ProjectService.updateOne(projectId, { gitHookId: response.body.id });
+        } else {
+            throw new Error('webhook not created');
+        }
+
+        res.status(200).json({
+            message: 'STATUS CHANGED TO MAINTAINED'
         });
 
     } catch (error) {
