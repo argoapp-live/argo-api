@@ -93,35 +93,6 @@ export async function createWebHook(
 }
 
 
-export async function createWebHook(
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> {
-    try {
-        const user: IUserModel = await AuthService.authUser(req);
-        if (!user) throw new Error('unauthorized');
-
-        req.body as IWebHookRequest;
-        const { name, projectId, configurationId, installationId, organizationId } = req.body;
-
-        const project: IProject = await ProjectService.findById(projectId);
-        if (!project) throw new Error('no project');
-        
-        const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
-        if (!configuration) throw new Error('no configuration');
-
-        const existingWebHook: IWebHook = await WebHookService.findOne({ projectId, branch: configuration.branch });
-        if (existingWebHook) throw new Error('webhook already exists');
-
-        const webHook: IWebHook = await WebHookService.create(name, projectId, configurationId, 
-            installationId, organizationId, configuration.branch);
-        res.status(200).json(webHook);
-    } catch (error) {
-        next(new HttpError(error.message.status, error.message));
-    }
-}
-
 export async function triggerWebHook(
     req: Request,
     res: Response,
