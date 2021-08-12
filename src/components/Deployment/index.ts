@@ -89,6 +89,8 @@ export async function deployFromRequest(
     } catch(err) {
       console.log('WebHook err', err.message);
     }
+  } else {
+    console.log('Webhook already exists')
   }
 
   const responseObj: any = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv);

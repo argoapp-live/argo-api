@@ -71,6 +71,7 @@ workflows:
           cluster-name: "hosting-api-dev"
           container-image-name-updates: "container=hosting-api-dev-api,tag=dev"
           family: "hosting-api-dev-api"
+          aws-region: AWS_DEFAULT_REGION_DEV
           requires:
             - aws-ecr-build-push-dev
           filters:
@@ -80,6 +81,7 @@ workflows:
           cluster-name: "hosting-api-prod"
           container-image-name-updates: "container=hosting-api-prod-api,tag=prod"
           family: "hosting-api-prod-api"
+          aws-region: AWS_DEFAULT_REGION_PROD
           requires:
             - aws-ecr-build-push-prod
           filters:
