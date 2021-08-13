@@ -29,9 +29,9 @@ export async function findAll(req: Request, res: Response, next: NextFunction): 
  */
 export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-        const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-        const user: IUserModel = await UserService.findOne(deserializedToken.session_id);
+        const argoDecodedHeaderToken: any = await JWTTokenService.decodeToken(req);
+        const deserializedToken: any = await JWTTokenService.verifyToken(argoDecodedHeaderToken);
+        const user: IUserModel = await UserService.findOne(deserializedToken.sessionId);
         res.status(200).json({ user });
     } catch (error) {
         next(new HttpError(error.message.status, error.message));
@@ -79,9 +79,9 @@ export async function remove(req: Request, res: Response, next: NextFunction): P
  */
 export async function update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-        const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
-        await UserService.findOneAndUpdate(deserializedToken.session_id, req.body);
+        const argoDecodedHeaderToken: any = await JWTTokenService.decodeToken(req);
+        const deserializedToken: any = await JWTTokenService.verifyToken(argoDecodedHeaderToken);
+        await UserService.findOneAndUpdate(deserializedToken.sessionId, req.body);
         res.status(200).json({
             success: true
         });

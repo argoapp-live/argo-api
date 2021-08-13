@@ -3,7 +3,6 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as express from 'express';
 import * as helmet from 'helmet';
-import * as passport from 'passport';
 import * as session from 'express-session';
 import config from '../env/index';
 import * as mongo from 'connect-mongo';
@@ -54,8 +53,7 @@ export function configure(app: express.Application): void {
             autoReconnect: true
         })
     }));
-    app.use(passport.initialize());
-    app.use(passport.session());
+
     // custom errors
     app.use(sendHttpErrorModule);
 

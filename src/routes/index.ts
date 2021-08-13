@@ -1,8 +1,8 @@
 import * as express from 'express';
 import * as http from 'http';
-import * as passportConfig from '../config/middleware/passport';
+import * as auth from '../config/middleware/authMiddleware';
+
 // import * as swaggerUi from 'swagger-ui-express';
-import AuthRouter from './AuthRouter';
 import ProfileRouter from './ProfileRouter';
 import OrganizationRouter from './OrganizationRouter';
 import ProjectRouter from './ProjectRouter';
@@ -14,6 +14,7 @@ import WalletRouter from './WalletRouter';
 import DomainRouter from './DomainRouter';
 import ConfigurationRouter from './ConfigurationRouter';
 import HealthCheckRouter from './HealthCheck';
+import GithubRouter from './GithubRouter';
 
 // let swaggerDoc: Object;
 
@@ -26,7 +27,6 @@ import HealthCheckRouter from './HealthCheck';
 //     console.log('  $ swagger-jsdoc -d swaggerDef.js -o swagger.json');
 //     console.log('***************************************************');
 // }
-
 /**
  * @export
  * @param {express.Application} app
@@ -34,17 +34,17 @@ import HealthCheckRouter from './HealthCheck';
 export function init(app: express.Application): void {
     const router: express.Router = express.Router();
 
-    app.use('/profile', passportConfig.isAuthenticated, ProfileRouter);
-    app.use('/organization', passportConfig.isAuthenticated, OrganizationRouter);
-    app.use('/project', passportConfig.isAuthenticated, ProjectRouter);
+    app.use('/profile', auth.isAuthenticated, ProfileRouter);
+    app.use('/organization', auth.isAuthenticated, OrganizationRouter);
+    app.use('/project', auth.isAuthenticated, ProjectRouter);
     app.use('/webhook', WebHookRouter);
-    app.use('/auth', AuthRouter);
-    app.use('/invite', passportConfig.isAuthenticated, InvitationRouter);
-    app.use('/domain', passportConfig.isAuthenticated, DomainRouter);
+    app.use('/invite', auth.isAuthenticated, InvitationRouter);
+    app.use('/domain', auth.isAuthenticated, DomainRouter);
     app.use('/logs', LogsRouter);
     app.use('/wallet', WalletRouter);
     app.use('/configuration', ConfigurationRouter);
     app.use('/status', HealthCheckRouter)
+    app.use('/github', GithubRouter)
 
     
     // /**

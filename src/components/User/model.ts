@@ -40,7 +40,7 @@ export interface IProvider {
 export interface IArgoUser {
     username: string;
     avatar: string;
-    is_active?: boolean;
+    isActive?: boolean;
     name: string;
     email: string;
 }
@@ -96,7 +96,7 @@ export interface IProviderModel extends Document {
 export interface IArgoUserModel extends Document {
     username: string;
     avatar: string;
-    is_active?: boolean;
+    isActive?: boolean;
     name: string;
     email: string;
 }
@@ -176,7 +176,7 @@ const UserSchema: Schema = new Schema({
         avatar: String,
         name: String,
         email: String,
-        is_active: { type: Boolean, default: true }
+        isActive: { type: Boolean, default: true }
     },
     provider: ProviderSchema,
     organizations: [

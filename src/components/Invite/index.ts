@@ -48,13 +48,13 @@ export async function updateInvite(
 ): Promise<void> {
     try {
         if (req.body) {
-            const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-            const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
+            const argoDecodedHeaderToken: any = await JWTTokenService.decodeToken(req);
+            const deserializedToken: any = await JWTTokenService.verifyToken(argoDecodedHeaderToken);
 
             const user: any = await InvitationService.findOneAndUpdate(req.body.id, req.body.status);
 
-            await OrganizationService.findOneAndUpdate(user.organization._id, deserializedToken.session_id);
-            await UserService.updateUserOrganization(user.organization._id, deserializedToken.session_id);
+            await OrganizationService.findOneAndUpdate(user.organization._id, deserializedToken.sessionId);
+            await UserService.updateUserOrganization(user.organization._id, deserializedToken.sessionId);
             res.status(200).json(true);
         } else {
             res.status(400);

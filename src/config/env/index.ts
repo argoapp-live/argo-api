@@ -9,16 +9,7 @@ interface IConfig {
     MONGODB_DB_MAIN: string;
     MONGODB_ATLAS_OPTION: string;
   };
-  github?: {
-    CLIENT_ID: string;
-    CLIENT_SECRET: string;
-    CALLBACK_URL: string;
-  };
-  gitlab?: {
-    CLIENT_ID: string;
-    CLIENT_SECRET: string;
-    CALLBACK_URL: string;
-  };
+
   smtp?: {
     USERNAME: string;
     PASSWORD: string;
@@ -66,6 +57,9 @@ interface IConfig {
   frontendApp?: {
     HOST_ADDRESS: string;
   };
+  authApi?: {
+    HOST_ADDRESS: string;
+  };
   domainResolver: {
     HOST_ADDRESS: string;
     SECRET: string;
@@ -82,16 +76,6 @@ const development: IConfig = {
     MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || "argo_db",
     MONGODB_ATLAS_OPTION:
       process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
-  },
-  github: {
-    CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    CALLBACK_URL: process.env.GITHUB_CALLBACK_URL,
-  },
-  gitlab: {
-    CLIENT_ID: process.env.GITLAB_CLIENT_ID,
-    CLIENT_SECRET: process.env.GITLAB_CLIENT_SECRET,
-    CALLBACK_URL: process.env.GITLAB_CALLBACK_URL,
   },
   smtp: {
     USERNAME: process.env.SMTP_USERNAME,
@@ -138,6 +122,10 @@ const development: IConfig = {
     HOST_ADDRESS:
       process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
   },
+  authApi: {
+    HOST_ADDRESS:
+      process.env.AURH_API_HOST_ADDRESS || "http://localhost:4000",
+  },
   paymentApi: {
     HOST_ADDRESS:
       process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
@@ -161,16 +149,7 @@ const production: IConfig = {
     MONGODB_ATLAS_OPTION:
       process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
   },
-  github: {
-    CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    CALLBACK_URL: process.env.GITHUB_CALLBACK_URL,
-  },
-  gitlab: {
-    CLIENT_ID: process.env.GITLAB_CLIENT_ID,
-    CLIENT_SECRET: process.env.GITLAB_CLIENT_SECRET,
-    CALLBACK_URL: process.env.GITLAB_CALLBACK_URL,
-  },
+
   smtp: {
     USERNAME: process.env.SMTP_USERNAME,
     PASSWORD: process.env.SMTP_PASSWORD,
@@ -238,16 +217,6 @@ const test: IConfig = {
     MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || "argo_db",
     MONGODB_ATLAS_OPTION:
       process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
-  },
-  github: {
-    CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-    CALLBACK_URL: process.env.GITHUB_CALLBACK_URL,
-  },
-  gitlab: {
-    CLIENT_ID: process.env.GITLAB_CLIENT_ID,
-    CLIENT_SECRET: process.env.GITLAB_CLIENT_SECRET,
-    CALLBACK_URL: process.env.GITLAB_CALLBACK_URL,
   },
   smtp: {
     USERNAME: process.env.SMTP_USERNAME,
