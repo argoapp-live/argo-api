@@ -27,7 +27,10 @@
     "copy:templates": "cpx './src/templates/**' './build/templates'",
     "copy:templates:windows": "cpx ./src/templates/** ./build/templates",
     "test": "NODE_ENV=test mocha -r ts-node/register test/index.js --exit",
-    "clean": "rimraf ./build"
+    "clean": "rimraf ./build",
+    "prettier": "prettier \"**/*.{css,scss,json,md,html,yml}\" --ignore-path=.eslintignore",
+    "prettier:write": "prettier --write '**/*.{ts,tsx,json,md}' --ignore-path .gitignore",
+    "prettier:check": "prettier --check '**/*.{ts,tsx,json,md}' --ignore-path .gitignore"
   },
   "files": [
     "src"
@@ -111,8 +114,9 @@
     "supertest": "4.0.2",
     "swagger-jsdoc": "3.2.7",
     "swagger-ui-express": "4.0.2",
-    "tslint": "5.8.0",
-    "tslint-config-airbnb": "5.8.0",
-    "tslint-eslint-rules": "5.4.0"
+    "prettier": "^2.0.5"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended"
   }
 }

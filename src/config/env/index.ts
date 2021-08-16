@@ -107,7 +107,7 @@ const development: IConfig = {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
   },
   neofs: {
-    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://http.fs.neo.org/" }],
   },
   redis: {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
@@ -123,8 +123,7 @@ const development: IConfig = {
       process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
   },
   authApi: {
-    HOST_ADDRESS:
-      process.env.AURH_API_HOST_ADDRESS || "http://localhost:4000",
+    HOST_ADDRESS: process.env.AURH_API_HOST_ADDRESS || "http://localhost:4000",
   },
   paymentApi: {
     HOST_ADDRESS:
@@ -138,7 +137,7 @@ const development: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
 };
 
 const production: IConfig = {
@@ -173,75 +172,7 @@ const production: IConfig = {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
   },
   neofs: {
-    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
-  },
-  cloudflare: {
-    ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
-    DOMAIN_NAME: process.env.CLOUDFLARE_DOMAIN_NAME,
-    ZONE_ID: process.env.CLOUDFLARE_ZONE_ID,
-    EMAIL: process.env.CLOUDFLARE_EMAIL,
-    KEY: process.env.CLOUDFLARE_KEY,
-  },
-  redis: {
-    HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
-    PORT: +process.env.REDIS_PORT || 6379,
-    PASSWORD: process.env.REDIS_PASSWORD || "",
-  },
-  namebase: {
-    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
-    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
-  },
-  deployerApi: {
-    HOST_ADDRESS:
-      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
-  },
-  paymentApi: {
-    HOST_ADDRESS:
-      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
-  },
-  frontendApp: {
-    HOST_ADDRESS:
-      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
-  },
-  domainResolver: {
-    HOST_ADDRESS:
-      process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
-    SECRET: process.env.DOMAIN_RESOLVER_SECRET,
-  },
-  selfUrl: process.env.SELF_URL
-};
-const test: IConfig = {
-  port: process.env.PORT || 3000,
-  database: {
-    MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/",
-    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || "argo_db",
-    MONGODB_ATLAS_OPTION:
-      process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
-  },
-  smtp: {
-    USERNAME: process.env.SMTP_USERNAME,
-    PASSWORD: process.env.SMTP_PASSWORD,
-  },
-  secret: process.env.SECRET,
-  githubApp: {
-    CLIENT_ID: process.env.GITHUB_APP_CLIENT_ID,
-    CLIENT_SECRET: process.env.GITHUB_APP_CLIENT_SECRET,
-    CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
-    APP_ID: process.env.GITHUB_APP_ID,
-    PEM_FILE_NAME: process.env.PEM_FILE_NAME,
-    PEM_CONTENT_BASE64: process.env.PEM_CONTENT_BASE64,
-  },
-  arweave: {
-    LOGSTOCAPTURE: [
-      { key: "sitePreview", value: "https://arweave.net" },
-      { key: "fee", value: "Total price:" },
-    ],
-  },
-  skynet: {
-    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
-  },
-  neofs: {
-    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://http.fs.neo.org/" }],
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -275,7 +206,74 @@ const test: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
+};
+const test: IConfig = {
+  port: process.env.PORT || 3000,
+  database: {
+    MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/",
+    MONGODB_DB_MAIN: process.env.MONGODB_DB_MAIN || "argo_db",
+    MONGODB_ATLAS_OPTION:
+      process.env.MONGODB_ATLAS_OPTION || "retryWrites=true&w=majority",
+  },
+  smtp: {
+    USERNAME: process.env.SMTP_USERNAME,
+    PASSWORD: process.env.SMTP_PASSWORD,
+  },
+  secret: process.env.SECRET,
+  githubApp: {
+    CLIENT_ID: process.env.GITHUB_APP_CLIENT_ID,
+    CLIENT_SECRET: process.env.GITHUB_APP_CLIENT_SECRET,
+    CALLBACK_URL: process.env.GITHUB_APP_CALLBACK_URL,
+    APP_ID: process.env.GITHUB_APP_ID,
+    PEM_FILE_NAME: process.env.PEM_FILE_NAME,
+    PEM_CONTENT_BASE64: process.env.PEM_CONTENT_BASE64,
+  },
+  arweave: {
+    LOGSTOCAPTURE: [
+      { key: "sitePreview", value: "https://arweave.net" },
+      { key: "fee", value: "Total price:" },
+    ],
+  },
+  skynet: {
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
+  },
+  neofs: {
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://http.fs.neo.org/" }],
+  },
+  cloudflare: {
+    ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
+    DOMAIN_NAME: process.env.CLOUDFLARE_DOMAIN_NAME,
+    ZONE_ID: process.env.CLOUDFLARE_ZONE_ID,
+    EMAIL: process.env.CLOUDFLARE_EMAIL,
+    KEY: process.env.CLOUDFLARE_KEY,
+  },
+  redis: {
+    HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
+    PORT: +process.env.REDIS_PORT || 6379,
+    PASSWORD: process.env.REDIS_PASSWORD || "",
+  },
+  namebase: {
+    ACCESS_KEY: process.env.NAMEBASE_ACCESS_KEY || "",
+    SECRET_KEY: process.env.NAMEBASE_SECRET_KEY || "",
+  },
+  deployerApi: {
+    HOST_ADDRESS:
+      process.env.DEPLOYER_API_HOST_ADDRESS || "http://localhost:5000",
+  },
+  paymentApi: {
+    HOST_ADDRESS:
+      process.env.PAYMENT_API_HOST_ADDRESS || "http://localhost:3001",
+  },
+  frontendApp: {
+    HOST_ADDRESS:
+      process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
+  },
+  domainResolver: {
+    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+    SECRET: process.env.DOMAIN_RESOLVER_SECRET,
+  },
+  selfUrl: process.env.SELF_URL,
 };
 
 const config: {

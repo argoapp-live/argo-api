@@ -17,10 +17,9 @@ import WalletService from "../Wallet/service";
 import { ICommitInfo } from "../GitHubApp/service";
 import { IWebHook } from "../WebHook/model";
 import WebHookService from "../WebHook/service";
-const gh = require('parse-github-url');
+const gh = require("parse-github-url");
 
-const DEFAULT_WEBHOOK_NAME = 'production';
-
+const DEFAULT_WEBHOOK_NAME = "production";
 
 export async function deployFromRequest(
   req: Request,
@@ -38,12 +37,13 @@ export async function deployFromRequest(
     uniqueTopicId,
     configurationId,
     env,
-    createDefaultWebhook
+    createDefaultWebhook,
   } = req.body;
 
   const user: IUserModel = await AuthService.authUser(req);
 
-  if (!user) {}
+  if (!user) {
+  }
 
   const wallet: IWalletModel = await WalletService.findOne({ organizationId });
 
@@ -68,43 +68,75 @@ export async function deployFromRequest(
   //TODO if (createDefaultWebhook && created)
   if (createDefaultWebhook) {
     try {
-      const installationToken = await GithubAppService.createInstallationToken(installationId);
+      const installationToken = await GithubAppService.createInstallationToken(
+        installationId
+      );
       const parsed = gh(githubUrl);
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
       );
-      await WebHookService.connectWithGithub(project.id, installationToken, parsed);
-      await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, configuration.branch);
-    } catch(err) {
-      console.log('WebHook err', err.message);
+      await WebHookService.connectWithGithub(
+        project.id,
+        installationToken,
+        parsed
+      );
+      await WebHookService.create(
+        DEFAULT_WEBHOOK_NAME,
+        project.id,
+        configurationId,
+        installationId,
+        organizationId,
+        configuration.branch
+      );
+    } catch (err) {
+      console.log("WebHook err", err.message);
     }
   }
 
-  const responseObj: any = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv);
+  const responseObj: any = await deploy(
+    githubUrl,
+    installationId,
+    owner,
+    folderName,
+    uniqueTopicId,
+    project,
+    configurationId,
+    wallet,
+    deploymentEnv
+  );
   res.status(200).json(responseObj);
 }
 
 // async function deployFromWebHook() {
-  
+
 // }
 
-export async function deploy(githubUrl: string, installationId: number, owner: string, folderName: string,
-    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any) {
+export async function deploy(
+  githubUrl: string,
+  installationId: number,
+  owner: string,
+  folderName: string,
+  uniqueTopicId: string,
+  project: IProject,
+  configurationId: string,
+  wallet: IWalletModel,
+  deploymentEnv: any
+) {
+  const configuration: IConfiguration = await ConfigurationService.findById(
+    configurationId
+  );
 
-      const configuration: IConfiguration = await ConfigurationService.findById(
-        configurationId
-      );
-    
-      if (!configuration) {}
-      const {
-        branch,
-        buildCommand,
-        packageManager,
-        publishDir,
-        protocol,
-        framework,
-        workspace,
-      } = configuration;
+  if (!configuration) {
+  }
+  const {
+    branch,
+    buildCommand,
+    packageManager,
+    publishDir,
+    protocol,
+    framework,
+    workspace,
+  } = configuration;
 
   const fullGitHubPath: string =
     await GithubAppService.getFullGithubUrlAndFolderName(
@@ -114,7 +146,11 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
       folderName
     );
 
-  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(installationId, githubUrl, branch);
+  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(
+    installationId,
+    githubUrl,
+    branch
+  );
 
   const deployment: IDeployment = await DeploymentService.create(
     uniqueTopicId,
@@ -170,7 +206,7 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
     topic: uniqueTopicId,
     deploymentId: deployment._id,
     projectId: project._id,
-  }
+  };
 }
 
 export async function deploymentFinished(

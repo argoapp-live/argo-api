@@ -1,5 +1,5 @@
-import * as connections from '../../config/connection/connection';
-import { Document, Schema } from 'mongoose';
+import * as connections from "../../config/connection/connection";
+import { Document, Schema } from "mongoose";
 
 // /**
 //  * @export
@@ -7,29 +7,32 @@ import { Document, Schema } from 'mongoose';
 //  * @extends { Document }
 //  */
 export interface IConfiguration extends Document {
-    branch: string,
-    buildCommand: string, 
-    workspace: string,
-    publishDir: string,
-    protocol: string,
-    packageManager: string,
-    framework: string,
+  branch: string;
+  buildCommand: string;
+  workspace: string;
+  publishDir: string;
+  protocol: string;
+  packageManager: string;
+  framework: string;
 }
 
 const ConfigurationSchema: Schema = new Schema(
-    {
-        branch: String,
-        buildCommand: String, 
-        workspace: String,
-        publishDir: String,
-        protocol: String,
-        packageManager: String,
-        framework: String,
-    },
-    {
-        collection: 'configurations',
-        versionKey: false,
-    }
+  {
+    branch: String,
+    buildCommand: String,
+    workspace: String,
+    publishDir: String,
+    protocol: String,
+    packageManager: String,
+    framework: String,
+  },
+  {
+    collection: "configurations",
+    versionKey: false,
+  }
 );
 
-export default connections.db.model<IConfiguration>('ConfigurationModel', ConfigurationSchema);
+export default connections.db.model<IConfiguration>(
+  "ConfigurationModel",
+  ConfigurationSchema
+);
