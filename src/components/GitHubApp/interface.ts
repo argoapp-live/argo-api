@@ -2,16 +2,31 @@ import { Types } from "mongoose";
 import { IGuHubAppToken } from "./model";
 import { ICommitInfo } from "./service";
 
-
 export interface IGitHubAppTokenService {
-    findByUserId(id: Types.ObjectId): Promise<IGuHubAppToken>;
-    findByInstallationAndUserId(id: Types.ObjectId, installationId: number): Promise<IGuHubAppToken>;
-    create(gitHubToke: IGuHubAppToken): Promise<boolean>;
-    findAndCreate(gitHubId: number, token: string, installationId: number): Promise<boolean>;
-    remove(installationId: number): Promise<boolean>;
-    createInstallationToken (installationId: any): Promise<any>;
-    getFullGithubUrlAndFolderName(branch: string, installationId: number, owner: string, folderName: string): Promise<string>;
-    getBranches(id: string, branchesQuery: any): Promise<any>;
-    getInstallationRepos(id: string, installationId: any): Promise<any>;
-    getLatestCommitInfo(installationId: number, githubUrl: string, branch: string): Promise<ICommitInfo>;
+  findByUserId(id: Types.ObjectId): Promise<IGuHubAppToken>;
+  findByInstallationAndUserId(
+    id: Types.ObjectId,
+    installationId: number
+  ): Promise<IGuHubAppToken>;
+  create(gitHubToke: IGuHubAppToken): Promise<boolean>;
+  findAndCreate(
+    gitHubId: number,
+    token: string,
+    installationId: number
+  ): Promise<boolean>;
+  remove(installationId: number): Promise<boolean>;
+  createInstallationToken(installationId: any): Promise<any>;
+  getFullGithubUrlAndFolderName(
+    branch: string,
+    installationId: number,
+    owner: string,
+    folderName: string
+  ): Promise<string>;
+  getBranches(id: string, branchesQuery: any): Promise<any>;
+  getInstallationRepos(id: string, installationId: any): Promise<any>;
+  getLatestCommitInfo(
+    installationId: number,
+    githubUrl: string,
+    branch: string
+  ): Promise<ICommitInfo>;
 }

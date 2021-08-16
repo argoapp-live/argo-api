@@ -4,16 +4,16 @@ import { IOrganization } from "../Organization/model";
 
 export interface IWalletModel extends Document {
   address: string;
-  organizationId:  IOrganization['_id'];
+  organizationId: IOrganization["_id"];
 }
 
 const WalletSchema: Schema = new Schema(
   {
     address: { type: String },
     organizationId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Organization',
-    }
+      type: Schema.Types.ObjectId,
+      ref: "Organization",
+    },
   },
   {
     collection: "wallets",
