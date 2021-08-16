@@ -66,12 +66,12 @@ export async function create(req: Request, res: Response, next: NextFunction): P
 export async function GetUserRepos(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
 
-        const getToken: any = await JWTTokenService.DecodeToken(req);
-        const decodeToken: any = await JWTTokenService.VerifyToken(getToken);
+        const getToken: any = await JWTTokenService.decodeToken(req);
+        const decodeToken: any = await JWTTokenService.verifyToken(getToken);
 
-        const argoSession: IArgoSessionModel = await JWTTokenService.FindOneBySessionId(decodeToken.session_id);
+        const argoSession: IArgoSessionModel = await JWTTokenService.findOneBySessionId(decodeToken.session_id);
 
-        const octokit = new Octokit({ auth: `${argoSession.access_token}` });
+        const octokit = new Octokit({ auth: `${argoSession.accessToken}` });
         const response = await octokit.request("GET /user/repos", {
             type: "all",
             per_page: 100
@@ -98,8 +98,8 @@ export async function findOneAndUpdate(req: Request, res: Response, next: NextFu
 
 export async function getInstallationRepos(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-        const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
+        const argoDecodedHeaderToken: any = await JWTTokenService.decodeToken(req);
+        const deserializedToken: any = await JWTTokenService.verifyToken(argoDecodedHeaderToken);
         const response = await GithubAppService.getInstallationRepos(deserializedToken.session_id, req.params.installationId);
         res.status(200).json({
             success: true,
@@ -113,8 +113,8 @@ export async function getInstallationRepos(req: Request, res: Response, next: Ne
 
 export async function getBranches(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const argoDecodedHeaderToken: any = await JWTTokenService.DecodeToken(req);
-        const deserializedToken: any = await JWTTokenService.VerifyToken(argoDecodedHeaderToken);
+        const argoDecodedHeaderToken: any = await JWTTokenService.decodeToken(req);
+        const deserializedToken: any = await JWTTokenService.verifyToken(argoDecodedHeaderToken);
         const response = await GithubAppService.getBranches(deserializedToken.session_id, req.query.branches);
         res.status(200).json({
             success: true,
@@ -217,4 +217,3 @@ export async function changeStateToMaintained(req: Request, res: Response, next:
         throw new Error(error)
     }
 }
-

@@ -1,6 +1,6 @@
-import * as connections from '../../config/connection/connection';
-import { Document, Schema } from 'mongoose';
-import { IProject } from '../Project/model';
+import * as connections from "../../config/connection/connection";
+import { Document, Schema } from "mongoose";
+import { IProject } from "../Project/model";
 
 // /**
 //  * @export
@@ -8,33 +8,33 @@ import { IProject } from '../Project/model';
 //  * @extends { Document }
 //  */
 export interface IDomain extends Document {
-    name: string,
-    link: string,
-    argoKey: string,
-    isLatest: boolean,
-    type: string,
-    verified: boolean,
-    projectId: IProject['_id']
+  name: string;
+  link: string;
+  argoKey: string;
+  isLatest: boolean;
+  type: string;
+  verified: boolean;
+  projectId: IProject["_id"];
 }
 
 const DomainSchema: Schema = new Schema(
-    {
-        name: String,
-        link: String,
-        argoKey: String,
-        isLatest: Boolean,
-        type: String,
-        verified: { type: Boolean, default: false },
-        projectId: {
-            type: Schema.Types.ObjectId,
-            ref: 'ProjectModel',
-        }
+  {
+    name: String,
+    link: String,
+    argoKey: String,
+    isLatest: Boolean,
+    type: String,
+    verified: { type: Boolean, default: false },
+    projectId: {
+      type: Schema.Types.ObjectId,
+      ref: "ProjectModel",
     },
-    {
-        collection: 'domains',
-        timestamps: true,
-        versionKey: false,
-    }
+  },
+  {
+    collection: "domains",
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
-export default connections.db.model<IDomain>('DomainModel', DomainSchema);
+export default connections.db.model<IDomain>("DomainModel", DomainSchema);

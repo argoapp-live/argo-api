@@ -1,7 +1,7 @@
-import * as connections from '../../config/connection/connection';
-import { Document, Schema, Model } from 'mongoose';
-import { IOrganization } from '../Organization/model';
-import { IDeployment } from '../Deployment/model';
+import * as connections from "../../config/connection/connection";
+import { Document, Schema, Model } from "mongoose";
+import { IOrganization } from "../Organization/model";
+import { IDeployment } from "../Deployment/model";
 
 
 // /**
@@ -40,11 +40,7 @@ const ProjectSchema: Schema = new Schema(
         },
         gitHookId: { type: Number, default: -1 },
     },
-    {
-        collection: 'projects',
-        timestamps: true,
-        versionKey: false,
-    }
+  
 );
 
 export const ProjectModel: Model<IProject> = connections.db.model<IProject>('ProjectModel', ProjectSchema);

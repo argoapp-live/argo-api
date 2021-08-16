@@ -108,8 +108,8 @@ export async function create(req: Request, res: Response, next: NextFunction): P
     try {
         const organization: IOrganization = await OrganizationService.insert(req.body);
 
-        const jwtToken: any = await JWTTokenService.DecodeToken(req);
-        const decodedToken: any = await JWTTokenService.VerifyToken(jwtToken);
+        const jwtToken: any = await JWTTokenService.decodeToken(req);
+        const decodedToken: any = await JWTTokenService.verifyToken(jwtToken);
         const userService: IUserModel = await UserService.updateUserOrganization(organization._id, decodedToken.session_id);
 
 

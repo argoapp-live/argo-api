@@ -7,6 +7,5 @@ import { Request } from "express";
  */
 export interface IAuthService {
   findProfileOrCreate(user: IUser): Promise<IUserModel>;
-  deseralizeToken(req: Request): Promise<any>;
   authUser(req: Request): Promise<IUserModel>;
 }

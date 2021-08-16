@@ -6,28 +6,30 @@
 import { IArgoSessionModel } from "./model";
 
 export interface IArgoJwtTokenService {
-    /**
-    * @param {number} id
-    * @returns {Promise<IArgoSessionModel>}
-    * @memberof IArgoSessionModel
-    */
-    findSessionOrCreate(argoSessionDto: IArgoSessionDto): Promise<IArgoSessionDto>;
+  /**
+   * @param {number} id
+   * @returns {Promise<IArgoSessionModel>}
+   * @memberof IArgoSessionModel
+   */
+  findSessionOrCreate(
+    argoSessionDto: IArgoSessionDto
+  ): Promise<IArgoSessionDto>;
 
-    generateToken(argoSessionDto: IArgoSessionDto): Promise<string>;
+  generateToken(argoSessionDto: IArgoSessionDto): Promise<string>;
 
-    findOneByUserId(argo_username: string): Promise<IArgoSessionModel>;
+  findOneByUserId(argo_username: string): Promise<IArgoSessionModel>;
 
-    VerifyToken(token: string): Promise<string>;
-    DecodeToken(req: any): Promise<any>;
+  verifyToken(token: string): Promise<string>;
 
-    FindAndRemove(session_id: string): Promise<any>;
+  decodeToken(req: any): Promise<any>;
 
-    FindOneBySessionId(session_id: string): Promise<IArgoSessionModel>;
+  findAndRemove(sessionId: string): Promise<any>;
+
+  findOneBySessionId(sessionId: string): Promise<IArgoSessionModel>;
 }
 
 export interface IArgoSessionDto {
-    session_id: string;
-    access_token: string;
-    is_active: boolean;
+  sessionId: string;
+  accessToken: string;
+  isActive: boolean;
 }
-
