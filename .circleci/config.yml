@@ -18,13 +18,17 @@ jobs:
             - dependencies-cache-{{ checksum "package.json" }}
 
       - run:
-          name: install dependencies
+          name: Install Dependencies
           command: |
-            sudo npm i -g  codecov node-gyp
+            sudo npm i -g node-gyp
             npm i
       - run:
-          name: test
-          command: npm test && codecov
+          name: Run Test
+          command: npm test
+
+      - run:
+          name: Run Formatting Check
+          command: npm run prettier:check
 
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
