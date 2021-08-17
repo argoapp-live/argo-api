@@ -7,8 +7,7 @@ import * as DeploymentComponent from "./Deployment";
 import * as WalletComponent from "./Wallet";
 import * as ConfigurationComponent from "./Configuration";
 import * as DomainComponent from "./Domain";
-import * as NftComponent from './Nft';
-
+import * as NftComponent from "./Nft";
 
 export {
   ConfigurationComponent,

@@ -66,11 +66,11 @@ interface IConfig {
     SECRET: string;
   };
   selfUrl: string;
-  nft:{
+  nft: {
     MNEMONIC: string;
     RPC_PROVIDER: string;
     NFT_SUBGRAPH: string;
-  }
+  };
 }
 
 const NODE_ENV: string = process.env.NODE_ENV || "test";
@@ -108,7 +108,7 @@ const development: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY,
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -146,11 +146,11 @@ const development: IConfig = {
   },
   selfUrl: process.env.SELF_URL,
 
-  nft:{
-    MNEMONIC:process.env.SIGNER_MNEMONIC,
+  nft: {
+    MNEMONIC: process.env.SIGNER_MNEMONIC,
     RPC_PROVIDER: process.env.RPC_PROVIDER,
     NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
-  }
+  },
 };
 
 const production: IConfig = {
@@ -180,7 +180,7 @@ const production: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY,
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -221,11 +221,11 @@ const production: IConfig = {
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
   selfUrl: process.env.SELF_URL,
-  nft:{
-    MNEMONIC:process.env.SIGNER_MNEMONIC,
+  nft: {
+    MNEMONIC: process.env.SIGNER_MNEMONIC,
     RPC_PROVIDER: process.env.RPC_PROVIDER,
     NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
-  }
+  },
 };
 const test: IConfig = {
   port: process.env.PORT || 3000,
@@ -253,7 +253,7 @@ const test: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY,
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
@@ -294,11 +294,11 @@ const test: IConfig = {
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
   selfUrl: process.env.SELF_URL,
-  nft:{
-    MNEMONIC:process.env.SIGNER_MNEMONIC,
+  nft: {
+    MNEMONIC: process.env.SIGNER_MNEMONIC,
     RPC_PROVIDER: process.env.RPC_PROVIDER,
     NFT_SUBGRAPH: process.env.NFT_SUBGRAPH,
-  }
+  },
 };
 
 const config: {

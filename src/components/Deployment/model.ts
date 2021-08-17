@@ -47,7 +47,7 @@ const DeploymentSchema: Schema = new Schema(
     screenshot: {
       id: String,
       fee: String,
-      url: String
+      url: String,
     },
   },
   {

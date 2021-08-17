@@ -14,8 +14,8 @@ const path = require("path");
 let gitPrivateKey: string;
 
 if (config.githubApp.PEM_CONTENT_BASE64) {
-    const base64Encoded: string = config.githubApp.PEM_CONTENT_BASE64;
-    const buff: Buffer = Buffer.from(base64Encoded, 'base64');
+  const base64Encoded: string = config.githubApp.PEM_CONTENT_BASE64;
+  const buff: Buffer = Buffer.from(base64Encoded, "base64");
 
   gitPrivateKey = buff.toString("ascii");
 } else {
@@ -26,7 +26,6 @@ if (config.githubApp.PEM_CONTENT_BASE64) {
 
   gitPrivateKey = fs.readFileSync(gitPrivateKeyPath, "utf8");
 }
-
 
 const GithubAppService: IGitHubAppTokenService = {
   async findByUserId(id: Types.ObjectId): Promise<IGuHubAppToken> {

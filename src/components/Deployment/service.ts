@@ -1,91 +1,128 @@
 import { Types } from "mongoose";
-import { IDeployment, DeploymentModel, IScreenshot } from './model';
+import { IDeployment, DeploymentModel, IScreenshot } from "./model";
 import { IDeploymentService } from "./service-interface";
-import * as uploaderLib from '@argoapp/nft-uploader-js'
-import config from '../../config/env/index';
+import * as uploaderLib from "@argoapp/nft-uploader-js";
+import config from "../../config/env/index";
 
 const DeploymentService: IDeploymentService = {
-    async create(topic: string, projectId: string, configurationId: string, deploymentEnv: any, commitId: string, commitMessage: string): Promise<IDeployment> {
-        const deployment: any = {
-            topic,
-            project: projectId,
-            configuration: configurationId,
-            env: deploymentEnv,
-            commitId,
-            commitMessage
-        };
-        
-        return DeploymentModel.create(deployment);
-    },
+  async create(
+    topic: string,
+    projectId: string,
+    configurationId: string,
+    deploymentEnv: any,
+    commitId: string,
+    commitMessage: string
+  ): Promise<IDeployment> {
+    const deployment: any = {
+      topic,
+      project: projectId,
+      configuration: configurationId,
+      env: deploymentEnv,
+      commitId,
+      commitMessage,
+    };
 
-    async findById(id: string): Promise<IDeployment> {
-        return DeploymentModel.findById(id).populate("configuration").populate("project");
-    },
+    return DeploymentModel.create(deployment);
+  },
 
-    async findOne(query: Partial<IDeployment>): Promise<IDeployment> {
-        return DeploymentModel.findOne(query).populate("configuration");
-    },
+  async findById(id: string): Promise<IDeployment> {
+    return DeploymentModel.findById(id)
+      .populate("configuration")
+      .populate("project");
+  },
 
-    async findLatest(projectId: string): Promise<IDeployment> {
-        const latest = await DeploymentModel.find({ project: Types.ObjectId(projectId) }).sort({"updatedAt": "desc"}).populate("configuration")
-        return latest[0];
-    },
+  async findOne(query: Partial<IDeployment>): Promise<IDeployment> {
+    return DeploymentModel.findOne(query).populate("configuration");
+  },
 
-    async findLatestDeployed(projectId: string): Promise<IDeployment> {
-        const latest = await DeploymentModel.find({ project: Types.ObjectId(projectId), status: "Deployed" }).sort({"updatedAt": "desc"}).populate("configuration")
-        return latest[0];
-    },
+  async findLatest(projectId: string): Promise<IDeployment> {
+    const latest = await DeploymentModel.find({
+      project: Types.ObjectId(projectId),
+    })
+      .sort({ updatedAt: "desc" })
+      .populate("configuration");
+    return latest[0];
+  },
 
-    async find(query: Partial<IDeployment>): Promise<Array<IDeployment>> {
-        return DeploymentModel.find(query).populate("configuration").populate("project")
-    },
+  async findLatestDeployed(projectId: string): Promise<IDeployment> {
+    const latest = await DeploymentModel.find({
+      project: Types.ObjectId(projectId),
+      status: "Deployed",
+    })
+      .sort({ updatedAt: "desc" })
+      .populate("configuration");
+    return latest[0];
+  },
 
-    async updateFinishedDeployment(deploymentId: string, sitePreview: string, status: string, buildTime: number, logs: Array<string>): Promise<IDeployment> {
-        const condition = {
-            '_id': Types.ObjectId(deploymentId)
-        }
+  async find(query: Partial<IDeployment>): Promise<Array<IDeployment>> {
+    return DeploymentModel.find(query)
+      .populate("configuration")
+      .populate("project");
+  },
 
-        const update = {
-            sitePreview,
-            status,
-            buildTime,
-            logs,
-        }
+  async updateFinishedDeployment(
+    deploymentId: string,
+    sitePreview: string,
+    status: string,
+    buildTime: number,
+    logs: Array<string>
+  ): Promise<IDeployment> {
+    const condition = {
+      _id: Types.ObjectId(deploymentId),
+    };
 
-        return DeploymentModel.findOneAndUpdate(condition, update);
-    },
+    const update = {
+      sitePreview,
+      status,
+      buildTime,
+      logs,
+    };
 
-    async updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment> {
-        const condition = {
-            '_id': Types.ObjectId(deploymentId)
-        }
-        
-        const update = {
-            paymentId,
-        }
+    return DeploymentModel.findOneAndUpdate(condition, update);
+  },
 
-        return DeploymentModel.findOneAndUpdate(condition, update);
-    },
-    
-    async updateScreenshot(deploymentId: string, screenshot: IScreenshot): Promise<IDeployment> {
-        const condition = {
-            '_id': Types.ObjectId(deploymentId)
-        }
-        
-        const update = {
-            screenshot,
-        }
+  async updatePayment(
+    deploymentId: string,
+    paymentId: string
+  ): Promise<IDeployment> {
+    const condition = {
+      _id: Types.ObjectId(deploymentId),
+    };
 
-        return DeploymentModel.findOneAndUpdate(condition, update);
-    },
-    async uploadScreenshotToArweave(url: string): Promise<IScreenshot>{
-        const uploaderVendor: uploaderLib.Vendor = new uploaderLib.Vendor(Buffer.from(config.arweave.PRIVATE_KEY, 'base64').toString());
-        const uploader: uploaderLib.Uploader = new uploaderLib.Uploader(uploaderVendor)
-        const screenshot: IScreenshot = await uploader.uploadScreenshotToArweave(url)
-        console.log(screenshot)
-        return screenshot;
-    }
+    const update = {
+      paymentId,
+    };
 
-}
+    return DeploymentModel.findOneAndUpdate(condition, update);
+  },
+
+  async updateScreenshot(
+    deploymentId: string,
+    screenshot: IScreenshot
+  ): Promise<IDeployment> {
+    const condition = {
+      _id: Types.ObjectId(deploymentId),
+    };
+
+    const update = {
+      screenshot,
+    };
+
+    return DeploymentModel.findOneAndUpdate(condition, update);
+  },
+  async uploadScreenshotToArweave(url: string): Promise<IScreenshot> {
+    const uploaderVendor: uploaderLib.Vendor = new uploaderLib.Vendor(
+      Buffer.from(config.arweave.PRIVATE_KEY, "base64").toString()
+    );
+    const uploader: uploaderLib.Uploader = new uploaderLib.Uploader(
+      uploaderVendor
+    );
+    const screenshot: IScreenshot = await uploader.uploadScreenshotToArweave(
+      url
+    );
+    console.log(screenshot);
+    return screenshot;
+  },
+};
 
 export default DeploymentService;

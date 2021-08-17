@@ -5,5 +5,4 @@ const router: Router = Router();
 
 router.post("/metadata", NftComponent.getMetadataUrl);
 
-
 export default router;
