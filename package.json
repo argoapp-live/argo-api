@@ -39,6 +39,8 @@
         "node": ">=10.0.0 <15.0.0"
     },
     "dependencies": {
+        "@argoapp/nft-js": "^1.1.0",
+        "@argoapp/nft-uploader-js": "^1.2.7",
         "@octokit/auth-app": "^3.5.0",
         "@octokit/core": "^3.5.1",
         "@socket.io/redis-adapter": "^7.0.0",
@@ -109,12 +111,12 @@
         "jsdoc": "3.5.5",
         "mocha": "6.2.0",
         "nodemon": "1.18.10",
+        "prettier": "^2.0.5",
         "rimraf": "^3.0.2",
         "source-map-loader": "0.2.4",
         "supertest": "4.0.2",
         "swagger-jsdoc": "3.2.7",
-        "swagger-ui-express": "4.0.2",
-        "prettier": "^2.0.5"
+        "swagger-ui-express": "4.0.2"
     },
     "eslintConfig": {
         "extends": "eslint:recommended"

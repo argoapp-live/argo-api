@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/abhimanyushekhawat/.nvm/versions/node/v12.21.0/bin/node /opt/homebrew/bin/yarn run dev
+  /Users/abhimanyushekhawat/.nvm/versions/node/v12.21.0/bin/node /opt/homebrew/bin/yarn @argoapp/nft-js
 
 PATH: 
   /Users/abhimanyushekhawat/.nvm/versions/node/v12.21.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/abhimanyushekhawat/dev/flutter/bin:/opt/homebrew/bin:/usr/local/go/bin:/Library/Apple/usr/bin:/Users/abhimanyushekhawat/.cargo/bin
@@ -52,7 +52,10 @@ npm manifest:
           "copy:templates": "cpx './src/templates/**' './build/templates'",
           "copy:templates:windows": "cpx ./src/templates/** ./build/templates",
           "test": "NODE_ENV=test mocha -r ts-node/register test/index.js --exit",
-          "clean": "rimraf ./build"
+          "clean": "rimraf ./build",
+          "prettier": "prettier \"**/*.{css,scss,json,md,html,yml}\" --ignore-path=.eslintignore",
+          "prettier:write": "prettier --write '**/*.{ts,tsx,json,md}' --ignore-path .gitignore",
+          "prettier:check": "prettier --check '**/*.{ts,tsx,json,md}' --ignore-path .gitignore"
       },
       "files": [
           "src"
@@ -61,13 +64,10 @@ npm manifest:
           "node": ">=10.0.0 <15.0.0"
       },
       "dependencies": {
-          "@argoapp/nft-uploader-js": "1.2.7",
           "@octokit/auth-app": "^3.5.0",
           "@octokit/core": "^3.5.1",
           "@socket.io/redis-adapter": "^7.0.0",
           "axios": "^0.21.1",
-          "bcrypt": "4.0.1",
-          "class-mapper": "^0.2.3",
           "cloudflare": "^2.7.0",
           "compression": "1.7.4",
           "connect-mongo": "^3.2.0",
@@ -79,23 +79,17 @@ npm manifest:
           "express": "4.17.1",
           "express-jwt": "^6.0.0",
           "express-session": "^1.17.1",
-          "handlebars": "^4.7.6",
           "helmet": "3.22.0",
           "joi": "14.3.1",
           "jsonwebtoken": "^8.5.1",
           "mongoose": "5.9.16",
           "nodemailer": "^6.6.1",
           "parse-github-url": "^1.0.2",
-          "passport": "0.4.0",
-          "passport-github": "^1.1.0",
-          "passport-gitlab2": "^5.0.0",
           "redis": "^3.1.2",
           "rimraf": "^3.0.2",
           "socket.io": "^4.1.1",
-          "socket.io-client": "^2.3.0",
           "ts-node": "8.10.1",
           "typescript": "^4.0.2",
-          "util": "0.12.3",
           "uuid": "^8.3.0"
       },
       "devDependencies": {
@@ -145,10 +139,12 @@ npm manifest:
           "supertest": "4.0.2",
           "swagger-jsdoc": "3.2.7",
           "swagger-ui-express": "4.0.2",
-          "tslint": "5.8.0",
-          "tslint-config-airbnb": "5.8.0",
-          "tslint-eslint-rules": "5.4.0"
+          "prettier": "^2.0.5"
+      },
+      "eslintConfig": {
+          "extends": "eslint:recommended"
       }
+  }
   =======
     "name": "argo-hosting-api",
     "version": "3.0.0",
@@ -178,10 +174,7 @@ npm manifest:
       "copy:templates": "cpx './src/templates/**' './build/templates'",
       "copy:templates:windows": "cpx ./src/templates/** ./build/templates",
       "test": "NODE_ENV=test mocha -r ts-node/register test/index.js --exit",
-      "clean": "rimraf ./build",
-      "prettier": "prettier \"**/*.{css,scss,json,md,html,yml}\" --ignore-path=.eslintignore",
-      "prettier:write": "prettier --write '**/*.{ts,tsx,json,md}' --ignore-path .gitignore",
-      "prettier:check": "prettier --check '**/*.{ts,tsx,json,md}' --ignore-path .gitignore"
+      "clean": "rimraf ./build"
     },
     "files": [
       "src"
@@ -190,10 +183,14 @@ npm manifest:
       "node": ">=10.0.0 <15.0.0"
     },
     "dependencies": {
+      "@argoapp/nft-js": "git+https://github.com/argoapp-live/argo-nft-js.git",
+      "@argoapp/payment-js": "git+https://github.com/argoapp-live/argo-nft-js.git",
       "@octokit/auth-app": "^3.5.0",
       "@octokit/core": "^3.5.1",
       "@socket.io/redis-adapter": "^7.0.0",
       "axios": "^0.21.1",
+      "bcrypt": "4.0.1",
+      "class-mapper": "^0.2.3",
       "cloudflare": "^2.7.0",
       "compression": "1.7.4",
       "connect-mongo": "^3.2.0",
@@ -202,20 +199,26 @@ npm manifest:
       "cpx": "^1.5.0",
       "dotenv": "8.2.0",
       "email-templates": "2.x",
+      "ethers": "^5.4.1",
       "express": "4.17.1",
       "express-jwt": "^6.0.0",
       "express-session": "^1.17.1",
+      "handlebars": "^4.7.6",
       "helmet": "3.22.0",
       "joi": "14.3.1",
       "jsonwebtoken": "^8.5.1",
       "mongoose": "5.9.16",
       "nodemailer": "^6.6.1",
-      "parse-github-url": "^1.0.2",
+      "passport": "0.4.0",
+      "passport-github": "^1.1.0",
+      "passport-gitlab2": "^5.0.0",
       "redis": "^3.1.2",
       "rimraf": "^3.0.2",
       "socket.io": "^4.1.1",
+      "socket.io-client": "^2.3.0",
       "ts-node": "8.10.1",
       "typescript": "^4.0.2",
+      "util": "0.12.3",
       "uuid": "^8.3.0"
     },
     "devDependencies": {
@@ -241,7 +244,6 @@ npm manifest:
       "@types/mongoose": "5.3.5",
       "@types/node": "10.12.18",
       "@types/nodemailer": "^6.4.2",
-      "@types/parse-github-url": "^1.0.0",
       "@types/passport": "1.0.0",
       "@types/passport-github": "^1.1.5",
       "@types/redis": "^2.8.28",
@@ -265,13 +267,12 @@ npm manifest:
       "supertest": "4.0.2",
       "swagger-jsdoc": "3.2.7",
       "swagger-ui-express": "4.0.2",
-      "prettier": "^2.0.5"
-    },
-    "eslintConfig": {
-      "extends": "eslint:recommended"
+      "tslint": "5.8.0",
+      "tslint-config-airbnb": "5.8.0",
+      "tslint-eslint-rules": "5.4.0"
     }
-  >>>>>>> auth
   }
+  >>>>>>> nft
 
 yarn manifest: 
   No manifest

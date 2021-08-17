@@ -15,6 +15,7 @@ import DomainRouter from "./DomainRouter";
 import ConfigurationRouter from "./ConfigurationRouter";
 import HealthCheckRouter from "./HealthCheck";
 import GithubRouter from "./GithubRouter";
+import NftRouter from './NftRouter';
 
 // let swaggerDoc: Object;
 
@@ -45,6 +46,8 @@ export function init(app: express.Application): void {
   app.use("/configuration", ConfigurationRouter);
   app.use("/status", HealthCheckRouter);
   app.use("/github", GithubRouter);
+  app.use('/nft', NftRouter)
+
 
   // /**
   //  * @description
