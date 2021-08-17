@@ -29,7 +29,7 @@ const DeploymentSchema: Schema = new Schema(
   {
     sitePreview: String,
     commitId: String,
-    commitMessage: { type: String, default: '' },
+    commitMessage: { type: String, default: "" },
     logs: [{ time: String, log: String }],
     topic: String,
     status: { type: String, default: "Pending" },
@@ -47,7 +47,7 @@ const DeploymentSchema: Schema = new Schema(
     screenshot: {
       id: String,
       fee: String,
-      url: String
+      url: String,
     },
   },
   {

@@ -1,15 +1,14 @@
-import * as compression from 'compression';
-import * as cookieParser from 'cookie-parser';
-import * as cors from 'cors';
-import * as express from 'express';
-import * as helmet from 'helmet';
-import * as passport from 'passport';
-import * as session from 'express-session';
-import config from '../env/index';
-import * as mongo from 'connect-mongo';
-import { HttpError } from '../error/index';
-import { sendHttpErrorModule } from '../error/sendHttpError';
-
+import * as compression from "compression";
+import * as cookieParser from "cookie-parser";
+import * as cors from "cors";
+import * as express from "express";
+import * as helmet from "helmet";
+import * as passport from "passport";
+import * as session from "express-session";
+import config from "../env/index";
+import * as mongo from "connect-mongo";
+import { HttpError } from "../error/index";
+import { sendHttpErrorModule } from "../error/sendHttpError";
 
 // import { MongoStore } from 'connect-mongo';
 const MongoStore: mongo.MongoStoreFactory = mongo(session);
@@ -19,78 +18,87 @@ const MongoStore: mongo.MongoStoreFactory = mongo(session);
  * @param {express.Application} app
  */
 export function configure(app: express.Application): void {
-    // express middleware
-    app.use(express.urlencoded({
-        extended: false
-    }));
-    app.use(express.json({
-        limit: '1mb'
-    }));
-    // parse Cookie header and populate req.cookies with an object keyed by the cookie names.
-    app.use(cookieParser());
-    // returns the compression middleware
-    app.use(compression());
-    // helps you secure your Express apps by setting various HTTP headers
-    app.use(helmet());
-    // providing a Connect/Express middleware that can be used to enable CORS with various options
-    app.use(cors());
+  // express middleware
+  app.use(
+    express.urlencoded({
+      extended: false,
+    })
+  );
+  app.use(
+    express.json({
+      limit: "1mb",
+    })
+  );
+  // parse Cookie header and populate req.cookies with an object keyed by the cookie names.
+  app.use(cookieParser());
+  // returns the compression middleware
+  app.use(compression());
+  // helps you secure your Express apps by setting various HTTP headers
+  app.use(helmet());
+  // providing a Connect/Express middleware that can be used to enable CORS with various options
+  app.use(cors());
 
-    /**
-     * @swagger
-     * components:
-     *  securitySchemes:
-     *    cookieAuth:
-     *      type: apiKey
-     *      in: cookie
-     *      name: sid
-     */
-    app.use(session({
-        resave: true,
-        saveUninitialized: true,
-        secret: config.secret,
-        name: 'api.sid',
-        store: new MongoStore({
-            url: `${config.database.MONGODB_URI}${config.database.MONGODB_DB_MAIN}`,
-            autoReconnect: true
-        })
-    }));
-    app.use(passport.initialize());
-    app.use(passport.session());
-    // custom errors
-    app.use(sendHttpErrorModule);
+  /**
+   * @swagger
+   * components:
+   *  securitySchemes:
+   *    cookieAuth:
+   *      type: apiKey
+   *      in: cookie
+   *      name: sid
+   */
+  app.use(
+    session({
+      resave: true,
+      saveUninitialized: true,
+      secret: config.secret,
+      name: "api.sid",
+      store: new MongoStore({
+        url: `${config.database.MONGODB_URI}${config.database.MONGODB_DB_MAIN}`,
+        autoReconnect: true,
+      }),
+    })
+  );
+  app.use(passport.initialize());
+  app.use(passport.session());
+  // custom errors
+  app.use(sendHttpErrorModule);
 
-    // cors
-    app.use((req, res, next) => {
-        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS ');
-        res.header(
-            'Access-Control-Allow-Headers',
-            'Origin, X-Requested-With,' +
-            ' Content-Type, Accept,' +
-            ' Authorization,' +
-            ' Access-Control-Allow-Credentials'
-        );
-        res.header('Access-Control-Allow-Origin', config.frontendApp.HOST_ADDRESS);
-        res.header('Access-Control-Allow-Credentials', 'true');
-        next();
-    });
+  // cors
+  app.use((req, res, next) => {
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS "
+    );
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With," +
+        " Content-Type, Accept," +
+        " Authorization," +
+        " Access-Control-Allow-Credentials"
+    );
+    res.header("Access-Control-Allow-Origin", config.frontendApp.HOST_ADDRESS);
+    res.header("Access-Control-Allow-Credentials", "true");
+    next();
+  });
 
-    // app.use(jwt({
-    //     secret: config.secret,
-    //     credentialsRequired: false,
-    //     algorithms: ['HS256'],
-    //     getToken: function fromHeaderOrQuerystring(req: any) {
-    //         if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-    //             return req.headers.authorization.split(' ')[1];
-    //         } else if (req.query && req.query.token) {
-    //             return req.query.token;
-    //         }
-    //         return null;
-    //     }
-    // }).unless({ path: ['/auth/github', '/auth/github/callback'] }));
+  // app.use(jwt({
+  //     secret: config.secret,
+  //     credentialsRequired: false,
+  //     algorithms: ['HS256'],
+  //     getToken: function fromHeaderOrQuerystring(req: any) {
+  //         if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+  //             return req.headers.authorization.split(' ')[1];
+  //         } else if (req.query && req.query.token) {
+  //             return req.query.token;
+  //         }
+  //         return null;
+  //     }
+  // }).unless({ path: ['/auth/github', '/auth/github/callback'] }));
 }
 
 interface CustomResponse extends express.Response {
-    sendHttpError: (error: HttpError | Error, message?: string) => void;
+  sendHttpError: (error: HttpError | Error, message?: string) => void;
 }
 
 /**
@@ -98,23 +106,30 @@ interface CustomResponse extends express.Response {
  * @param {express.Application} app
  */
 export function initErrorHandler(app: express.Application): void {
-    app.use((error: Error, req: express.Request, res: CustomResponse, next: express.NextFunction) => {
-        if (typeof error === 'number') {
-            error = new HttpError(error); // next(404)
-        }
-        console.log(error)
+  app.use(
+    (
+      error: Error,
+      req: express.Request,
+      res: CustomResponse,
+      next: express.NextFunction
+    ) => {
+      if (typeof error === "number") {
+        error = new HttpError(error); // next(404)
+      }
+      console.log(error);
 
-        if (error instanceof HttpError) {
-            res.sendHttpError(error);
+      if (error instanceof HttpError) {
+        res.sendHttpError(error);
+      } else {
+        if (app.get("env") === "development") {
+          error = new HttpError(500, error.message);
+          res.sendHttpError(error);
         } else {
-            if (app.get('env') === 'development') {
-                error = new HttpError(500, error.message);
-                res.sendHttpError(error);
-            } else {
-                error = new HttpError(500);
-                res.sendHttpError(error, error.message);
-            }
+          error = new HttpError(500);
+          res.sendHttpError(error, error.message);
         }
-        console.error(error);
-    });
+      }
+      console.error(error);
+    }
+  );
 }

@@ -119,13 +119,13 @@ const development: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY,
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
   },
   neofs: {
-    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://http.fs.neo.org/" }],
   },
   redis: {
     HOST: process.env.REDIS_ENDPOINT || "127.0.0.1",
@@ -152,7 +152,7 @@ const development: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
 };
 
 const production: IConfig = {
@@ -191,13 +191,13 @@ const production: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY,
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
   },
   neofs: {
-    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://http.fs.neo.org/" }],
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -228,11 +228,10 @@ const production: IConfig = {
       process.env.FRONTEND_APP_HOST_ADDRESS || "http://localhost:3000",
   },
   domainResolver: {
-    HOST_ADDRESS:
-      process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
+    HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
 };
 const test: IConfig = {
   port: process.env.PORT || 3000,
@@ -270,13 +269,13 @@ const test: IConfig = {
       { key: "sitePreview", value: "https://arweave.net" },
       { key: "fee", value: "Total price:" },
     ],
-    PRIVATE_KEY: process.env.ARWEAVE_KEY
+    PRIVATE_KEY: process.env.ARWEAVE_KEY,
   },
   skynet: {
     LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://siasky.net" }],
   },
   neofs: {
-    LOGSTOCAPTURE: [{ key: 'sitePreview', value: 'https://http.fs.neo.org/' }],
+    LOGSTOCAPTURE: [{ key: "sitePreview", value: "https://http.fs.neo.org/" }],
   },
   cloudflare: {
     ARGO_IPV4: process.env.CLOUDFLARE_ARGO_IVP4,
@@ -310,7 +309,7 @@ const test: IConfig = {
     HOST_ADDRESS: process.env.DOMAIN_RESOLVER_URL || "http://localhost:3000",
     SECRET: process.env.DOMAIN_RESOLVER_SECRET,
   },
-  selfUrl: process.env.SELF_URL
+  selfUrl: process.env.SELF_URL,
 };
 
 const config: {

@@ -143,7 +143,12 @@ const DomainService = {
     }
   },
 
-  async update(id: string, name: string, link: string, isLatest: boolean): Promise<IDomain> {
+  async update(
+    id: string,
+    name: string,
+    link: string,
+    isLatest: boolean
+  ): Promise<IDomain> {
     try {
       const domain: IDomain = await DomainService.findById(id);
       if (name) domain.name = name;
@@ -160,7 +165,6 @@ const DomainService = {
       throw new Error(error.message);
     }
   },
-
 
   async remove(id: string): Promise<void> {
     try {
@@ -251,7 +255,11 @@ const DomainService = {
     }
   },
 
-  async addStaticToResolver(domain: string, argoKey: string, link: string): Promise<boolean> {
+  async addStaticToResolver(
+    domain: string,
+    argoKey: string,
+    link: string
+  ): Promise<boolean> {
     if (link === "") return false;
 
     const body = {
