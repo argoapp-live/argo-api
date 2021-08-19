@@ -6,7 +6,7 @@ import { ISubscriptionPackage } from '../SubscriptionPackage/model';
 export interface ISubscription extends Document {
     dateOfIssue: number,
     dateOfExpiration: number,
-    status: string, 
+    state: string, 
     renew: boolean,
     organizationId: IOrganization['_id'],
     subscriptionPackageId: ISubscriptionPackage['_id']
@@ -17,7 +17,7 @@ const SubscriptionSchema: Schema = new Schema(
         dateOfIssue: Number,
         dateOfExpiration: Number,
         renew: Boolean,
-        status: {
+        state: {
             type: String,
             enum: ['ACTIVE', 'EXPIRED', 'PENDING', 'DEMANDED', 'ERROR', 'REJECTED', 'CANCELED'],
         }, 

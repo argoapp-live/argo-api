@@ -41,15 +41,15 @@ const SubscriptionService = {
     },
 
     async findOne(query: any): Promise<ISubscription> {
-        return SubscriptionPackageModel.findOne(query);
+        return await SubscriptionPackageModel.findOne(query).populate('subscriptionPackageId');
     },
 
     async find(query: any): Promise<Array<ISubscription>> {
         return SubscriptionPackageModel.find(query);
     },
 
-    async updateOne(id: string, query: any): Promise<Array<ISubscription>> {
-        return SubscriptionPackageModel.updateOne(id, query);
+    async updateOne(query: any, conditions: any): Promise<Array<ISubscription>> {
+        return SubscriptionPackageModel.updateOne(query, conditions);
     },
 }
 

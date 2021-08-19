@@ -5,3 +5,8 @@ export interface ISubscriptionPaymentRequest {
     amount: number,
     subscriptionId: string,
 }
+
+export interface IConstraintCheckResponse {
+    canDeploy: boolean,
+    msg: string,
+}

@@ -10,7 +10,14 @@ import axios from "axios";
 import config from '../../config/env/index';
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
-import { ISubscriptionPaymentRequest } from "./interfaces";
+import { IConstraintCheckResponse, ISubscriptionPaymentRequest } from "./interfaces";
+import { DeploymentComponent, ProjectComponent } from "..";
+import { IConfiguration } from "../Configuration/model";
+import ConfigurationService from "../Configuration/service";
+import { IProject } from "../Project/model";
+import ProjectService from "../Project/service";
+import DeploymentService from "../Deployment/service";
+import { DeploymentModel } from "../Deployment/model";
 
 export async function subscribe(req: Request, res: Response, next: NextFunction) {
     try {
@@ -42,14 +49,14 @@ export async function subscribe(req: Request, res: Response, next: NextFunction)
             subscriptionId: newSubscription.id
         }
 
-        const subscriptionResponse: any = await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments/subscibe`, subscriptionPaymentRequest);
+        const subscriptionResponse: any = await axios.post(`${config.paymentApi.HOST_ADDRESS}/payments/subscribe`, subscriptionPaymentRequest);
 
         if (subscriptionResponse.status !== 200) {
             await SubscriptionService.updateOne(newSubscription.id, { state: 'ERROR' });
         }
 
     } catch(error) {
-        next(new HttpError(error.message.status, error.message));
+        next(new HttpError(404, error.message));
     }
 }
 
@@ -79,7 +86,7 @@ export async function changeSubscriptionPackage(req: Request, res: Response, nex
         res.status(200).json(newPendingSubscription);
 
     } catch(error) {
-        next(new HttpError(error.message.status, error.message));
+        next(new HttpError(404, error.message));
     }
 }
 
@@ -90,7 +97,7 @@ export async function activateOrRejectSubscription(req: Request, res: Response, 
         const subscription: ISubscription = await SubscriptionService.findById(subscriptionId);
         if (!subscription) throw new Error('no subscription to update from payment');
         
-        await SubscriptionService.updateOne(subscriptionId, { state });
+        await SubscriptionService.updateOne({ _id: subscriptionId }, { state });
 
         if(state=== 'REJECTED') {
             const pendingSubscription: ISubscription = await SubscriptionService.findOne({ organizationId: subscription.organizationId, state: 'PENDING' });
@@ -99,8 +106,10 @@ export async function activateOrRejectSubscription(req: Request, res: Response, 
             }
         }
 
+        res.status(200).json({ msg: 'OK' });
+
     } catch(error) {
-        next(new HttpError(error.message.status, error.message));
+        next(new HttpError(404, error.message));
     }
 }
 
@@ -122,6 +131,95 @@ export async function cancelSubscription(req: Request, res: Response, next: Next
     }
 }
 
+export async function getAcitveIfExists(req: Request, res: Response, next: NextFunction) {
+    const { organizationId } = req.body;
+    const activeSubscription :ISubscription = await SubscriptionService.findOne({organizationId, status : 'ACTIVE'});
+
+    if(activeSubscription) {
+        res.status(200).json({
+            activeSubscription,
+            exists: true,
+        })
+        return;
+    }
+
+    res.status(200).json({
+        activeSubscription: null,
+        exists: false,
+    })
+}
+
+async function checkDeploymentConstraints(subscription: ISubscription, organizationId: string): Promise<IConstraintCheckResponse> {
+    const projects: Array<IProject> = await ProjectService.find({ organizationId });
+
+    const projectIds = projects.map((project: IProject) => {
+        return project.id;
+    })
+
+    const deployments = await DeploymentService.allDeploymentsInSubscription(subscription.dateOfIssue, projectIds);
+
+    console.log(deployments);
+    //TODO add webhook logic later
+
+    let canDeploy: boolean;
+    let msg: string;
+
+    const subscriptionPackage: ISubscriptionPackage = subscription.subscriptionPackageId;
+    if(deployments.length < subscriptionPackage.numberOfAllowedDeployments) {
+        canDeploy = true;
+        msg = '';
+    } else { 
+        canDeploy = false;
+        msg = 'number of allowed deployments exceeded'
+    }
+
+    return {
+        canDeploy,
+        msg
+    }
+}
+
+export async function deploy(req: Request, res: Response, next: NextFunction) {
+    const {
+        organizationId,
+        githubUrl,
+        folderName,
+        installationId,
+        uniqueTopicId,
+        configurationId,
+        env,
+        createDefaultWebhook,          
+    } = req.body;
+
+    const activeSubscription :ISubscription = await SubscriptionService.findOne({organizationId, state : 'ACTIVE'});
+    if (!activeSubscription) throw new Error('No active sub');
+
+    const constraintCheckResponse: IConstraintCheckResponse = await checkDeploymentConstraints(activeSubscription, organizationId);
+
+    if(!constraintCheckResponse.canDeploy) {
+        res.status(200).json({
+            msg: constraintCheckResponse.msg, 
+            success: false,
+        });
+
+        return;
+    }
+    
+
+    const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
+    if (!configurationId) {
+        throw new Error('No configuration');
+    }
+
+    const project = await ProjectComponent.createIfNotExists(githubUrl, organizationId, folderName, env, createDefaultWebhook, configuration.id, installationId);
+    const wallet: IWalletModel = await WalletService.findOne({ organizationId });
+
+
+    const responseObj: any = await DeploymentComponent.deployWithSubscription(githubUrl, installationId, uniqueTopicId, project, wallet, project.env, organizationId, 
+        activeSubscription, configuration);
+
+    res.status(200).json(responseObj);
+}
 
 
 export async function find(query: any): Promise<Array<ISubscription>> {

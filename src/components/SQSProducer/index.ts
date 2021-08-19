@@ -1,24 +1,18 @@
-const { Producer } = require('sqs-producer');
+import { Producer } from 'sqs-producer';
+import { v4 as uuidv4 } from "uuid";
+
  
-// create simple producer
-const producer = Producer.create({
+const producer: Producer = Producer.create({
   queueUrl: 'https://sqs.us-east-1.amazonaws.com/141264133120/dev-deployment-queue.fifo',
   region: 'us-east-1'
 });
 
-// export async function checkSize(params:type) {
-    
-// }
-
-producer.queueSize().then((size: any) => {
-    console.log('queue size', size);
-});
-
-producer.send({
-    id: "testId",
-    body: 'Hello world from our FIFO queue!',
-    groupId: 'group1234',
+export async function send(body: string) {
+  producer.send({
+    id: uuidv4(),
+    body,
+    groupId: uuidv4(),
+  }).then((res: any) => {
+    console.log('from producer: ', res)
   });
-
-export default {};
-// console.log(`There are ${size} messages on the queue.`);
+}

@@ -16,13 +16,15 @@ import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
 import { ICommitInfo } from "../GitHubApp/service";
 import { IWebHook } from "../WebHook/model";
-import * as toDelete from "./../SQSProducer";
-console.log(toDelete);
+import { v4 as uuidv4 } from "uuid";
+// import * as toDelete from "./../SQSProducer";
+// console.log(toDelete);
 import WebHookService from "../WebHook/service";
 import { ISubscription } from "../Subscription/model";
 import SubscriptionService from "../Subscription/service";
 import SubscriptionPackageService from "../SubscriptionPackage/service";
 import { ISubscriptionPackage } from "../SubscriptionPackage/model";
+import * as Producer from '../SQSProducer';
 const gh = require('parse-github-url');
 
 const DEFAULT_WEBHOOK_NAME = 'production';
@@ -53,6 +55,8 @@ export async function deployFromRequest(
 
   const wallet: IWalletModel = await WalletService.findOne({ organizationId });
 
+
+  //TODO move this to project component
   const result: any = await ProjectService.createIfNotExists(
     githubUrl,
     organizationId,
@@ -85,47 +89,98 @@ export async function deployFromRequest(
       console.log('WebHook err', err.message);
     }
   }
-  const activeSubscription :ISubscription = await SubscriptionService.findOne({organizationId, status : 'ACTIVE'});
-  let responseObj: any;
-  if(activeSubscription){
-    const constraintsSatisfied : Boolean = await checkSubscriptionConstraints(activeSubscription,organizationId);
-    if(!constraintsSatisfied){
-      res.status(200).json({
-        message : "Subscription constraints not satisfied"
-      })
-      return;
-    }
-    responseObj = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv,true);
-  }else { 
-    responseObj = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv, false);    
-  }
+  const responseObj = await deploy(githubUrl, installationId, owner, folderName, uniqueTopicId, project, configurationId, wallet, deploymentEnv);    
   res.status(200).json(responseObj);
 }
 
-// async function deployFromWebHook() {
-  
-// }
-async function checkSubscriptionConstraints(subscription : ISubscription, organizationId : string) : Promise<Boolean>{
-  const subscriptionPackage : ISubscriptionPackage = await SubscriptionPackageService.findById(subscription.subscriptionPackageId);
-  // checking constratint {numberOfDeployments}
-  let numberOfDeploymentsForOrganization = 0 ;
-  const projects : IProject[] = await ProjectService.find({organizationId});
-  projects.forEach(async p => {    
-    const pDeployments : IDeployment[]  = await DeploymentService.find({project : p.id });
-    pDeployments.forEach(d => { 
-      let createdAtTimestamp = Date.parse(d.createdAt);
-      if(createdAtTimestamp > subscription.dateOfIssue){
-        numberOfDeploymentsForOrganization++;
-      }
-    })
-  });
-  if(numberOfDeploymentsForOrganization>subscriptionPackage.numberOfAllowedDeployments){
-    return false;
+export async function deployWithSubscription(githubUrl: string, installationId: number,
+    uniqueTopicId: string, project: IProject, wallet: IWalletModel, deploymentEnv: any, 
+    organizationId: string, subscription: ISubscription, configuration: IConfiguration): Promise<any> {
+
+    const {
+      branch,
+      buildCommand,
+      packageManager,
+      publishDir,
+      protocol,
+      framework,
+      workspace,
+    } = configuration;
+
+    const parsed = gh(project.githubUrl);
+
+    const fullGitHubPath: string =
+    await GithubAppService.getFullGithubUrlAndFolderName(
+      branch,
+      installationId,
+      parsed.owner,
+      parsed.name
+    );
+
+  const commitInfo: ICommitInfo = await GithubAppService.getLatestCommitInfo(installationId, githubUrl, branch);
+  //TODO add payment logic
+
+  // const paymentResponse: any = axios.post(`${config.paymentApi.HOST_ADDRESS}/subscription/${subscription.id}`);
+  // const payment: any = paymentResponse.data;
+
+  const deployment: IDeployment = await DeploymentService.create(
+    uniqueTopicId,
+    project._id,
+    configuration.id,
+    deploymentEnv,
+    commitInfo.id,
+    commitInfo.message,
+    uuidv4(),
+  );
+
+  let logsToCapture;
+
+  switch (protocol) {
+    case "arweave":
+      logsToCapture = config.arweave.LOGSTOCAPTURE;
+      break;
+    case "skynet":
+      logsToCapture = config.skynet.LOGSTOCAPTURE;
+      break;
+    case "neofs":
+      logsToCapture = config.neofs.LOGSTOCAPTURE;
+      break;
   }
-  return true;
+
+  const body: any = {
+    deploymentId: deployment._id,
+    githubUrl: fullGitHubPath,
+    folderName: parsed.name,
+    topic: !!uniqueTopicId ? uniqueTopicId : "random-topic-url",
+    framework,
+    packageManager,
+    branch,
+    buildCommand,
+    publishDir,
+    protocol,
+    workspace: !!workspace ? workspace : "",
+    is_workspace: !!workspace,
+    logsToCapture,
+    env: deploymentEnv,
+  };
+
+  //SKIP WHILE MOCKING REAL DEPLOYMENTS
+  // await ProjectService.setLatestDeployment(project._id, deployment._id);
+
+  //push to producer
+  Producer.send(JSON.stringify(body));
+
+  return {
+    message: "Deployment is being processed",
+    success: true,
+    topic: uniqueTopicId,
+    deploymentId: deployment._id,
+    projectId: project._id,
+  }
 }
+
 export async function deploy(githubUrl: string, installationId: number, owner: string, folderName: string,
-    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any, withSubscription : boolean) {
+    uniqueTopicId: string, project: IProject, configurationId: string, wallet: IWalletModel, deploymentEnv: any) {
 
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
@@ -158,7 +213,8 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
     configurationId,
     deploymentEnv,
     commitInfo.id,
-    commitInfo.message
+    commitInfo.message,
+    null,
   );
 
   let logsToCapture;
@@ -195,15 +251,9 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
   };
 
   await ProjectService.setLatestDeployment(project._id, deployment._id);
-  if(!withSubscription){
-    axios
+  axios
       .post(`${config.deployerApi.HOST_ADDRESS}/deploy`, body)
       .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
-  }else { 
-    axios
-      .post(`${config.deployerApi.HOST_ADDRESS}/deployWithSubscription`, body)
-      .then((response: any) => console.log("FROM DEPLOYMENT", response.data));
-  }
   return {
     message: "Deployment is being processed",
     success: true,
@@ -211,6 +261,14 @@ export async function deploy(githubUrl: string, installationId: number, owner: s
     deploymentId: deployment._id,
     projectId: project._id,
   }
+}
+
+export async function subscriptionDeploymentFinished(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  console.log(req.body);
 }
 
 export async function deploymentFinished(

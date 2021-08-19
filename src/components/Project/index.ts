@@ -7,7 +7,14 @@ import GithubAppService from '../GitHubApp/service';
 import ProjectService from './service';
 import DeploymentService from '../Deployment/service';
 import DomainService from '../Domain/service';
+import { IConfiguration } from '../Configuration/model';
+import ConfigurationService from '../Configuration/service';
+import WebHookService from '../WebHook/service';
 const { Octokit } = require("@octokit/core");
+const gh = require('parse-github-url');
+
+
+const DEFAULT_WEBHOOK_NAME = 'production';
 
 /**
  * @export
@@ -133,3 +140,23 @@ export async function updateEnv(req: Request, res: Response, next: NextFunction)
     }
 }
 
+export async function createIfNotExists(githubUrl: string, organizationId: string, name: string, env: string, createDefaultWebhook: boolean,
+    configurationId: string, installationId: string): Promise<IProject> {
+
+    const existingProject: IProject = await ProjectService.findOne({ githubUrl, organizationId });
+    if(existingProject) return existingProject;
+
+    const project = await ProjectService.insert({ name, githubUrl, organizationId, env });
+    await DomainService.addDefault(project);
+
+    if(createDefaultWebhook) {
+        const installationToken = await GithubAppService.createInstallationToken(installationId);
+        const configuration: IConfiguration = await ConfigurationService.findById(configurationId);
+
+        const parsed = gh(githubUrl);
+        await WebHookService.connectWithGithub(project.id, installationToken, parsed);
+        await WebHookService.create(DEFAULT_WEBHOOK_NAME, project.id, configurationId, installationId, organizationId, configuration.branch);
+    }
+
+    return project;
+}

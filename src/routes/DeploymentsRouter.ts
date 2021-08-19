@@ -8,4 +8,6 @@ router.post("/created", DeploymentComponent.deploymentFinished);
 router.post("/payment", DeploymentComponent.paymentFinished);
 router.get("/:id", DeploymentComponent.findDeploymentById);
 
+router.post('/finished', DeploymentComponent.subscriptionDeploymentFinished);
+
 export default router;

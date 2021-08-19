@@ -4,14 +4,15 @@ import { IDeploymentService } from "./service-interface";
 
 
 const DeploymentService: IDeploymentService = {
-    async create(topic: string, projectId: string, configurationId: string, deploymentEnv: any, commitId: string, commitMessage: string): Promise<IDeployment> {
+    async create(topic: string, projectId: string, configurationId: string, deploymentEnv: any, commitId: string, commitMessage: string, paymentId: string = null): Promise<IDeployment> {
         const deployment: any = {
             topic,
             project: projectId,
             configuration: configurationId,
             env: deploymentEnv,
             commitId,
-            commitMessage
+            commitMessage,
+            paymentId,
         };
         
         return DeploymentModel.create(deployment);
@@ -64,8 +65,16 @@ const DeploymentService: IDeploymentService = {
         }
 
         return DeploymentModel.findOneAndUpdate(condition, update);
+    },
+
+    async allDeploymentsInSubscription(fromTimestamp: number, projectIds: Array<string>): Promise<Array<IDeployment>> {
+
+        return DeploymentModel.find({
+            project: { $in: projectIds },
+            createdAt: { $gt: new Date(fromTimestamp).toISOString() }
+        })
+        
     }
-    async 
 }
 
 export default DeploymentService;
