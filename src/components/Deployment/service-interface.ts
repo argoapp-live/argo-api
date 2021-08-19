@@ -1,4 +1,4 @@
-import { IDeployment } from "./model";
+import { IDeployment, IScreenshot } from "./model";
 
 export interface IDeploymentService {
   create(
@@ -22,4 +22,9 @@ export interface IDeploymentService {
     logs: Array<string>
   ): Promise<IDeployment>;
   updatePayment(deploymentId: string, paymentId: string): Promise<IDeployment>;
+  updateScreenshot(
+    deploymentId: string,
+    screenshot: IScreenshot
+  ): Promise<IDeployment>;
+  uploadScreenshotToArweave(deploymentUrl: string): Promise<IScreenshot>;
 }

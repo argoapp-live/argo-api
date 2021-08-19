@@ -14,6 +14,8 @@ export interface IProject extends Document {
   env: any;
   organizationId: IOrganization["_id"];
   latestDeployment: IDeployment["_id"];
+  state: string;
+  gitHookId: number;
 }
 
 const ProjectSchema: Schema = new Schema(
@@ -30,6 +32,12 @@ const ProjectSchema: Schema = new Schema(
       ref: "Deployment",
       default: null,
     },
+    state: {
+      type: String,
+      enum: ["MAINTAINED", "ARCHIVED"],
+      default: "MAINTAINED",
+    },
+    gitHookId: { type: Number, default: -1 },
   },
   {
     collection: "projects",

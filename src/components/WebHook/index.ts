@@ -33,6 +33,12 @@ export async function connect(
 
     const project: IProject = await ProjectService.findById(projectId);
     if (!project) throw new Error("no project");
+    if (project.gitHookId !== -1) {
+      res.status(200).json({
+        message: "REPO CONNECTED",
+      });
+      return;
+    }
 
     const parsed = gh(project.githubUrl);
 
@@ -45,7 +51,17 @@ export async function connect(
       parsed
     );
 
-    res.status(200).json(response);
+    if (response.status === 201) {
+      await ProjectService.updateOne(projectId, {
+        gitHookId: response.data.id,
+      });
+    } else {
+      throw new Error("webhook not created");
+    }
+
+    res.status(200).json({
+      message: "REPO CONNECTED",
+    });
   } catch (error) {
     next(new HttpError(error.message.status, error.message));
   }
@@ -61,7 +77,7 @@ export async function createWebHook(
     if (!user) throw new Error("unauthorized");
 
     req.body as IWebHookRequest;
-    const { name, projectId, configurationId, installationId, organizationId } =
+    const { name, projectId, configurationId, installationId, orgId } =
       req.body;
 
     const project: IProject = await ProjectService.findById(projectId);
@@ -72,18 +88,24 @@ export async function createWebHook(
     );
     if (!configuration) throw new Error("no configuration");
 
-    const existingWebHook: IWebHook = await WebHookService.findOne({
+    const existingWebHook1: IWebHook = await WebHookService.findOne({
       projectId,
       branch: configuration.branch,
     });
-    if (existingWebHook) throw new Error("webhook already exists");
+    if (existingWebHook1) throw new Error("webhook already exists");
+
+    const existingWebHook2: IWebHook = await WebHookService.findOne({
+      projectId,
+      name,
+    });
+    if (existingWebHook2) throw new Error("webhook already exists");
 
     const webHook: IWebHook = await WebHookService.create(
       name,
       projectId,
       configurationId,
       installationId,
-      organizationId,
+      orgId,
       configuration.branch
     );
     res.status(200).json(webHook);

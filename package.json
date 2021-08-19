@@ -27,10 +27,14 @@
         "copy:templates": "cpx './src/templates/**' './build/templates'",
         "copy:templates:windows": "cpx ./src/templates/** ./build/templates",
         "test": "NODE_ENV=test mocha -r ts-node/register test/index.js --exit",
+<<<<<<< .merge_file_pSKgZz
         "clean": "rimraf ./build",
         "prettier": "prettier \"**/*.{css,scss,json,md,html,yml}\" --ignore-path=.eslintignore",
         "prettier:write": "prettier --write '**/*.{ts,tsx,json,md}' --ignore-path .gitignore",
         "prettier:check": "prettier --check '**/*.{ts,tsx,json,md}' --ignore-path .gitignore"
+=======
+        "clean": "rimraf ./build"
+>>>>>>> .merge_file_jE9svm
     },
     "files": [
         "src"
@@ -39,10 +43,19 @@
         "node": ">=10.0.0 <15.0.0"
     },
     "dependencies": {
+<<<<<<< .merge_file_pSKgZz
+=======
+        "@argoapp/nft-uploader-js": "1.2.7",
+>>>>>>> .merge_file_jE9svm
         "@octokit/auth-app": "^3.5.0",
         "@octokit/core": "^3.5.1",
         "@socket.io/redis-adapter": "^7.0.0",
         "axios": "^0.21.1",
+<<<<<<< .merge_file_pSKgZz
+=======
+        "bcrypt": "4.0.1",
+        "class-mapper": "^0.2.3",
+>>>>>>> .merge_file_jE9svm
         "cloudflare": "^2.7.0",
         "compression": "1.7.4",
         "connect-mongo": "^3.2.0",
@@ -54,18 +67,35 @@
         "express": "4.17.1",
         "express-jwt": "^6.0.0",
         "express-session": "^1.17.1",
+<<<<<<< .merge_file_pSKgZz
         "handlebar": "^1.0.0",
+=======
+        "handlebars": "^4.7.6",
+>>>>>>> .merge_file_jE9svm
         "helmet": "3.22.0",
         "joi": "14.3.1",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "5.9.16",
         "nodemailer": "^6.6.1",
         "parse-github-url": "^1.0.2",
+<<<<<<< .merge_file_pSKgZz
         "redis": "^3.1.2",
         "rimraf": "^3.0.2",
         "socket.io": "^4.1.1",
         "ts-node": "8.10.1",
         "typescript": "^4.0.2",
+=======
+        "passport": "0.4.0",
+        "passport-github": "^1.1.0",
+        "passport-gitlab2": "^5.0.0",
+        "redis": "^3.1.2",
+        "rimraf": "^3.0.2",
+        "socket.io": "^4.1.1",
+        "socket.io-client": "^2.3.0",
+        "ts-node": "8.10.1",
+        "typescript": "^4.0.2",
+        "util": "0.12.3",
+>>>>>>> .merge_file_jE9svm
         "uuid": "^8.3.0"
     },
     "devDependencies": {
@@ -110,14 +140,26 @@
         "jsdoc": "3.5.5",
         "mocha": "6.2.0",
         "nodemon": "1.18.10",
+<<<<<<< .merge_file_pSKgZz
         "prettier": "^2.0.5",
+=======
+>>>>>>> .merge_file_jE9svm
         "rimraf": "^3.0.2",
         "source-map-loader": "0.2.4",
         "supertest": "4.0.2",
         "swagger-jsdoc": "3.2.7",
+<<<<<<< .merge_file_pSKgZz
         "swagger-ui-express": "4.0.2"
     },
     "eslintConfig": {
         "extends": "eslint:recommended"
     }
 }
+=======
+        "swagger-ui-express": "4.0.2",
+        "tslint": "5.8.0",
+        "tslint-config-airbnb": "5.8.0",
+        "tslint-eslint-rules": "5.4.0"
+    }
+}
+>>>>>>> .merge_file_jE9svm

@@ -47,6 +47,7 @@ export async function findAll(
  * @param {NextFunction} next
  * @returns {Promise < void >}
  */
+<<<<<<< .merge_file_qcEhXl
 export async function findOne(
   req: Request,
   res: Response,
@@ -94,6 +95,22 @@ export async function findOne(
         );
         const deployments: Array<IDeployment> = await DeploymentService.find({
           _id: { $in: deploymentIds },
+=======
+export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        let organization: any = await OrganizationService.findOne(req.params.id);
+        if(!organization) {
+            // TODO return null
+        }
+
+        const wallet: IWalletModel = await WalletService.findOne({ organizationId: organization._id });
+        organization._doc.wallet = wallet;
+
+        const projects: Array<IProject> = await ProjectService.findMaintained({ organizationId: organization._id});
+
+        const projectIds: Array<Types.ObjectId> = projects.map((project: IProject) => {
+            return project._id;
+>>>>>>> .merge_file_aT3e2a
         });
         organization._doc.payments = payments.data.map((payment: any) => {
           return _populatePayment(payment, deployments);

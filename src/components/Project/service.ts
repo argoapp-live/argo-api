@@ -36,6 +36,32 @@ const ProjectService: any = {
     }
   },
 
+  async findMaintained(query: Partial<IProject>): Promise<IProject[]> {
+    try {
+      return ProjectModel.find({ ...query, state: "MAINTAINED" }).populate({
+        path: "latestDeployment",
+        populate: {
+          path: "configuration",
+        },
+      });
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  },
+
+  async findArchived(query: Partial<IProject>): Promise<IProject[]> {
+    try {
+      return ProjectModel.find({ ...query, state: "ARCHIVED" }).populate({
+        path: "latestDeployment",
+        populate: {
+          path: "configuration",
+        },
+      });
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  },
+
   async findById(id: string): Promise<IProject> {
     try {
       return ProjectModel.findById(id).populate({
@@ -101,6 +127,14 @@ const ProjectService: any = {
       return ProjectModel.findById(id);
     } catch (err) {
       throw new Error(err.message);
+    }
+  },
+
+  async updateOne(id: string, updateQuery: any): Promise<IProject> {
+    try {
+      return ProjectModel.updateOne({ _id: id }, updateQuery);
+    } catch (error) {
+      throw new Error(error.message);
     }
   },
 };

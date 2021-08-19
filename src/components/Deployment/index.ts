@@ -10,7 +10,7 @@ import { IProject } from "../Project/model";
 import ProjectService from "../Project/service";
 import ConfigurationService from "../Configuration/service";
 import { IConfiguration } from "../Configuration/model";
-import { IDeployment } from "./model";
+import { IDeployment, IScreenshot } from "./model";
 import DomainService from "../Domain/service";
 import { IWalletModel } from "../Wallet/model";
 import WalletService from "../Wallet/service";
@@ -57,6 +57,14 @@ export async function deployFromRequest(
   const deploymentEnv = result.project.env;
   const created = result.created;
 
+  if (project.state === "ARCHIVED") {
+    res.status(401).json({
+      message: "THIS REPO IS ARCHIVED AND CANNOT BE DEPLOYED",
+    });
+
+    return;
+  }
+
   if (created) {
     try {
       await DomainService.addDefault(project);
@@ -65,8 +73,7 @@ export async function deployFromRequest(
     }
   }
 
-  //TODO if (createDefaultWebhook && created)
-  if (createDefaultWebhook) {
+  if (createDefaultWebhook && project.gitHookId === -1) {
     try {
       const installationToken = await GithubAppService.createInstallationToken(
         installationId
@@ -75,22 +82,31 @@ export async function deployFromRequest(
       const configuration: IConfiguration = await ConfigurationService.findById(
         configurationId
       );
-      await WebHookService.connectWithGithub(
+      const response = await WebHookService.connectWithGithub(
         project.id,
         installationToken,
         parsed
       );
-      await WebHookService.create(
-        DEFAULT_WEBHOOK_NAME,
-        project.id,
-        configurationId,
-        installationId,
-        organizationId,
-        configuration.branch
-      );
+      if (response.status === 201) {
+        await ProjectService.updateOne(project.id, {
+          gitHookId: response.data.id,
+        });
+        await WebHookService.create(
+          DEFAULT_WEBHOOK_NAME,
+          project.id,
+          configurationId,
+          installationId,
+          organizationId,
+          configuration.branch
+        );
+      } else {
+        console.log("Webhook not created");
+      }
     } catch (err) {
       console.log("WebHook err", err.message);
     }
+  } else {
+    console.log("Webhook already exists");
   }
 
   const responseObj: any = await deploy(
@@ -214,7 +230,6 @@ export async function deploymentFinished(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  console.log("DEPLOYMENT FINISHED", req.body);
   try {
     const { deploymentId, capturedLogs, deploymentStatus, buildTime, logs } =
       req.body;
@@ -242,7 +257,6 @@ export async function paymentFinished(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  console.log("Payment finished", req.body);
   const {
     paymentId,
     deploymentId,
@@ -250,7 +264,6 @@ export async function paymentFinished(
   }: { paymentId: string; deploymentId: string; status: string } = req.body;
 
   let deployment: IDeployment = await DeploymentService.findById(deploymentId);
-
   if (status === "created") {
     deployment = await DeploymentService.updatePayment(deploymentId, paymentId);
     res.status(201).json({ msg: "Payment successfully recorded" });
@@ -258,6 +271,13 @@ export async function paymentFinished(
 
   if (deployment.status === "Deployed" && status === "success") {
     DomainService.addToResolver(deployment.project, deployment.sitePreview);
+    console.log("SITE PREVIEW", deployment.sitePreview);
+    const screenshot: IScreenshot =
+      await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview);
+    deployment = await DeploymentService.updateScreenshot(
+      deploymentId,
+      screenshot
+    );
   }
 }
 

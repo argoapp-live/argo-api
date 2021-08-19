@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
-import { IDeployment, DeploymentModel } from "./model";
+import { IDeployment, DeploymentModel, IScreenshot } from "./model";
 import { IDeploymentService } from "./service-interface";
+import * as uploaderLib from "@argoapp/nft-uploader-js";
+import config from "../../config/env/index";
 
 const DeploymentService: IDeploymentService = {
   async create(
@@ -92,6 +94,34 @@ const DeploymentService: IDeploymentService = {
     };
 
     return DeploymentModel.findOneAndUpdate(condition, update);
+  },
+
+  async updateScreenshot(
+    deploymentId: string,
+    screenshot: IScreenshot
+  ): Promise<IDeployment> {
+    const condition = {
+      _id: Types.ObjectId(deploymentId),
+    };
+
+    const update = {
+      screenshot,
+    };
+
+    return DeploymentModel.findOneAndUpdate(condition, update);
+  },
+  async uploadScreenshotToArweave(url: string): Promise<IScreenshot> {
+    const uploaderVendor: uploaderLib.Vendor = new uploaderLib.Vendor(
+      Buffer.from(config.arweave.PRIVATE_KEY, "base64").toString()
+    );
+    const uploader: uploaderLib.Uploader = new uploaderLib.Uploader(
+      uploaderVendor
+    );
+    const screenshot: IScreenshot = await uploader.uploadScreenshotToArweave(
+      url
+    );
+    console.log(screenshot);
+    return screenshot;
   },
 };
 
