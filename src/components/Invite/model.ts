@@ -10,6 +10,7 @@ import { IOrganization } from "../Organization/model";
 export interface IUserInvite extends Document {
   userEmail: String;
   status: String;
+  link: String;
   organization: IOrganization;
 }
 
@@ -17,6 +18,7 @@ const UserInviteSchema: Schema = new Schema(
   {
     userEmail: String,
     status: String,
+    link: String,
     organization: {
       type: Schema.Types.ObjectId,
       ref: "Organization",

@@ -38,7 +38,7 @@ export function init(app: express.Application): void {
   app.use("/organization", auth.isAuthenticated, OrganizationRouter);
   app.use("/project", auth.isAuthenticated, ProjectRouter);
   app.use("/webhook", WebHookRouter);
-  app.use("/invite", auth.isAuthenticated, InvitationRouter);
+  app.use("/invite", auth.isAuthenticated, InvitationRouter); 
   app.use("/domain", auth.isAuthenticated, DomainRouter);
   app.use("/logs", LogsRouter);
   app.use("/wallet", WalletRouter);
