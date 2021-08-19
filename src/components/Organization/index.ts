@@ -16,6 +16,9 @@ import { IProject } from "../Project/model";
 import { Types } from "mongoose";
 import { IDomain } from "../Domain/model";
 import { IDeployment } from "../Deployment/model";
+import InvitationService from "../Invite/service";
+import { IUserInvite } from "../Invite/model";
+import bodyParser = require("body-parser");
 
 /**
  * @export
@@ -73,10 +76,13 @@ export async function findOne(
     const domains: Array<IDomain> = await DomainService.find({
       projectId: { $in: projectIds },
     });
+    
+    const invitedMembers : Array<IUserInvite> = await InvitationService.findFromOrganization(req.params.id)
+    organization._doc.invitedMembers = invitedMembers;
     organization._doc.projects = projects.map((project: any) => {
       return _populateProject(project, domains);
     });
-
+    
     if (wallet) {
       const payments: any = await axios.get(
         `${config.paymentApi.HOST_ADDRESS}/payments/wallet/${wallet._id}`
@@ -95,7 +101,7 @@ export async function findOne(
         });
       }
     }
-
+    console.log(organization)
     res.status(200).json(organization);
   } catch (error) {
     next(new HttpError(error.message.status, error.message));
