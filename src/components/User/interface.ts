@@ -43,5 +43,8 @@ export interface IUserService {
 
   updateOrganization(orgId: string, userId: string): Promise<IUserModel>;
 
+  deleteOrganisation(orgId: string, userId: string): Promise<IUserModel>;
+
+
   updateUserOrganization(orgId: string, userId: string): Promise<IUserModel>;
 }

@@ -138,6 +138,26 @@ const UserService: IUserService = {
    * @returns {Promise < IUserModel >}
    * @memberof UserService
    */
+  async deleteOrganisation(orgId: string, userId: string): Promise<IUserModel> {
+    try {
+      const filter: any = {
+        _id: Types.ObjectId(userId),
+      };
+      const org_id: Types.ObjectId = Types.ObjectId(orgId);
+
+      const update: any = { $pull: { 'organizations': org_id } }
+      return await UserModel.findOneAndUpdate(filter, update);
+    } catch (error) {
+      console.log("error: ", error.meesage)
+      throw new Error(error.message);
+    }
+  },
+
+  /**
+   * @param {string} id
+   * @returns {Promise < IUserModel >}
+   * @memberof UserService
+   */
   async updateUserOrganization(
     orgId: string,
     userId: string

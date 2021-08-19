@@ -101,7 +101,6 @@ export async function findOne(
         });
       }
     }
-    console.log(organization)
     res.status(200).json(organization);
   } catch (error) {
     next(new HttpError(error.message.status, error.message));
@@ -206,6 +205,21 @@ export async function update(
       await OrganizationService.updateOrganization(req.params.id, req.body);
 
     res.status(200).json(organization);
+  } catch (error) {
+    next(new HttpError(error.message.status, error.message));
+  }
+}
+
+export async function deleteUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const organization: IOrganization =
+      await OrganizationService.deleteUser(req.params.id, req.body.userId);
+    const user = await UserService.deleteOrganisation(req.params.id, req.body.userId);
+    res.status(200).json("organization");
   } catch (error) {
     next(new HttpError(error.message.status, error.message));
   }

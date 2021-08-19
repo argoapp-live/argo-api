@@ -175,23 +175,22 @@ const OrganizationService: IOrganizationService = {
       throw new Error(error.message);
     }
   },
-  // async deleteUser(organisationId: string, userId: string): Promise<any> {
-  //   try {
-  //     const filter: any = {
-  //       _id: Types.ObjectId(organisationId),
-  //     };
+  async deleteUser(organisationId: string, userId: string): Promise<any> {
+    try {
+      const filter: any = {
+        _id: Types.ObjectId(organisationId),
+      };
 
-  //     const user_id: Types.ObjectId = Types.ObjectId(userId);
+      const user_id: Types.ObjectId = Types.ObjectId(userId);
 
-  //     const update: any = {
-  //       wallet: wallet_id,
-  //     };
+      const update: any = { $pull: { 'users': user_id } }    
+      ;
 
-  //     return OrganizationModel.findOneAndUpdate(filter, update);
-  //   } catch (error) {
-  //     throw new Error(error.message);
-  //   }
-  // },
+      return OrganizationModel.findOneAndUpdate(filter, update);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
 };
 
 export default OrganizationService;
