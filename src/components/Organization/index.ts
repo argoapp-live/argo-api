@@ -16,9 +16,6 @@ import { IProject } from "../Project/model";
 import { Types } from "mongoose";
 import { IDomain } from "../Domain/model";
 import { IDeployment } from "../Deployment/model";
-import InvitationService from "../Invite/service";
-import { IUserInvite } from "../Invite/model";
-import bodyParser = require("body-parser");
 
 /**
  * @export
@@ -47,7 +44,6 @@ export async function findAll(
  * @param {NextFunction} next
  * @returns {Promise < void >}
  */
-<<<<<<< .merge_file_qcEhXl
 export async function findOne(
   req: Request,
   res: Response,
@@ -58,12 +54,13 @@ export async function findOne(
     if (!organization) {
       // TODO return null
     }
+
     const wallet: IWalletModel = await WalletService.findOne({
       organizationId: organization._id,
     });
     organization._doc.wallet = wallet;
 
-    const projects: Array<IProject> = await ProjectService.find({
+    const projects: Array<IProject> = await ProjectService.findMaintained({
       organizationId: organization._id,
     });
 
@@ -76,13 +73,10 @@ export async function findOne(
     const domains: Array<IDomain> = await DomainService.find({
       projectId: { $in: projectIds },
     });
-    
-    const invitedMembers : Array<IUserInvite> = await InvitationService.findFromOrganization(req.params.id)
-    organization._doc.invitedMembers = invitedMembers;
     organization._doc.projects = projects.map((project: any) => {
       return _populateProject(project, domains);
     });
-    
+
     if (wallet) {
       const payments: any = await axios.get(
         `${config.paymentApi.HOST_ADDRESS}/payments/wallet/${wallet._id}`
@@ -95,29 +89,13 @@ export async function findOne(
         );
         const deployments: Array<IDeployment> = await DeploymentService.find({
           _id: { $in: deploymentIds },
-=======
-export async function findOne(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-        let organization: any = await OrganizationService.findOne(req.params.id);
-        if(!organization) {
-            // TODO return null
-        }
-
-        const wallet: IWalletModel = await WalletService.findOne({ organizationId: organization._id });
-        organization._doc.wallet = wallet;
-
-        const projects: Array<IProject> = await ProjectService.findMaintained({ organizationId: organization._id});
-
-        const projectIds: Array<Types.ObjectId> = projects.map((project: IProject) => {
-            return project._id;
->>>>>>> .merge_file_aT3e2a
         });
         organization._doc.payments = payments.data.map((payment: any) => {
           return _populatePayment(payment, deployments);
         });
       }
     }
-    console.log(organization)
+
     res.status(200).json(organization);
   } catch (error) {
     next(new HttpError(error.message.status, error.message));
@@ -175,12 +153,12 @@ export async function create(
     const decodedToken: any = await JWTTokenService.verifyToken(jwtToken);
     const userService: IUserModel = await UserService.updateUserOrganization(
       organization._id,
-      decodedToken.sessionId
+      decodedToken.session_id
     );
 
     const orgModel: IOrganization = await OrganizationService.findOneAndUpdate(
       organization.id,
-      decodedToken.sessionId
+      decodedToken.session_id
     );
 
     res.status(200).json({ id: orgModel._id, success: true });

@@ -134,7 +134,7 @@ export async function getInstallationRepos(
 ): Promise<void> {
   try {
     const argoDecodedHeaderToken: any = await JWTTokenService.decodeToken(req);
-    const deserializedToken: any = await JWTTokenService.VerifyToken(
+    const deserializedToken: any = await JWTTokenService.verifyToken(
       argoDecodedHeaderToken
     );
     const response = await GithubAppService.getInstallationRepos(
