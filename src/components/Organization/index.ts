@@ -50,20 +50,20 @@ export async function findOne(
   next: NextFunction
 ): Promise<void> {
   try {
-    let organization: any = await OrganizationService.findOne(req.params.id);
-    if (!organization) {
-      // TODO return null
-    }
+    let organizationPromise: Promise<any> = OrganizationService.findOne(req.params.id);
 
-    const wallet: IWalletModel = await WalletService.findOne({
-      organizationId: organization._id,
+    const walletPromise: Promise<IWalletModel> = WalletService.findOne({
+      organizationId: Types.ObjectId(req.params.id),
     });
+   
+    const projectsPromise : Promise<Array<IProject>> = ProjectService.findMaintained({
+      organizationId: Types.ObjectId(req.params.id),
+    });
+    const result = await Promise.all([organizationPromise, walletPromise, projectsPromise])
+    const organization = result[0]
+    const wallet: IWalletModel = result[1]
+    const projects : Array<IProject> = result[2]
     organization._doc.wallet = wallet;
-
-    const projects: Array<IProject> = await ProjectService.findMaintained({
-      organizationId: organization._id,
-    });
-
     const projectIds: Array<Types.ObjectId> = projects.map(
       (project: IProject) => {
         return project._id;

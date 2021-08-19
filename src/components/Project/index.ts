@@ -9,6 +9,8 @@ import DeploymentService from "../Deployment/service";
 import DomainService from "../Domain/service";
 import WebHookService from "../WebHook/service";
 import { IWebHook } from "../WebHook/model";
+import { IDeployment } from "../Deployment/model";
+import { IDomain } from "../Domain/model";
 const gh = require("parse-github-url");
 const { Octokit } = require("@octokit/core");
 
@@ -27,11 +29,20 @@ export async function findOne(
   try {
     const project: any = await ProjectService.findById(req.params.id);
     if (project) {
-      const deployments = await DeploymentService.find({
+      const deploymentsPromise: Promise<Array<IDeployment>> = DeploymentService.find({
         project: req.params.id,
       });
+      const domainsPromise: Promise<Array<IDomain>> = DomainService.find({ projectId: req.params.id });
+
+      const webHooksPromise: Array<IWebHook> = await WebHookService.find({
+        projectId: project.id,
+      });
+
+      const result = await Promise.all([deploymentsPromise, domainsPromise, webHooksPromise])
+      const deployments: Array<IDeployment> = result[0];
+      const domains: Array<IDomain> = result[1];
+      const webHooks: Array<IWebHook> = result[2]
       project._doc.deployments = deployments;
-      const domains = await DomainService.find({ projectId: req.params.id });
       project._doc.domains = domains.filter(
         (domain) => domain.type === "domain"
       );
@@ -45,9 +56,7 @@ export async function findOne(
         (domain) => domain.type === "handshake-subdomain"
       );
 
-      const webHooks: Array<IWebHook> = await WebHookService.find({
-        projectId: project.id,
-      });
+
       project._doc.webHooks = webHooks;
     }
     res.status(200).json(project);
