@@ -35,8 +35,7 @@ export function init(app: express.Application): void {
   const router: express.Router = express.Router();
 
   app.use("/profile", passportConfig.isAuthenticated, ProfileRouter);
-  app.use("/organization", OrganizationRouter);
-  //app.use("/organization", passportConfig.isAuthenticated, OrganizationRouter);
+  app.use("/organization", passportConfig.isAuthenticated, OrganizationRouter);
   app.use("/project", passportConfig.isAuthenticated, ProjectRouter);
   app.use("/webhook", WebHookRouter);
   app.use("/auth", AuthRouter);

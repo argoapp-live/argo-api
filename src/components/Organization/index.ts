@@ -216,6 +216,13 @@ export async function deleteUser(
   next: NextFunction
 ): Promise<void> {
   try {
+
+    const user: IUserModel = await AuthService.authUser(req);
+
+    if (!user) {
+      return;
+    }
+
     const organization: IOrganization =
       await OrganizationService.deleteUser(req.params.id, req.body.userId);
     const user = await UserService.deleteOrganisation(req.params.id, req.body.userId);

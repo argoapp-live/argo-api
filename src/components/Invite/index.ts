@@ -5,6 +5,8 @@ import { IUserInvite } from "./model";
 import JWTTokenService from "../Session/service";
 import OrganizationService from "../Organization/service";
 import UserService from "../User/service";
+import { IUserModel } from "../User/model";
+import AuthService from "../Auth/service";
 
 /**
  * @export
@@ -20,6 +22,13 @@ export async function sendInvite(
 ): Promise<void> {
   try {
     if (req.body) {
+
+      const user: IUserModel = await AuthService.authUser(req);
+
+      if (!user) {
+        return;
+      }
+
       const invitedUser: IUserInvite = await InvitationService.insert(req.body);
       const inviteLink: string = await InvitationService.sendMail(
         req.body.userEmail,
@@ -94,7 +103,7 @@ export async function updateInvite(
  * @param {NextFunction} next
  * @returns {Promise <void>}
  */
- export async function getInvites(
+export async function getInvites(
   req: Request,
   res: Response,
   next: NextFunction
@@ -120,7 +129,7 @@ export async function updateInvite(
  * @param {NextFunction} next
  * @returns {Promise <void>}
  */
- export async function deleteInvite(
+export async function deleteInvite(
   req: Request,
   res: Response,
   next: NextFunction
