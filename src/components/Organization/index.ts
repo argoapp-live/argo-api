@@ -53,19 +53,26 @@ export async function findOne(
   next: NextFunction
 ): Promise<void> {
   try {
-    let organizationPromise: Promise<any> = OrganizationService.findOne(req.params.id);
+    let organizationPromise: Promise<any> = OrganizationService.findOne(
+      req.params.id
+    );
 
     const walletPromise: Promise<IWalletModel> = WalletService.findOne({
       organizationId: Types.ObjectId(req.params.id),
     });
-   
-    const projectsPromise : Promise<Array<IProject>> = ProjectService.findMaintained({
-      organizationId: Types.ObjectId(req.params.id),
-    });
-    const result = await Promise.all([organizationPromise, walletPromise, projectsPromise])
-    const organization = result[0]
-    const wallet: IWalletModel = result[1]
-    const projects : Array<IProject> = result[2]
+
+    const projectsPromise: Promise<Array<IProject>> =
+      ProjectService.findMaintained({
+        organizationId: Types.ObjectId(req.params.id),
+      });
+    const result = await Promise.all([
+      organizationPromise,
+      walletPromise,
+      projectsPromise,
+    ]);
+    const organization = result[0];
+    const wallet: IWalletModel = result[1];
+    const projects: Array<IProject> = result[2];
     organization._doc.wallet = wallet;
     const projectIds: Array<Types.ObjectId> = projects.map(
       (project: IProject) => {
@@ -76,13 +83,14 @@ export async function findOne(
     const domains: Array<IDomain> = await DomainService.find({
       projectId: { $in: projectIds },
     });
-    
-    const invitedMembers : Array<IUserInvite> = await InvitationService.findFromOrganization(req.params.id)
+
+    const invitedMembers: Array<IUserInvite> =
+      await InvitationService.findFromOrganization(req.params.id);
     organization._doc.invitedMembers = invitedMembers;
     organization._doc.projects = projects.map((project: any) => {
       return _populateProject(project, domains);
     });
-    
+
     if (wallet) {
       const payments: any = await axios.get(
         `${config.paymentApi.HOST_ADDRESS}/payments/wallet/${wallet._id}`
@@ -216,16 +224,20 @@ export async function deleteUser(
   next: NextFunction
 ): Promise<void> {
   try {
-
     const user: IUserModel = await AuthService.authUser(req);
 
     if (!user) {
       return;
     }
 
-    const organization: IOrganization =
-      await OrganizationService.deleteUser(req.params.id, req.body.userId);
-    const user = await UserService.deleteOrganisation(req.params.id, req.body.userId);
+    const organization: IOrganization = await OrganizationService.deleteUser(
+      req.params.id,
+      req.body.userId
+    );
+    const user = await UserService.deleteOrganisation(
+      req.params.id,
+      req.body.userId
+    );
     res.status(200).json("organization");
   } catch (error) {
     next(new HttpError(error.message.status, error.message));

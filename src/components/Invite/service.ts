@@ -21,7 +21,7 @@ const InvitationService: IInvitationService = {
     inviteId: string,
     orgName: string,
     invitingUser: string
-  ): Promise<string|undefined> {
+  ): Promise<string | undefined> {
     console.log(config.smtp.USERNAME, config.smtp.PASSWORD);
     let _transporter: nodemailer.Transporter;
     try {
@@ -37,15 +37,15 @@ const InvitationService: IInvitationService = {
       const template: any = new EmailTemplate(
         path.join(templatesDir, "user-org-invite")
       );
-      const inviteLink =  config.frontendApp.HOST_ADDRESS +
-      `/#/invite/callback?ref=${encodeURIComponent(
-        inviteId
-      )}&orgName=${encodeURIComponent(orgName)}`;
+      const inviteLink =
+        config.frontendApp.HOST_ADDRESS +
+        `/#/invite/callback?ref=${encodeURIComponent(
+          inviteId
+        )}&orgName=${encodeURIComponent(orgName)}`;
       const locals: any = {
         orgName,
         invitingUser,
-        inviteLink: inviteLink
-         
+        inviteLink: inviteLink,
       };
 
       template.render(locals, (err: any, results: any) => {
@@ -95,34 +95,31 @@ const InvitationService: IInvitationService = {
    * @memberof InvitationService
    */
   async findFromOrganization(id: string): Promise<Array<IUserInvite>> {
-    console.log(id)
+    console.log(id);
     try {
       return await UserInviteModel.find({
-        organization: Types.ObjectId(id),  
-        // status: undefined  
-      })
-      .populate("organization")
+        organization: Types.ObjectId(id),
+        // status: undefined
+      }).populate("organization");
     } catch (error) {
       throw new Error(error.message);
     }
   },
 
-   /**
+  /**
    * @param {string} id
    * @returns {Promise <IUserInvite >}
    * @memberof InvitationService
    */
-    async deleteInvite(id: string): Promise<IUserInvite> {
-      try {
-        return await UserInviteModel.findByIdAndDelete({
-          _id: Types.ObjectId(id),  
-        })
-      } catch (error) {
-        throw new Error(error.message);
-      }
-    },
-  
-
+  async deleteInvite(id: string): Promise<IUserInvite> {
+    try {
+      return await UserInviteModel.findByIdAndDelete({
+        _id: Types.ObjectId(id),
+      });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
 
   /**
    * @param {IUserInvite} userInvite
@@ -171,7 +168,7 @@ const InvitationService: IInvitationService = {
    * @returns {Promise <any>}
    * @memberof UserService
    */
-   async findOneAndUpdateLink(
+  async findOneAndUpdateLink(
     inviteId: string,
     link: string
   ): Promise<IUserInvite> {
@@ -195,4 +192,3 @@ const InvitationService: IInvitationService = {
 };
 
 export default InvitationService;
-

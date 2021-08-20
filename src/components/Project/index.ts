@@ -29,19 +29,26 @@ export async function findOne(
   try {
     const project: any = await ProjectService.findById(req.params.id);
     if (project) {
-      const deploymentsPromise: Promise<Array<IDeployment>> = DeploymentService.find({
-        project: req.params.id,
+      const deploymentsPromise: Promise<Array<IDeployment>> =
+        DeploymentService.find({
+          project: req.params.id,
+        });
+      const domainsPromise: Promise<Array<IDomain>> = DomainService.find({
+        projectId: req.params.id,
       });
-      const domainsPromise: Promise<Array<IDomain>> = DomainService.find({ projectId: req.params.id });
 
       const webHooksPromise: Array<IWebHook> = await WebHookService.find({
         projectId: project.id,
       });
 
-      const result = await Promise.all([deploymentsPromise, domainsPromise, webHooksPromise])
+      const result = await Promise.all([
+        deploymentsPromise,
+        domainsPromise,
+        webHooksPromise,
+      ]);
       const deployments: Array<IDeployment> = result[0];
       const domains: Array<IDomain> = result[1];
-      const webHooks: Array<IWebHook> = result[2]
+      const webHooks: Array<IWebHook> = result[2];
       project._doc.deployments = deployments;
       project._doc.domains = domains.filter(
         (domain) => domain.type === "domain"
@@ -55,7 +62,6 @@ export async function findOne(
       project._doc.handshakeSubdomains = domains.filter(
         (domain) => domain.type === "handshake-subdomain"
       );
-
 
       project._doc.webHooks = webHooks;
     }

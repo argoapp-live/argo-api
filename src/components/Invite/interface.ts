@@ -14,7 +14,7 @@ export interface IInvitationService {
     inviteId: string,
     orgName: string,
     invitingUser: string
-  ): Promise<string|undefined>;
+  ): Promise<string | undefined>;
 
   /**
    * @param {string} id
@@ -23,17 +23,17 @@ export interface IInvitationService {
    */
   findOne(id: string): Promise<IUserInvite>;
   /**
-  * @param {string} id organisation id
-  * @returns {Promise<IUserInvite>}
-  * @memberof IInvitationService
-  */
-  findFromOrganization(id: string): Promise<Array<IUserInvite>>
+   * @param {string} id organisation id
+   * @returns {Promise<IUserInvite>}
+   * @memberof IInvitationService
+   */
+  findFromOrganization(id: string): Promise<Array<IUserInvite>>;
   /**
- * @param {string} id organisation id
- * @returns {Promise<IUserInvite>}
- * @memberof IInvitationService
- */
-  deleteInvite(id: string): Promise<IUserInvite>
+   * @param {string} id organisation id
+   * @returns {Promise<IUserInvite>}
+   * @memberof IInvitationService
+   */
+  deleteInvite(id: string): Promise<IUserInvite>;
 
   /**
    * @param {IUserInvite} IUserInvite
@@ -47,7 +47,7 @@ export interface IInvitationService {
    * @memberof IInvitationService
    */
   findOneAndUpdate(id: string, status: string): Promise<IUserInvite>;
-    /**
+  /**
    * @returns {Promise<any>}
    * @memberof IInvitationService
    */

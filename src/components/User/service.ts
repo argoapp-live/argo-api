@@ -145,10 +145,10 @@ const UserService: IUserService = {
       };
       const org_id: Types.ObjectId = Types.ObjectId(orgId);
 
-      const update: any = { $pull: { 'organizations': org_id } }
+      const update: any = { $pull: { organizations: org_id } };
       return await UserModel.findOneAndUpdate(filter, update);
     } catch (error) {
-      console.log("error: ", error.meesage)
+      console.log("error: ", error.meesage);
       throw new Error(error.message);
     }
   },

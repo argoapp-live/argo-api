@@ -22,7 +22,6 @@ export async function sendInvite(
 ): Promise<void> {
   try {
     if (req.body) {
-
       const user: IUserModel = await AuthService.authUser(req);
 
       if (!user) {
@@ -42,7 +41,7 @@ export async function sendInvite(
           invitedUser.id,
           inviteLink
         );
-        console.log(user)
+        console.log(user);
         res.status(200).json({ message: "Invitation send" });
       }
     } else {
@@ -110,7 +109,8 @@ export async function getInvites(
 ): Promise<void> {
   try {
     if (req.body) {
-      const invitedUser: Array<IUserInvite> = await InvitationService.findFromOrganization(req.body.organizationId);
+      const invitedUser: Array<IUserInvite> =
+        await InvitationService.findFromOrganization(req.body.organizationId);
       if (invitedUser) {
         res.status(200).json(invitedUser);
       }
@@ -136,7 +136,9 @@ export async function deleteInvite(
 ): Promise<void> {
   try {
     if (req.body) {
-      const invitedUser: IUserInvite = await InvitationService.deleteInvite(req.body.inviteId);
+      const invitedUser: IUserInvite = await InvitationService.deleteInvite(
+        req.body.inviteId
+      );
       if (invitedUser) {
         res.status(200).json(invitedUser);
       }

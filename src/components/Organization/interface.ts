@@ -46,7 +46,7 @@ export interface IOrganizationService {
   updatePayment(organisationId: string, paymentId: string): Promise<any>;
 
   updateWallet(organisationId: string, walletId: string): Promise<any>;
-  
+
   deleteUser(organisationId: string, userId: string): Promise<any>;
   // hasPendingDeployment(organisationId: string): Promise<boolean>;
 }

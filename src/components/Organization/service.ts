@@ -183,9 +183,7 @@ const OrganizationService: IOrganizationService = {
 
       const user_id: Types.ObjectId = Types.ObjectId(userId);
 
-      const update: any = { $pull: { 'users': user_id } }    
-      ;
-
+      const update: any = { $pull: { users: user_id } };
       return OrganizationModel.findOneAndUpdate(filter, update);
     } catch (error) {
       throw new Error(error.message);
