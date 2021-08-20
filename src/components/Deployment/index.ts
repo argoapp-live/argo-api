@@ -43,6 +43,7 @@ export async function deployFromRequest(
   const user: IUserModel = await AuthService.authUser(req);
 
   if (!user) {
+    return;
   }
 
   const wallet: IWalletModel = await WalletService.findOne({ organizationId });
