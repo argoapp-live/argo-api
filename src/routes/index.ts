@@ -14,6 +14,9 @@ import WalletRouter from './WalletRouter';
 import DomainRouter from './DomainRouter';
 import ConfigurationRouter from './ConfigurationRouter';
 import HealthCheckRouter from './HealthCheck';
+import SubscriptionRouter from './SubscriptionRouter';
+import SubscriptionPackageRouter from './SubscriptionPackageRouter';
+import SharedParameterRouter from './SharedParameterRouter';
 
 // let swaggerDoc: Object;
 
@@ -44,7 +47,10 @@ export function init(app: express.Application): void {
     app.use('/logs', LogsRouter);
     app.use('/wallet', WalletRouter);
     app.use('/configuration', ConfigurationRouter);
-    app.use('/status', HealthCheckRouter)
+    app.use('/status', HealthCheckRouter);
+    app.use('/subscription',SubscriptionRouter );
+    app.use('/subscriptionPackage',SubscriptionPackageRouter);
+    app.use('/sharedParameter',SharedParameterRouter);
 
     
     // /**

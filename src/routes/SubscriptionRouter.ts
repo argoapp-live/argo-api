@@ -10,3 +10,7 @@ router.post('/subscribe',SubscriptionComponent.subscribe);
 router.post('/changeSubscriptionPackage',SubscriptionComponent.changeSubscriptionPackage);
 
 router.post('/confirmSubscriptionPayment',SubscriptionComponent.activateOrRejectSubscription);
+
+router.get('/',SubscriptionComponent.findAll);
+
+export default router;

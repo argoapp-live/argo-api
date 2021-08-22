@@ -139,3 +139,11 @@ export async function findById(id: string): Promise<ISubscription> {
         throw new Error(error.message);
     }
 }
+export async function findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const subscriptions: ISubscription[] = await SubscriptionService.find({});
+        res.status(200).json(subscriptions);
+    } catch (error) {
+        next(new HttpError(error.message.status, error.message));
+    }
+}

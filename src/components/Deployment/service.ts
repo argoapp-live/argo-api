@@ -65,7 +65,6 @@ const DeploymentService: IDeploymentService = {
 
         return DeploymentModel.findOneAndUpdate(condition, update);
     }
-    async 
 }
 
 export default DeploymentService;

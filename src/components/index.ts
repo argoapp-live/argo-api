@@ -9,7 +9,8 @@ import * as WalletComponent from './Wallet';
 import * as ConfigurationComponent from './Configuration';
 import * as DomainComponent from './Domain';
 import * as SubscriptionComponent from './Subscription';
-
+import * as SubscriptionPackageComponent from './SubscriptionPackage';
+import * as SharedParameterComponent from './SharedParameter';
 export {
     AuthComponent,
     ConfigurationComponent,
@@ -21,5 +22,7 @@ export {
     WebHookComponent,
     WalletComponent,
     DomainComponent,
-    SubscriptionComponent
+    SubscriptionComponent,
+    SubscriptionPackageComponent,
+    SharedParameterComponent
 };
