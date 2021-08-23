@@ -5,6 +5,8 @@ import { IUserInvite } from "./model";
 import JWTTokenService from "../Session/service";
 import OrganizationService from "../Organization/service";
 import UserService from "../User/service";
+import EmailService from "../Email/service";
+
 
 /**
  * @export
@@ -21,7 +23,7 @@ export async function sendInvite(
   try {
     if (req.body) {
       const invitedUser: IUserInvite = await InvitationService.insert(req.body);
-      const response: Boolean = await InvitationService.sendMail(
+      const response: Boolean = await EmailService.inviteMail(
         req.body.userEmail,
         invitedUser.id,
         req.body.orgName,

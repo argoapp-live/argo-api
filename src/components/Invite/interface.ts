@@ -6,16 +6,6 @@ import { IUserInvite } from "./model";
  */
 export interface IInvitationService {
   /**
-   * @memberof IInvitationService
-   */
-  sendMail(
-    to: string,
-    inviteId: string,
-    orgName: string,
-    invitingUser: string
-  ): Promise<Boolean>;
-
-  /**
    * @param {string} id
    * @returns {Promise<IUserInvite>}
    * @memberof IInvitationService
