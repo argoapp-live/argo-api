@@ -182,7 +182,7 @@ const DomainService = {
     }
   },
 
-  async addDefault(project: IProject): Promise<void> {
+  async addDefault(project: IProject): Promise<IDomain> {
     try {
       const argoKey: string = uuidv4();
       const randomString: string = Math.random().toString(36).substring(7);
@@ -203,7 +203,7 @@ const DomainService = {
 
       await this._addDnsRecord(record);
 
-      await DomainModel.create({
+      return await DomainModel.create({
         name,
         link: "",
         argoKey,
@@ -253,6 +253,7 @@ const DomainService = {
       );
       await DomainModel.updateMany({ _id: { $in: ids } }, { link });
     }
+    return latestDomains
   },
 
   async addStaticToResolver(
