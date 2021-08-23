@@ -5,7 +5,6 @@ import { IUserModel } from "../User/model";
 import { IDomain } from "./model";
 import DomainService, { IVerified } from "./service";
 import ProjectService from "../Project/service";
-import { domain } from "process";
 
 export async function create(
   req: Request,
@@ -121,6 +120,7 @@ export async function verify(
         result.domain.link
       );
     }
+    DomainService.callDomain(result.domain.name)
     res.status(200).json({ verified: result.domain.verified });
   } catch (error) {
     next(new HttpError(error.message.status, error.message));
