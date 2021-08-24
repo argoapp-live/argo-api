@@ -17,6 +17,7 @@ import WalletService from "../Wallet/service";
 import { ICommitInfo } from "../GitHubApp/service";
 import { IWebHook } from "../WebHook/model";
 import WebHookService from "../WebHook/service";
+import { IDomain } from "../Domain/model";
 const gh = require("parse-github-url");
 
 const DEFAULT_WEBHOOK_NAME = "production";
@@ -67,7 +68,8 @@ export async function deployFromRequest(
 
   if (created) {
     try {
-      await DomainService.addDefault(project);
+      const domain: IDomain = await DomainService.addDefault(project);
+      DomainService.callDomain(domain.name)
     } catch (err) {
       throw new Error(err.message);
     }
@@ -270,7 +272,11 @@ export async function paymentFinished(
   }
 
   if (deployment.status === "Deployed" && status === "success") {
-    DomainService.addToResolver(deployment.project, deployment.sitePreview);
+    const domain = await DomainService.addToResolver(deployment.project, deployment.sitePreview);
+    if(domain !== false){
+      DomainService.callDomain(domain.name)
+    }
+    
     console.log("SITE PREVIEW", deployment.sitePreview);
     const screenshot: IScreenshot =
       await DeploymentService.uploadScreenshotToArweave(deployment.sitePreview);

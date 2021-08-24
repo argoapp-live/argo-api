@@ -87,17 +87,17 @@ const DomainService = {
 
           verified =
             txtRecord.value ===
-              `${separator.base}://${domain.link.split(separator.sep)[1]}` &&
+            `${separator.base}://${domain.link.split(separator.sep)[1]}` &&
             alaisRecord.value === `${separator.base}.namebase.io.`;
         } else {
           const txtRecord = records.filter(
             (r) =>
               r.type === "TXT" &&
               r.host ===
-                `_contenthash.${domain.name.substring(
-                  0,
-                  domain.name.lastIndexOf(".")
-                )}`
+              `_contenthash.${domain.name.substring(
+                0,
+                domain.name.lastIndexOf(".")
+              )}`
           )[0];
           const alaisRecord = records.filter(
             (r) =>
@@ -106,7 +106,7 @@ const DomainService = {
           )[0];
           verified =
             txtRecord.value ===
-              `${separator.base}://${domain.link.split(separator.sep)[1]}` &&
+            `${separator.base}://${domain.link.split(separator.sep)[1]}` &&
             alaisRecord.value === `${separator.base}.namebase.io.`;
         }
 
@@ -182,7 +182,7 @@ const DomainService = {
     }
   },
 
-  async addDefault(project: IProject): Promise<void> {
+  async addDefault(project: IProject): Promise<IDomain> {
     try {
       const argoKey: string = uuidv4();
       const randomString: string = Math.random().toString(36).substring(7);
@@ -203,7 +203,7 @@ const DomainService = {
 
       await this._addDnsRecord(record);
 
-      await DomainModel.create({
+      return await DomainModel.create({
         name,
         link: "",
         argoKey,
@@ -253,6 +253,7 @@ const DomainService = {
       );
       await DomainModel.updateMany({ _id: { $in: ids } }, { link });
     }
+    return latestDomains
   },
 
   async addStaticToResolver(
@@ -280,6 +281,13 @@ const DomainService = {
     );
     return response.status === 200;
   },
+  callDomain(url: string) {
+    try {
+      axios.get(url);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 };
 
 function _resolveTxt(hostname: string): Promise<string[][]> {
