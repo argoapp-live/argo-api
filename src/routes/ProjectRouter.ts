@@ -16,7 +16,7 @@ router.put('/changeStateToArchived/:id', ProjectComponent.changeStateToArchived)
 
 router.put('/changeStateToMaintained/:id', ProjectComponent.changeStateToMaintained);
 
-router.get('/getArchived/:organisationId', ProjectComponent.getArchived);
+router.get('/getArchived/:organizationId', ProjectComponent.getArchived);
 
 router.get('/installations/:installationId', ProjectComponent.getInstallationRepos);
 

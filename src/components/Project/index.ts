@@ -220,8 +220,9 @@ export async function changeStateToMaintained(req: Request, res: Response, next:
 
 export async function getArchived(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const organisationId = req.params.organisationId;
-        const archivedProjects: IProject[] = await ProjectService.find({organisationId, state : 'ARCHIVED' });
+        const organizationId = req.params.organizationId;
+        console.log(organizationId);
+        const archivedProjects: IProject[] = await ProjectService.find({organizationId, state: 'ARCHIVED'});
         res.status(200).json({
             archivedProjects
         });
