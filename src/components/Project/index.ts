@@ -148,23 +148,23 @@ export async function changeStateToArchived(req: Request, res: Response, next: N
             res.status(200).json({
                 message: 'STATUS ALREADY ARCHIVED'
             });
-
-            return next();
+            return;
         }
         
-        
-        const { installationId } = req.body;
-        const installationToken = await GithubAppService.createInstallationToken(installationId);
-        const parsed = gh(project.githubUrl);
-        const existsResponse = await WebHookService.getGitHook(installationToken, parsed, project.gitHookId);
-        
-        if (existsResponse.status === 200) {
+        if(project.gitHookId != -1){
+            const { installationId } = req.body;
+            const installationToken = await GithubAppService.createInstallationToken(installationId);
+            const parsed = gh(project.githubUrl);
+            try { 
+            const existsResponse = await WebHookService.getGitHook(installationToken, parsed, project.gitHookId);
             await WebHookService.disconnectWithGithub(installationToken, parsed, project.gitHookId);
+            } catch(error){
+                console.log(error);
+            }
         }
-        
         await ProjectService.updateOne(req.params.id, { state: 'ARCHIVED', gitHookId: -1 });
         res.status(200).json({
-            message: 'HOOK ALREADY DELETED',
+            message: 'PROJECT ARCHIVED',
         });
 
     } catch (error) {
@@ -180,35 +180,25 @@ export async function changeStateToMaintained(req: Request, res: Response, next:
 
         if (project.state === 'MAINTAINED') {
             res.status(200).json({
-                message: 'STATUS ALREADY MAINTAINED'
+                message: 'Project status is already MAINTAINED'
             });
-
-            return next();
+            return;
         }
 
         const updatedProject: IProject = await ProjectService.updateOne(projectId, { state: 'MAINTAINED' });
         
-        const { installationId } = req.body;
-        const installationToken = await GithubAppService.createInstallationToken(installationId);
-        const parsed = gh(updatedProject.githubUrl);
-        const existsResponse = await WebHookService.getGitHook(installationToken, parsed, project.gitHookId);
-
-        if (existsResponse.status === 200) {
-            res.status(200).json({
-                message: 'HOOK ALREADY EXISTS'
-            });
-
-            return next();
-        }
-
-        const response: any = await WebHookService.connectWithGithub(projectId, installationId, parsed);
-
-        if (response.status === 201) {
+        if(project.gitHookId == -1){
+            const { installationId } = req.body;
+            const installationToken = await GithubAppService.createInstallationToken(installationId);
+            const parsed = gh(updatedProject.githubUrl);
+            try{
+            const response: any = await WebHookService.connectWithGithub(projectId, installationToken, parsed);
             await ProjectService.updateOne(projectId, { gitHookId: response.body.id });
-        } else {
-            throw new Error('webhook not created');
+            }catch(error){
+                console.log(error);
+            }
+       
         }
-
         res.status(200).json({
             message: 'STATUS CHANGED TO MAINTAINED'
         });
@@ -221,8 +211,7 @@ export async function changeStateToMaintained(req: Request, res: Response, next:
 export async function getArchived(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
         const organizationId = req.params.organizationId;
-        console.log(organizationId);
-        const archivedProjects: IProject[] = await ProjectService.find({organizationId, state: 'ARCHIVED'});
+        const archivedProjects: IProject[] = await ProjectService.find({organizationId, state : 'ARCHIVED' });
         res.status(200).json({
             archivedProjects
         });
